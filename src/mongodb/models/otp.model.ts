@@ -2,10 +2,9 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const OTPSchema = new Schema({
-    accountId: {
-        type: Schema.Types.ObjectId,
+    email: {
+        type: String,
         required: true,
-        ref: 'Account',
     },
     password: {
         type: String,

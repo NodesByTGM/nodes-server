@@ -7,7 +7,7 @@ import { OTPModel, TokenModel, AccountModel } from '../mongodb/models';
 import { generateAccessToken, sendEmail } from '../services';
 import { AppConfig } from '../utilities/config';
 import { loginSchema, registerSchema } from '../validations';
-import { sendOTPSchema, verifyEmailSchema } from '../validations/auth.validations';
+import { sendOTPSchema, verifyEmailSchema, verifyOTPSchema } from '../validations/auth.validations';
 import { generateOTP } from '../utilities/common';
 
 // Register a new user
@@ -20,10 +20,19 @@ export const registerController: RequestHandler = async (req, res) => {
         username,
         email,
         dob,
+        otp,
         password,
-        avatar
     } = req.body;
     try {
+
+        if (otp) {
+            const dbOTP = await OTPModel.findOne({ password: otp, used: false })
+            if (!dbOTP) {
+                return res.status(401).json({ message: AppConfig.ERROR_MESSAGES.InvalidOTPProvided });
+            }
+            await dbOTP.deleteOne()
+        }
+
         const existing = await AccountModel.findOne({ email: email.toLowerCase() });
         if (existing) {
             return res.status(404).json({ message: AppConfig.ERROR_MESSAGES.UserAlreadyExists });
@@ -34,12 +43,24 @@ export const registerController: RequestHandler = async (req, res) => {
             username,
             email: email.toLowerCase(),
             dob,
-            avatar,
+            verified: otp ? true: false,
             password: hashedPassword,
         });
         await user.save();
         console.log('user saved', user)
         // TODO: Remove this.
+        
+        const accessToken = generateAccessToken(user);
+        // const refreshToken = generateRefreshToken(user);
+        // TODO: Refresh Tokens
+        res.cookie('nodesToken', accessToken, {
+            httpOnly: true,
+            maxAge: 24 * 60 * 60 * 1000, // Output: 86400000
+            sameSite: 'lax',
+            secure: process.env.NODE_ENV === 'development' ? false : true,
+            domain: process.env.NODE_ENV === 'development' ? 'localhost' : process.env.DOMAIN,
+            path: '/',
+        });
 
         const data = { ...req.body, id: user._id }
         return res.json({ message: AppConfig.STRINGS.RegistrationSuccessful, data });
@@ -108,32 +129,32 @@ export const sendOTPController: RequestHandler = async (req: any, res) => {
     const { error } = sendOTPSchema.validate(req.body);
     if (error) return res.status(400).json({ message: error.details[0].message });
     // const { email, name, password } = req.body;
-    const { password } = req.body;
-    const accountId = req.user._id
+    const { email } = req.body;
+    // const accountId = req.user._id
     try {
-        const user = await AccountModel.findById(accountId);
+        // const user = await AccountModel.findById(accountId);
 
-        if (!user) {
-            return res.status(401).json({ message: AppConfig.ERROR_MESSAGES.NotFoundError });
-        }
-        const isPasswordCorrect = await bcrypt.compare(password, user.password);
-        if (!isPasswordCorrect) {
-            return res.status(401).json({ message: AppConfig.ERROR_MESSAGES.InvalidCredentialsProvided });
-        }
+        // if (!user) {
+        //     return res.status(401).json({ message: AppConfig.ERROR_MESSAGES.NotFoundError });
+        // }
+        // const isPasswordCorrect = await bcrypt.compare(password, user.password);
+        // if (!isPasswordCorrect) {
+        //     return res.status(401).json({ message: AppConfig.ERROR_MESSAGES.InvalidCredentialsProvided });
+        // }
 
 
-        const pastOTP = await OTPModel.findOne({ accountId: req.user.id, used: false })
+        // const pastOTP = await OTPModel.findOne({ accountId: req.user.id, used: false })
 
-        if (pastOTP) {
-            await pastOTP.deleteOne()
-        }
+        // if (pastOTP) {
+        //     await pastOTP.deleteOne()
+        // }
 
         const otp = generateOTP()
         const created = await OTPModel.create({
-            accountId,
+            // accountId,
             password: otp
         })
-        sendEmail(user.email,
+        sendEmail(email,
             'Email Verification',
             `Please use this OTP For your verification: ${created.password}. Please note this is only valid for 1 hour.`
         )
@@ -143,15 +164,14 @@ export const sendOTPController: RequestHandler = async (req: any, res) => {
     }
 };
 
-
 export const verifyEmailController: RequestHandler = async (req: any, res) => {
 
     const { error } = verifyEmailSchema.validate(req.body);
     if (error) return res.status(400).json({ message: error.details[0].message });
 
-    const { otp, name, email } = req.body;
+    const { otp } = req.body;
     try {
-        const dbOTP = await OTPModel.findOne({ accountId: req.user.id, password: otp, used: false })
+        const dbOTP = await OTPModel.findOne({ email: req.user.email, password: otp, used: false })
 
         if (!dbOTP) {
             return res.status(401).json({ message: AppConfig.ERROR_MESSAGES.InvalidOTPProvided });
@@ -161,11 +181,28 @@ export const verifyEmailController: RequestHandler = async (req: any, res) => {
 
         const user = req.user
         user.verified = true
-        // user.name = name || user.name
-        // user.name = email || user.email
         await user.save()
 
         return res.status(200).json({ message: AppConfig.STRINGS.EmailVerified });
+    } catch (error) {
+        return res.status(500).json({ message: AppConfig.ERROR_MESSAGES.InternalServerError });
+    }
+};
+
+export const verifyOTPController: RequestHandler = async (req: any, res) => {
+
+    const { error } = verifyOTPSchema.validate(req.body);
+    if (error) return res.status(400).json({ message: error.details[0].message });
+
+    const { otp, email } = req.body;
+    try {
+        const dbOTP = await OTPModel.findOne({ email: email, password: otp, used: false })
+
+        if (!dbOTP) {
+            return res.status(401).json({ message: AppConfig.ERROR_MESSAGES.InvalidOTPProvided });
+        }
+        await dbOTP.deleteOne()
+        return res.status(200).json({ message: AppConfig.STRINGS.OTPVerified });
     } catch (error) {
         return res.status(500).json({ message: AppConfig.ERROR_MESSAGES.InternalServerError });
     }
@@ -207,7 +244,6 @@ export const forgotPasswordController: RequestHandler = async (req, res) => {
 
 
 }
-
 
 export const checkResetLinkController: RequestHandler = async (req, res) => {
     try {

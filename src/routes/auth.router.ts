@@ -10,6 +10,7 @@ import {
     sendOTPController,
     verifyEmailController,
     checkResetLinkController,
+    verifyOTPController,
 } from '../controllers/auth.controllers';
 import { authenticate } from '../middlewares';
 
@@ -23,7 +24,8 @@ router.get('/check-reset-link/:accountId/:token', checkResetLinkController);
 router.post('/forgot-password', forgotPasswordController);
 router.post('/change-password', authenticate, changePasswordController);
 router.post('/token', getTokenController)
-router.post('/send-otp', authenticate, sendOTPController)
+router.post('/send-otp', sendOTPController)
+router.post('/veirfy-otp', verifyOTPController)
 router.post('/verify-email', authenticate, verifyEmailController)
 
 

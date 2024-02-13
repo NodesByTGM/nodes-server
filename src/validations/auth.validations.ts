@@ -6,7 +6,7 @@ export const registerSchema = Joi.object({
     email: Joi.string().required(),
     dob: Joi.date().required(),
     password: Joi.string().required(),
-    avatar: Joi.string()
+    otp: Joi.string().required(),
 });
 
 export const loginSchema = Joi.object({
@@ -15,14 +15,19 @@ export const loginSchema = Joi.object({
 })
 
 export const sendOTPSchema = Joi.object({
-    name: Joi.string().required(),
+    // name: Joi.string().required(),
     email: Joi.string().required(),
-    password: Joi.string().required(),
+    // password: Joi.string().required(),
 })
 
 
 export const verifyEmailSchema = Joi.object({
     otp: Joi.string().required(),
-    name: Joi.string().allow(''),
+    email: Joi.string().allow('')
+})
+
+
+export const verifyOTPSchema = Joi.object({
+    otp: Joi.string().required(),
     email: Joi.string().allow('')
 })
