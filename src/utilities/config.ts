@@ -1,5 +1,7 @@
 export const EXTERNAL_BASE_API_ENDPOINT = 'https://animechan.xyz/api'
-export const BASE_API_ENDPOINT = process.env.NODE_ENV === 'development' ? 'http://localhost:3001/api/v1' : 'https://animequotes.onrender.com/api/v1'
+export const BASE_API_ENDPOINT = process.env.NODE_ENV === 'development' ? 'http://localhost:3001/api/v1' : 'https://nodes-server.onrender.com/api/v1'
+export const MAIN_APP_SERVER = 'https://nodes-platform.vercel.app'
+export const SOCIAL_AUTH_GOOGLE_URL = `${BASE_API_ENDPOINT}/auth/google/redirect`
 
 const API_ENDPOINTS = {
     Quotes: {

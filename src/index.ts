@@ -5,6 +5,8 @@ import dotenv from "dotenv";
 import express, { Express, json } from "express";
 import connectDB from "./mongodb/connect";
 import { authRouter, upgradesRouter, userRouter } from "./routes";
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from "./swagger";
 
 
 dotenv.config();
@@ -31,6 +33,9 @@ app.use('/api/v1/users', userRouter);
 
 // Define upgrade routes
 app.use('/api/v1/upgrades', upgradesRouter);
+
+// Swagger Docs
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.get('/', (req, res) => res.status(200).json({ message: 'Welcome to Nodes API' }));
 
