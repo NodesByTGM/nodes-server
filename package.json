@@ -1,6 +1,7 @@
 {
     "name": "nodes-server",
     "version": "1.0.0",
+    "type": "module",
     "description": "Backend server for Nodes App",
     "main": "src/index.ts",
     "scripts": {
