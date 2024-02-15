@@ -82,7 +82,7 @@ export const registerController: RequestHandler = async (req, res) => {
     try {
 
         if (otp) {
-            const dbOTP = await OTPModel.findOne({ password: otp, used: false })
+            const dbOTP = await OTPModel.findOne({ email, password: otp, used: false })
             if (!dbOTP) {
                 return res.status(401).json({ message: AppConfig.ERROR_MESSAGES.InvalidOTPProvided });
             }
