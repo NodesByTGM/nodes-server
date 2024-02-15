@@ -60,7 +60,7 @@ export const profileController: RequestHandler = async (req: any, res: any) => {
     try {
         const user = await AccountModel.findById(req.user.id)
         // const posts = await Post.find({ accountId: req.user.id })
-        res.json({ data: { user }, });
+        res.json({ user });
     } catch (error) {
         res.json({ error: JSON.stringify(error) })
     }
@@ -83,7 +83,7 @@ export const profileUpdateController: RequestHandler = async (req: any, res: any
             user.name = fullname || user.name
             user.avatar = avatar || user.avatar
             user.save()
-            res.json({ data: user });
+            res.json({ user });
         }
 
     } catch (error) {

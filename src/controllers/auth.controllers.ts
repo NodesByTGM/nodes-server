@@ -118,8 +118,8 @@ export const registerController: RequestHandler = async (req, res) => {
             path: '/',
         });
 
-        const data = { ...req.body, id: user._id }
-        return res.json({ message: AppConfig.STRINGS.RegistrationSuccessful, data });
+        const data = { ...req.body, id: user._id, accessToken }
+        return res.json({ message: AppConfig.STRINGS.RegistrationSuccessful, user: data });
     } catch (error) {
         console.log(error)
         return res.status(500).json({ message: AppConfig.ERROR_MESSAGES.InternalServerError, error });
@@ -190,8 +190,8 @@ export const loginController: RequestHandler = async (req, res, next) => {
             domain: process.env.NODE_ENV === 'development' ? 'localhost' : process.env.DOMAIN,
             path: '/',
         });
-
-        return res.status(200).json({ data: user, accessToken });
+        const data = { ...user.toJSON(), accessToken }
+        return res.status(200).json({ message: 'Login successful', user: data });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: AppConfig.ERROR_MESSAGES.InternalServerError });
