@@ -7,6 +7,7 @@ const TalentDetailsSchema = new mongoose.Schema({
     linkedIn: { type: String, required: false, default: '' },
     instagram: { type: String, required: false, default: '' },
     twitter: { type: String, required: false, default: '' },
+    step: { type: Number, required: false, default: 0 },
     accountId: {
         type: Schema.Types.ObjectId,
         required: true,

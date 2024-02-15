@@ -8,6 +8,7 @@ export const talentUpgradeSchema = Joi.object({
     instagram: Joi.string().allow(''),
     twitter: Joi.string().allow(''),
     onboardingPurpose: Joi.string().allow(''),
+    step: Joi.number().allow(''),
 });
 
 

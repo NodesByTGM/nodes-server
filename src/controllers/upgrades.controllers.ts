@@ -48,9 +48,10 @@ import { uploadMedia } from "../services";
  *                 type: string
  *                 description: Twitter profile URL of the talent.
  *                 example: https://twitter.com/talent_user
- *             required:
- *               - skills
- *               - location
+ *               step:
+ *                 type: number
+ *                 description: Progress on the onboarding form.
+ *                 example: 0
  *     responses:
  *       '200':
  *         description: Account successfully upgraded to talent.
@@ -73,29 +74,41 @@ export const talentUpgradeController: RequestHandler = async (req: any, res) => 
         linkedIn,
         instagram,
         twitter,
-        onboardingPurpose
+        onboardingPurpose,
+        step
     } = req.body;
     try {
         const { user } = req
-        const dbTalent = await TalentDetailsModel.findOne({ account: req.user.id, })
+        let talentProfile = await TalentDetailsModel.findOne({ account: req.user.id, })
         if (!user.verified) {
             return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.UnverifiedEmail });
         }
-        if ((user.type === AppConfig.ACCOUNT_TYPES.TALENT) && dbTalent) {
-            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.BadRequestError });
+        // if ((user.type === AppConfig.ACCOUNT_TYPES.TALENT) && dbTalent) {
+        //     return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.BadRequestError });
+        // }
+        if (talentProfile) {
+            talentProfile.skills = skills || talentProfile.skills,
+            talentProfile.location = location || talentProfile.location,
+            talentProfile.linkedIn = linkedIn || talentProfile.linkedIn,
+            talentProfile.instagram = instagram || talentProfile.instagram,
+            talentProfile.twitter = twitter || talentProfile.twitter,
+            talentProfile.onboardingPurpose = onboardingPurpose || talentProfile.onboardingPurpose,
+            talentProfile.step = step || talentProfile
+        } else {
+            talentProfile = await TalentDetailsModel.create({
+                accountId: req.user.id,
+                skills,
+                location,
+                linkedIn,
+                instagram,
+                twitter,
+                onboardingPurpose,
+                step
+            })
         }
-        const talentProfile = await TalentDetailsModel.create({
-            accountId: req.user.id,
-            skills,
-            location,
-            linkedIn,
-            instagram,
-            twitter,
-            onboardingPurpose
-        })
 
         user.type = AppConfig.ACCOUNT_TYPES.TALENT
-        user.avatar = avatar
+        user.avatar = avatar || user.avatar
         await user.save()
 
         const data = {
@@ -103,7 +116,7 @@ export const talentUpgradeController: RequestHandler = async (req: any, res) => 
             talentProfile
         }
 
-        return res.status(200).json({ message: AppConfig.STRINGS.AccountUpgradedTalent, data });
+        return res.status(200).json({ message: AppConfig.STRINGS.AccountUpgradedTalent, user:data });
     } catch (error) {
         console.log(error)
         return res.status(500).json({ message: AppConfig.ERROR_MESSAGES.InternalServerError });
