@@ -10,3 +10,8 @@ export const generateAccessToken = (user: any) => {
 export const generateRefreshToken = (user: any) => {
     return jwt.sign({ accountId: user.id }, `${process.env.REFRESH_TOKEN_SECRET}`, { expiresIn: '1 day' });
 };
+
+// Verify tokens
+export const verifyToken = (token: any) => {
+    return jwt.verify(token, `${process.env.ACCESS_TOKEN_SECRET}`);
+};

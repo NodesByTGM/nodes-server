@@ -15,10 +15,11 @@ const app: Express = express();
 // Connect to MongoDB
 connectDB();
 
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",");
 // Parse JSON request body
 app.use(json());
 app.use(cors({
-  origin: ['http://localhost:5173'],
+  origin: allowedOrigins,
   credentials: true
 }));
 app.use(cookieParser())
