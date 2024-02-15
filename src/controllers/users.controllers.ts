@@ -13,42 +13,22 @@ import { AccountModel } from '../mongodb/models';
  *       - bearerAuth: []
  *     responses:
  *       '200':
- *         description: Successfully retrieved user profile.
+ *         description: User successfully registered.
  *         content:
  *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 name:
- *                   type: string
- *                   description: The full name of the user.
- *                   example: John Doe
- *                 username:
- *                   type: string
- *                   description: The username of the user.
- *                   example: john_doe
- *                 email:
- *                   type: string
- *                   format: email
- *                   description: The email address of the user.
- *                   example: john@example.com
- *                 dob:
- *                   type: string
- *                   format: date
- *                   description: The date of birth of the user (in YYYY-MM-DD format).
- *                   example: 1990-01-01
- *                 verified:
- *                   type: boolean
- *                   description: Indicates whether the user's account is verified.
- *                   example: true
- *                 avatar:
- *                   type: string
- *                   description: URL or path to the user's avatar.
- *                   example: https://example.com/avatar/john_doe.jpg
- *                 type:
- *                   type: string
- *                   description: The type of user account (e.g., regular user, admin).
- *                   example: regular
+ *             example:
+ *                 user:
+ *                  id: "123456789"
+ *                  name: "John Doe"
+ *                  email: "john.doe@example.com"
+ *                  username: "johndoe"
+ *                  dob: "1990-01-01"
+ *                  type: 1
+ *                  avatar: "https://example.com/avatar.jpg"
+ *                  verified: true
+ *                  createdAt: "2024-02-14T12:00:00Z"
+ *                  updatedAt: "2024-02-14T12:30:00Z"
+ *                  accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
  *       '401':
  *         description: Unauthorized. User authentication failed.
  *       '500':
