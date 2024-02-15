@@ -6,7 +6,7 @@ export const registerSchema = Joi.object({
     email: Joi.string().required(),
     dob: Joi.date().required(),
     password: Joi.string().required(),
-    otp: Joi.string().required(),
+    otp: Joi.string().allow(''),
 });
 
 export const loginSchema = Joi.object({
