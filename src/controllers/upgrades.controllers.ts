@@ -72,7 +72,9 @@ export const talentUpgradeController: RequestHandler = async (req: any, res) => 
         avatar,
         linkedIn,
         instagram,
-        twitter } = req.body;
+        twitter,
+        onboardingPurpose
+    } = req.body;
     try {
         const { user } = req
         const dbTalent = await TalentDetailsModel.findOne({ account: req.user.id, })
@@ -82,20 +84,26 @@ export const talentUpgradeController: RequestHandler = async (req: any, res) => 
         if ((user.type === AppConfig.ACCOUNT_TYPES.TALENT) && dbTalent) {
             return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.BadRequestError });
         }
-        const talent = await TalentDetailsModel.create({
+        const talentProfile = await TalentDetailsModel.create({
             accountId: req.user.id,
             skills,
             location,
             linkedIn,
             instagram,
-            twitter
+            twitter,
+            onboardingPurpose
         })
 
         user.type = AppConfig.ACCOUNT_TYPES.TALENT
         user.avatar = avatar
         await user.save()
 
-        return res.status(200).json({ message: AppConfig.STRINGS.AccountUpgradedTalent, data: talent });
+        const data = {
+            ...user.toJSON(),
+            talentProfile
+        }
+
+        return res.status(200).json({ message: AppConfig.STRINGS.AccountUpgradedTalent, data });
     } catch (error) {
         console.log(error)
         return res.status(500).json({ message: AppConfig.ERROR_MESSAGES.InternalServerError });

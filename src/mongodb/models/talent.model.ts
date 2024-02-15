@@ -1,8 +1,9 @@
 import mongoose, { Schema } from 'mongoose';
 
 const TalentDetailsSchema = new mongoose.Schema({
-    skills: { type: String, required: true },
-    location: { type: String, required: true },
+    skills: { type: String, required: false, default: ''},
+    onboardingPurpose: { type: Number, required: false, default: 0 },
+    location: { type: String, required: false, default: '' },
     linkedIn: { type: String, required: false, default: '' },
     instagram: { type: String, required: false, default: '' },
     twitter: { type: String, required: false, default: '' },

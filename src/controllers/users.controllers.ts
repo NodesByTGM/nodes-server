@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express';
-import { AccountModel } from '../mongodb/models';
+import { AccountModel, TalentDetailsModel } from '../mongodb/models';
 
 /**
  * @swagger
@@ -29,6 +29,14 @@ import { AccountModel } from '../mongodb/models';
  *                  createdAt: "2024-02-14T12:00:00Z"
  *                  updatedAt: "2024-02-14T12:30:00Z"
  *                  accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+ *                  talentProfile?:
+ *                   skills: "Java, JavaScript, SQL"
+ *                   onboardingPurpose: 0
+ *                   location: "City, Country"
+ *                   linkedIn: "https://www.linkedin.com/in/johndoe"
+ *                   instagram: "https://www.instagram.com/johndoe"
+ *                   twitter: "https://twitter.com/johndoe"
+ *                   accountId: "user123"
  *       '401':
  *         description: Unauthorized. User authentication failed.
  *       '500':
@@ -38,9 +46,13 @@ import { AccountModel } from '../mongodb/models';
 export const profileController: RequestHandler = async (req: any, res: any) => {
     // res.json({ message: `Welcome ${req.user.username}` });
     try {
-        const user = await AccountModel.findById(req.user.id)
-        // const posts = await Post.find({ accountId: req.user.id })
-        res.json({ user });
+        const user = req.user
+        const talentProfile = await TalentDetailsModel.findOne({ accountId: req.user.id })
+        const data = {
+            ...user.toJSON(),
+            talentProfile: talentProfile
+        }
+        res.json({ user: data });
     } catch (error) {
         res.json({ error: JSON.stringify(error) })
     }
