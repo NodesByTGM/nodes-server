@@ -4,11 +4,12 @@ import { RequestHandler } from 'express';
 import Joi from 'joi';
 import jwt from 'jsonwebtoken';
 import { OTPModel, TokenModel, AccountModel } from '../mongodb/models';
-import { generateAccessToken, sendEmail } from '../services';
+import { generateAccessToken, generateRefreshToken, sendEmail } from '../services';
 import { AppConfig } from '../utilities/config';
 import { loginSchema, registerSchema } from '../validations';
 import { sendOTPSchema, verifyEmailSchema, verifyOTPSchema } from '../validations/auth.validations';
 import { generateOTP } from '../utilities/common';
+import { verifyRefreshToken } from '../services/auth.service';
 
 /**
  * @swagger
@@ -75,7 +76,7 @@ import { generateOTP } from '../utilities/common';
  *                  verified: true
  *                  createdAt: "2024-02-14T12:00:00Z"
  *                  updatedAt: "2024-02-14T12:30:00Z"
- *                  accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+ *                  accessToken: "your_access_token_here"
  *       '400':
  *         description: Bad request. Check the request payload for missing or invalid information.
  *       '500':
@@ -122,7 +123,7 @@ export const registerController: RequestHandler = async (req, res) => {
         // TODO: Remove this.
 
         const accessToken = generateAccessToken(user);
-        // const refreshToken = generateRefreshToken(user);
+        const refreshToken = generateRefreshToken(user);
         // TODO: Refresh Tokens
         res.cookie('nodesToken', accessToken, {
             httpOnly: true,
@@ -133,7 +134,7 @@ export const registerController: RequestHandler = async (req, res) => {
             path: '/',
         });
 
-        const data = { ...user.toJSON(), accessToken }
+        const data = { ...user.toJSON(), accessToken, refreshToken }
         return res.json({ message: AppConfig.STRINGS.RegistrationSuccessful, user: data });
     } catch (error) {
         console.log(error)
@@ -186,7 +187,7 @@ export const registerController: RequestHandler = async (req, res) => {
  *                  verified: true
  *                  createdAt: "2024-02-14T12:00:00Z"
  *                  updatedAt: "2024-02-14T12:30:00Z"
- *                  accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+ *                  accessToken: "your_access_token_here"
  *       '400':
  *         description: Bad request. Check the request payload for missing or invalid information.
  *       '500':
@@ -227,6 +228,43 @@ export const loginController: RequestHandler = async (req, res, next) => {
         return res.status(500).json({ message: AppConfig.ERROR_MESSAGES.InternalServerError });
     }
 };
+/**
+ * @swagger
+ * paths:
+ *   /auth/refresh-token:
+ *     post:
+ *       summary: Refresh Access Token
+ *       description: Obtain a new access token using a refresh token.
+ *       tags:
+ *         - Authentication
+ *       requestBody:
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 refreshToken:
+ *                   type: string
+ *                   description: The refresh token.
+ *                   example: "your_refresh_token_here"
+ *               required:
+ *                 - refreshToken
+ *       responses:
+ *         '200':
+ *           description: New access token obtained successfully.
+ *           content:
+ *             application/json:
+ *               example:
+ *                 accessToken: "your_new_access_token_here"
+ *         '400':
+ *           description: Bad request. Check the request payload for missing or invalid information.
+ *         '401':
+ *           description: Unauthorized. The provided refresh token is invalid or expired.
+ *         '500':
+ *           description: Internal Server Error.
+ */
+
 
 // Route to refresh access token using the refresh token
 export const getTokenController: RequestHandler = async (req, res) => {
@@ -234,14 +272,25 @@ export const getTokenController: RequestHandler = async (req, res) => {
         const refreshToken = req.body.refreshToken;
         if (!refreshToken) return res.status(401).json({ message: AppConfig.ERROR_MESSAGES.InvalidCredentialsProvided });
 
-        jwt.verify(refreshToken, `${process.env.REFRESH_TOKEN_SECRET}`, (err: any, user: any) => {
-            if (err) return res.status(401).json({ message: AppConfig.ERROR_MESSAGES.InvalidCredentialsProvided });
+        // jwt.verify(refreshToken, `${process.env.REFRESH_TOKEN_SECRET}`, (err: any, user: any) => {
+        //     if (err) return res.status(401).json({ message: AppConfig.ERROR_MESSAGES.InvalidCredentialsProvided });
 
-            const accessToken = generateAccessToken(user);
-            res.json({ accessToken });
-        });
+        //     const accessToken = generateAccessToken(user);
+        //     res.json({ accessToken });
+        // });
+
+        const decodedToken: any = verifyRefreshToken(refreshToken);
+        const user: any = await AccountModel.findById(decodedToken?.accountId);
+        if (!user) {
+            return res.status(404).json({ message: AppConfig.ERROR_MESSAGES.InvalidCredentialsProvided });
+        }
+
+        const accessToken = generateAccessToken(user);
+        const newRefreshToken = generateRefreshToken(user);
+        res.json({ accessToken, refreshToken: newRefreshToken });
+
     } catch (error) {
-        return res.status(500).json({ message: AppConfig.ERROR_MESSAGES.InternalServerError });
+        return res.status(500).json({ message: AppConfig.ERROR_MESSAGES.InvalidCredentialsProvided });
     }
 };
 

@@ -23,7 +23,7 @@ router.post('/reset-password/:accountId/:token', resetPasswordController);
 router.get('/check-reset-link/:accountId/:token', checkResetLinkController);
 router.post('/forgot-password', forgotPasswordController);
 router.post('/change-password', authenticate, changePasswordController);
-router.post('/token', getTokenController)
+router.post('/refresh-token', getTokenController)
 router.post('/send-otp', sendOTPController)
 router.post('/veirfy-otp', verifyOTPController)
 router.post('/verify-email', authenticate, verifyEmailController)
