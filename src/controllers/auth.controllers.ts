@@ -106,8 +106,20 @@ export const registerController: RequestHandler = async (req, res) => {
         }
 
         const existing = await AccountModel.findOne({ email: email.toLowerCase() });
+        // const existing = await AccountModel.findOne({
+        //     $or: [
+        //       { email: email.toLowerCase() },
+        //       { username: username.toLowerCase() },
+        //     ],
+        //   });
         if (existing) {
             return res.status(404).json({ message: AppConfig.ERROR_MESSAGES.UserAlreadyExists });
+        }
+
+        const existing1 = await AccountModel.findOne({ username: username.toLowerCase() });
+
+        if (existing1) {
+            return res.status(404).json({ message: AppConfig.ERROR_MESSAGES.UserAlreadyExistsUsername });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = new AccountModel({
@@ -354,6 +366,7 @@ export const sendOTPController: RequestHandler = async (req: any, res) => {
         const otp = generateOTP()
         const created = await OTPModel.create({
             // accountId,
+            email,
             password: otp
         })
         sendEmail(email,

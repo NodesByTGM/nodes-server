@@ -34,6 +34,7 @@ export const AppConfig = {
         ResourceNotFound: 'Unable to process. Resource not found.',
         ServerError: 'Unable to process request. Please try again later.',
         UserAlreadyExists: 'This email address provided is associated with an existing account.',
+        UserAlreadyExistsUsername: 'This username provided is associated with an existing account.',
         InvalidLinkProvided: 'The link provided is either invalid or has expired.',
         InvalidOTPProvided: 'The OTP provided is either invalid or has expired.',
         ValidationError: 'All fields are required',
