@@ -23,6 +23,17 @@ const API_ENDPOINTS = {
 
 }
 
+
+export enum OnboaringPurpose {
+    NotSelected = 0,
+    Connection = 1,
+    Jobs = 2,
+    Showcase = 3,
+    ExploreProjects = 4,
+    Others = 5,
+}
+
+
 export const AppConfig = {
     API_ENDPOINTS,
     ERROR_MESSAGES: {

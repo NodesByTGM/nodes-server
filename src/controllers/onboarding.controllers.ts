@@ -17,6 +17,7 @@ export const talentOnboardingController: RequestHandler = async (req: any, res) 
         instagram,
         twitter,
         onboardingPurpose,
+        otherPurpose,
         step
     } = req.body;
     try {
@@ -35,6 +36,7 @@ export const talentOnboardingController: RequestHandler = async (req: any, res) 
             talentProfile.instagram = instagram || talentProfile.instagram,
             talentProfile.twitter = twitter || talentProfile.twitter,
             talentProfile.onboardingPurpose = onboardingPurpose || talentProfile.onboardingPurpose,
+            talentProfile.otherPurpose = otherPurpose || talentProfile.otherPurpose,
             talentProfile.step = step || talentProfile
         } else {
             talentProfile = await TalentDetailsModel.create({
@@ -45,6 +47,7 @@ export const talentOnboardingController: RequestHandler = async (req: any, res) 
                 instagram,
                 twitter,
                 onboardingPurpose,
+                otherPurpose,
                 step
             })
         }
