@@ -14,9 +14,8 @@ npm run dev
 ```
 The server starts running as http://localhost:3001 or whatever port you've set it to listen to. Please ensure the DB is connected before any interactions.
 
-<!-- Authentication
-Onboarding
-Community
+<!-- 
 Profile
+Community
 Spaces groupchat
 Notifications -->

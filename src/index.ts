@@ -3,10 +3,10 @@ import cookieParser from "cookie-parser";
 import cors from 'cors';
 import dotenv from "dotenv";
 import express, { Express, json } from "express";
-import connectDB from "./mongodb/connect";
-import { authRouter, upgradesRouter, userRouter } from "./routes";
 import swaggerUi from 'swagger-ui-express';
-import swaggerSpec from "./swagger";
+import connectDB from "./mongodb/connect";
+import { authRouter, onboardingRouter, userRouter } from "./routes";
+import swaggerSpec from "./docs/swagger";
 
 
 dotenv.config();
@@ -32,13 +32,17 @@ app.use('/api/v1/auth', authRouter);
 // Define user routes
 app.use('/api/v1/users', userRouter);
 
+// Define onboarding routes
+app.use('/api/v1/onboarding', onboardingRouter);
+
+
 // Define upgrade routes
-app.use('/api/v1/upgrades', upgradesRouter);
+app.use('/api/v1/upgrades', onboardingRouter);
 
 // Swagger Docs
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.get('/', (req, res) => res.status(200).json({ message: 'Welcome to Nodes API' }));
+app.get('/', (_, res) => res.status(200).json({ message: 'Welcome to Nodes API' }));
 
 
 app.listen(port, () => {

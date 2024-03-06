@@ -1,4 +1,3 @@
-export { allQuotesController, singleQuoteController } from './quotes.controller'
 export {
     registerController,
     loginController,
@@ -13,4 +12,4 @@ export {
     profileUpdateController,
     allUsersContoller,
 } from './users.controllers'
-export { talentUpgradeController, businessUpgradeController } from './upgrades.controllers'
+export { talentOnboardingController, businessOnboardingController } from './onboarding.controllers'
