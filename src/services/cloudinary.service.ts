@@ -15,3 +15,14 @@ export const uploadMedia = async (photo: string) => {
   return photoUrl
 }
 
+export const deleteMedia = async (id?: string | null) => {
+  try {
+    if (!id) {
+      return false
+    }
+    await cloudinary.uploader.destroy(id);
+    return true
+  } catch (error: any) {
+    throw new Error(error);
+  }
+}

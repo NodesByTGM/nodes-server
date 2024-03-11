@@ -31,7 +31,7 @@ const OTPSchema = new Schema({
     }
 });
 
-OTPSchema.index({ accountId: 1, password: 1 }, { unique: true });
+// OTPSchema.index({ email: 1, password: 1 }, { unique: true });
 
 const OTPModel = mongoose.model('OTP', OTPSchema);
 

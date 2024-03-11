@@ -2,14 +2,13 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import { RequestHandler } from 'express';
 import Joi from 'joi';
-import jwt from 'jsonwebtoken';
-import { OTPModel, TokenModel, AccountModel } from '../mongodb/models';
+import { AccountModel, OTPModel, TokenModel } from '../mongodb/models';
 import { generateAccessToken, generateRefreshToken, sendEmail } from '../services';
+import { verifyRefreshToken } from '../services/auth.service';
+import { generateOTP } from '../utilities/common';
 import { AppConfig, MAIN_APP_URL } from '../utilities/config';
 import { loginSchema, registerSchema } from '../validations';
 import { sendOTPSchema, verifyEmailSchema, verifyOTPSchema } from '../validations/auth.validations';
-import { generateOTP } from '../utilities/common';
-import { verifyRefreshToken } from '../services/auth.service';
 
 export const registerController: RequestHandler = async (req, res) => {
     const { error } = registerSchema.validate(req.body);
@@ -152,7 +151,6 @@ export const sendOTPController: RequestHandler = async (req: any, res) => {
     if (error) return res.status(400).json({ message: error.details[0].message });
     // const { email, name, password } = req.body;
     const { email } = req.body;
-    // const accountId = req.user._id
     try {
         // const user = await AccountModel.findById(accountId);
 
@@ -165,7 +163,7 @@ export const sendOTPController: RequestHandler = async (req: any, res) => {
         // }
 
 
-        // const pastOTP = await OTPModel.findOne({ accountId: req.user.id, used: false })
+        // const pastOTP = await OTPModel.findOne({ account: req.user.id, used: false })
 
         // if (pastOTP) {
         //     await pastOTP.deleteOne()
@@ -173,7 +171,6 @@ export const sendOTPController: RequestHandler = async (req: any, res) => {
 
         const otp = generateOTP()
         const created = await OTPModel.create({
-            // accountId,
             email,
             password: otp
         })
@@ -245,10 +242,10 @@ export const forgotPasswordController: RequestHandler = async (req, res) => {
             return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.ResourceNotFound });
         }
 
-        let token = await TokenModel.findOne({ accountId: user._id });
+        let token = await TokenModel.findOne({ account: user._id });
         if (!token) {
             token = await TokenModel.create({
-                accountId: user._id,
+                account: user._id,
                 token: crypto.randomBytes(32).toString('hex'),
             });
         }
@@ -274,7 +271,7 @@ export const checkResetLinkController: RequestHandler = async (req, res) => {
         if (!user) return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.InvalidLinkProvided });
 
         const token = await TokenModel.findOne({
-            accountId: req.params.accountId,
+            account: req.params.accountId,
             token: req.params.token,
         });
         if (!token) return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.InvalidLinkProvided });
@@ -298,7 +295,7 @@ export const resetPasswordController: RequestHandler = async (req, res) => {
 
 
         const token = await TokenModel.findOne({
-            accountId: req.params.accountId,
+            account: req.params.accountId,
             token: req.params.token,
         });
         if (!token) return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.InvalidLinkProvided });

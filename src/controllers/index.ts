@@ -12,4 +12,18 @@ export {
     profileUpdateController,
     allUsersContoller,
 } from './users.controllers'
-export { talentOnboardingController, businessOnboardingController } from './onboarding.controllers'
+export {
+    onboardingController,
+    talentOnboardingController,
+    businessOnboardingController
+} from './onboarding.controllers'
+
+export {
+    projectCreateController,
+    allprojectsController
+} from './project.controllers'
+
+export {
+    uploadMediaController,
+    deleteMediaController
+} from './uploads.controllers';

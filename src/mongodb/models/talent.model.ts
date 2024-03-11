@@ -9,7 +9,7 @@ const TalentDetailsSchema = new mongoose.Schema({
     step: { type: Number, required: false, default: 0 },
     onboardingPurpose: { type: Number, required: false, default: 0 },
     otherPurpose: { type: String, required: false, default: '' },
-    accountId: {
+    account: {
         type: Schema.Types.ObjectId,
         required: true,
         ref: 'Account',

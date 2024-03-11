@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { AppConfig } from '../../utilities/config';
+import { fileSchema } from './file.model';
 
 const AccountSchema = new mongoose.Schema({
     name: { type: String, required: true },
@@ -8,9 +9,36 @@ const AccountSchema = new mongoose.Schema({
     dob: { type: Date, required: true, },
     password: { type: String, required: true, },
     verified: { type: Boolean, required: false, default: false },
-    avatar: { type: String, required: false, default: '' },
-    role: { type: Number, required: true, default: AppConfig.ACCOUNT_ROLES.USER, enum: Object.values(AppConfig.ACCOUNT_ROLES) },
-    type: { type: Number, required: true, default: AppConfig.ACCOUNT_TYPES.DEFAULT, enum: Object.values(AppConfig.ACCOUNT_TYPES) },
+    avatar: fileSchema,
+
+    skills: { type: String, required: false, default: '' },
+    location: { type: String, required: false, default: '' },
+    linkedIn: { type: String, required: false, default: '' },
+    instagram: { type: String, required: false, default: '' },
+    twitter: { type: String, required: false, default: '' },
+    step: { type: Number, required: false, default: 0 },
+    onboardingPurpose: { type: Number, required: false, default: 0 },
+    otherPurpose: { type: String, required: false, default: '' },
+
+
+    headline: { type: String, required: false, default: '' },
+    bio: { type: String, required: false, default: '' },
+    website: { type: String, required: false, default: '' },
+    spaces: { type: Boolean, required: false, default: false },
+    comments: { type: Boolean, required: false, default: false },
+
+    role: {
+        type: Number,
+        required: true,
+        default: AppConfig.ACCOUNT_ROLES.USER,
+        enum: Object.values(AppConfig.ACCOUNT_ROLES)
+    },
+    type: {
+        type: Number,
+        required: true,
+        default: AppConfig.ACCOUNT_TYPES.DEFAULT,
+        enum: Object.values(AppConfig.ACCOUNT_TYPES)
+    },
 }, {
     timestamps: true,
     toJSON: {

@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 import express, { Express, json } from "express";
 import swaggerUi from 'swagger-ui-express';
 import connectDB from "./mongodb/connect";
-import { authRouter, onboardingRouter, userRouter } from "./routes";
+import { authRouter, onboardingRouter, projectRouter, uploadsRouter, userRouter } from "./routes";
 import swaggerSpec from "./docs/swagger";
 
 
@@ -38,6 +38,14 @@ app.use('/api/v1/onboarding', onboardingRouter);
 
 // Define upgrade routes
 app.use('/api/v1/upgrades', onboardingRouter);
+
+
+// Define uploads routes
+app.use('/api/v1/upgrades', uploadsRouter);
+
+
+// Define projects routes
+app.use('/api/v1/upgrades', projectRouter);
 
 // Swagger Docs
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));

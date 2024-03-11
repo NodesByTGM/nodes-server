@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const tokenSchema = new Schema({
-    accountId: {
+    account: {
         type: Schema.Types.ObjectId,
         required: true,
         ref: 'Account',

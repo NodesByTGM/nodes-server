@@ -68,6 +68,7 @@ export const AppConfig = {
         EmailVerified: 'Your email has been verified successfully.',
         OTPVerified: 'Your OTP has been verified successfully.',
         AccountUpgradedTalent: 'Your account has been upgraded to a Talent account successfully.',
+        OnboardingSuccessful: 'Your account has been onboarded successfully.',
         AccountUpgradedBusiness: 'Your account has been upgraded to a Business account successfully.',
         Success: 'Success.',
     },
