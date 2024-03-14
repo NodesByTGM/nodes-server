@@ -1,6 +1,6 @@
 export const usersSwagger = {
     paths: {
-        '/api/v1/profile': {
+        '/api/v1/users/profile': {
             get: {
                 summary: 'Get User Profile',
                 description: 'Retrieve the authenticated user\'s profile information.',
