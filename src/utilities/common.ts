@@ -24,3 +24,16 @@ export const generateOTP = (length = AppConfig.OTP_LENGTH) => {
 
     return otp;
 }
+
+export const isValid = (value: any) => {
+    return value !== undefined && value !== "" && value !== null
+}
+
+
+export const isURL = (str: string): boolean => {
+    // Regular expression for a simple URL pattern
+    const urlRegex: RegExp = /^(http|https):\/\/[^ "]+$/;
+
+    // Test the string against the regex
+    return urlRegex.test(str);
+}
