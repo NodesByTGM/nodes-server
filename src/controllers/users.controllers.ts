@@ -48,16 +48,16 @@ export const profileUpdateController: RequestHandler = async (req: any, res: any
         if (user) {
             user.name = name || user.name
             user.avatar = uploadedAvatar || user.avatar
-            user.skills = skills || skills
-            user.location = location || location
-            user.linkedIn = linkedIn || linkedIn
-            user.instagram = instagram || instagram
-            user.twitter = twitter || twitter
-            user.headline = headline || headline
-            user.bio = bio || bio
-            user.website = website || website
-            user.spaces = spaces || spaces
-            user.comments = comments || comments
+            user.skills = skills || user.skills
+            user.location = location || user.location
+            user.linkedIn = linkedIn || user.linkedIn
+            user.instagram = instagram || user.instagram
+            user.twitter = twitter || user.twitter
+            user.headline = headline || user.headline
+            user.bio = bio || user.bio
+            user.website = website || user.website
+            user.spaces = spaces !== undefined ? spaces : user.spaces
+            user.comments = comments !== undefined ? comments: user.comments
 
             let businessProfile
             if (user.type === AppConfig.ACCOUNT_TYPES.BUSINESS) {
