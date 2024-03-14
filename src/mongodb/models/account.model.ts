@@ -11,7 +11,7 @@ const AccountSchema = new mongoose.Schema({
     verified: { type: Boolean, required: false, default: false },
     avatar: fileSchema,
 
-    skills: { type: String, required: false, default: '' },
+    skills: { type: [String], required: false, default: '' },
     location: { type: String, required: false, default: '' },
     linkedIn: { type: String, required: false, default: '' },
     instagram: { type: String, required: false, default: '' },
