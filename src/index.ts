@@ -45,7 +45,7 @@ app.use('/api/v1/upgrades', uploadsRouter);
 
 
 // Define projects routes
-app.use('/api/v1/upgrades', projectRouter);
+app.use('/api/v1/projects', projectRouter);
 
 // Swagger Docs
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
