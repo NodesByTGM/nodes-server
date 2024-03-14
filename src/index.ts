@@ -41,7 +41,7 @@ app.use('/api/v1/upgrades', onboardingRouter);
 
 
 // Define uploads routes
-app.use('/api/v1/upgrades', uploadsRouter);
+app.use('/api/v1/uploads', uploadsRouter);
 
 
 // Define projects routes
