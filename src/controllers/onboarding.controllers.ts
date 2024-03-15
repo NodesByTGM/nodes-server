@@ -27,6 +27,8 @@ export const onboardingController: RequestHandler = async (req: any, res) => {
             return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.UnverifiedEmail });
         }
 
+        const imgUrl = await uploadMedia(avatar)
+
         user.skills = skills || user.skills;
         user.location = location || user.location;
         user.linkedIn = linkedIn || user.linkedIn;
@@ -35,7 +37,7 @@ export const onboardingController: RequestHandler = async (req: any, res) => {
         user.onboardingPurpose = onboardingPurpose || user.onboardingPurpose;
         user.otherPurpose = otherPurpose || user.otherPurpose;
         user.step = step || user
-        user.avatar = avatar || user.avatar
+        user.avatar = imgUrl || user.avatar
         await user.save()
 
         return res.status(200).json({ message: AppConfig.STRINGS.AccountUpgradedTalent, user: user });
@@ -70,14 +72,14 @@ export const talentOnboardingController: RequestHandler = async (req: any, res) 
         //     return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.BadRequestError });
         // }
         if (talentProfile) {
-            talentProfile.skills = skills || talentProfile.skills,
-                talentProfile.location = location || talentProfile.location,
-                talentProfile.linkedIn = linkedIn || talentProfile.linkedIn,
-                talentProfile.instagram = instagram || talentProfile.instagram,
-                talentProfile.twitter = twitter || talentProfile.twitter,
-                talentProfile.onboardingPurpose = onboardingPurpose || talentProfile.onboardingPurpose,
-                talentProfile.otherPurpose = otherPurpose || talentProfile.otherPurpose,
-                talentProfile.step = step || talentProfile
+            talentProfile.skills = skills || talentProfile.skills
+            talentProfile.location = location || talentProfile.location
+            talentProfile.linkedIn = linkedIn || talentProfile.linkedIn
+            talentProfile.instagram = instagram || talentProfile.instagram
+            talentProfile.twitter = twitter || talentProfile.twitter
+            talentProfile.onboardingPurpose = onboardingPurpose || talentProfile.onboardingPurpose
+            talentProfile.otherPurpose = otherPurpose || talentProfile.otherPurpose
+            talentProfile.step = step || talentProfile
         } else {
             talentProfile = await TalentDetailsModel.create({
                 account: req.user.id,
