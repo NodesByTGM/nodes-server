@@ -39,6 +39,9 @@ export const profileUpdateController: RequestHandler = async (req: any, res: any
             comments,
             logo,
             companyName,
+
+            height,
+            age,
             yoe,
         } = req.body
 
@@ -56,6 +59,10 @@ export const profileUpdateController: RequestHandler = async (req: any, res: any
             user.headline = headline || user.headline
             user.bio = bio || user.bio
             user.website = website || user.website
+
+            user.height = height || user.height
+            user.age = age || user.age
+
             user.spaces = spaces !== undefined ? spaces : user.spaces
             user.comments = comments !== undefined ? comments: user.comments
 

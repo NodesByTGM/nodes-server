@@ -20,6 +20,10 @@ const AccountSchema = new mongoose.Schema({
     onboardingPurpose: { type: Number, required: false, default: 0 },
     otherPurpose: { type: String, required: false, default: '' },
 
+    height: { type: String, required: false, default: '' },
+    age: { type: String, required: false, default: '' },
+
+
 
     headline: { type: String, required: false, default: '' },
     bio: { type: String, required: false, default: '' },
