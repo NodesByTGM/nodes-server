@@ -1,15 +1,17 @@
 import mongoose from 'mongoose';
 import { AppConfig } from '../../utilities/config';
 import { fileSchema } from './file.model';
+import { SubscriptionSchema } from './subscription.model';
+import { BusinessSchema } from './business.model';
 
-const AccountSchema = new mongoose.Schema({
+export const AccountSchema = new mongoose.Schema({
     name: { type: String, required: true },
     username: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
     dob: { type: Date, required: true, },
     password: { type: String, required: true, },
     verified: { type: Boolean, required: false, default: false },
-    avatar: fileSchema,
+    avatar: { type: fileSchema, required: false, default: null },
 
     skills: { type: [String], required: false, default: '' },
     location: { type: String, required: false, default: '' },
@@ -23,13 +25,15 @@ const AccountSchema = new mongoose.Schema({
     height: { type: String, required: false, default: '' },
     age: { type: String, required: false, default: '' },
 
-
-
     headline: { type: String, required: false, default: '' },
     bio: { type: String, required: false, default: '' },
     website: { type: String, required: false, default: '' },
     spaces: { type: Boolean, required: false, default: false },
     comments: { type: Boolean, required: false, default: false },
+
+
+    subscription: { type: SubscriptionSchema, default: null },
+    business: { type: BusinessSchema, default: null },
 
     role: {
         type: Number,

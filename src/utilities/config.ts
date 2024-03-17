@@ -33,6 +33,12 @@ export enum OnboaringPurpose {
     Others = 5,
 }
 
+export enum JobType {
+    FullTime = 0,
+    PartTime = 1,
+    Contract = 2
+}
+
 
 export const AppConfig = {
     API_ENDPOINTS,
@@ -43,6 +49,7 @@ export const AppConfig = {
         NotFoundError: 'Resource Not found.',
         InternalServerError: 'Internal Server Error.',
         ResourceNotFound: 'Unable to process. Resource not found.',
+        UnauthorizedAccess: 'Unable to process. You\'re not the owner of this resource.',
         ServerError: 'Unable to process request. Please try again later.',
         UserAlreadyExists: 'This email address provided is associated with an existing account.',
         UserAlreadyExistsUsername: 'This username provided is associated with an existing account.',
@@ -52,6 +59,8 @@ export const AppConfig = {
         TooManyRequests: 'Too many requests to external API.',
         HoldUp: 'Hold up, The characters behind the scenes cant keep coming up with quotes',
         UnverifiedEmail: 'Please verify your email first before proceeding.',
+        AlreadySaved: 'You\'ve already saved this event.',
+        AlreadyApplied: 'You\'ve already applied for this job.',
     },
     STRINGS: {
         NewContactSubmission: 'New Contact Submission.',
@@ -83,4 +92,24 @@ export const AppConfig = {
         TALENT: 1,
         BUSINESS: 2,
     },
+    JOB_TYPES: {
+        FULL_TIME: 0,
+        PART_TIME: 1,
+        CONTRACT: 2,
+    },
+    TRANSACTION_DESC_TYPES: {
+        MEMBERSHIP_FEE: 'MEMBERSHIP_FEE',
+        SUBSCRIPTION: 'SUBSCRIPTION',
+    },
+    TRANSACTION_TYPES: {
+        WW: 'WW', // Wallet to Wallet
+        WE: 'WE', // Wallet to External
+        EW: 'EW', // External to Wallet
+        EE: 'EE' // External to Wallet
+    },
+    PLANS: {
+        Pro: { name: 'Pro Plan', planCode: `${process.env.PRO_PLAN}` },
+        Business: { name: 'Business Plan', planCode: `${process.env.BUSINESS_PLAN}` },
+    }
+
 }

@@ -4,6 +4,8 @@ import { usersSwagger } from './users.doc';
 import { upgradesSwagger } from './upgrades.doc';
 import { deleteMediaSwagger, uploadMediaSwagger } from './uploads.doc';
 import { projectsSwagger } from './projects.doc'
+import { jobSwagger } from './jobs.doc';
+import { eventSwagger } from './events.doc';
 // import pjson from '../../package.json';
 
 const options = {
@@ -33,11 +35,13 @@ const options = {
             ...authSwagger.paths,
             ...onboardingSwagger.paths,
             ...usersSwagger.paths,
-            ...upgradesSwagger.paths,
+            // ...upgradesSwagger.paths,
             ...uploadMediaSwagger.paths,
             ...deleteMediaSwagger.paths,
             ...projectsSwagger.paths,
-        },
+            ...eventSwagger.paths,
+            ...jobSwagger.paths,
+        }
     },
     // If this was in the folder same as index.ts
     // apis: ['/*.ts'], // Path to the API routes

@@ -1,7 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 import { fileSchema } from './file.model';
 
-const BusinessDetailsSchema = new mongoose.Schema({
+export const BusinessSchema = new mongoose.Schema({
     name: { type: String, required: true },
     logo: fileSchema,
     yoe: { type: Date, required: true },
@@ -21,6 +21,6 @@ const BusinessDetailsSchema = new mongoose.Schema({
     }
 });
 
-const BusinessDetailsModel = mongoose.model('BusinessDetails', BusinessDetailsSchema);
+const BusinessModel = mongoose.model('Business', BusinessSchema);
 
-export default BusinessDetailsModel;
+export default BusinessModel;

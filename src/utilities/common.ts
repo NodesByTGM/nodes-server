@@ -1,5 +1,12 @@
+import crypto from 'crypto';
 import { StringMap } from "../interfaces";
 import { AppConfig } from "./config";
+
+export const verifyTransaction = (eventData: any, signature: any) => {
+    const hmac = crypto.createHmac('sha512', `${process.env.PAYSTACK_API_SECRET_KEY}`);
+    const expectedSignature = hmac.update(JSON.stringify(eventData)).digest('hex');
+    return expectedSignature === signature;
+}
 
 export const objectToQueryString = (obj: StringMap) => {
     const keyValuePairs = [];
@@ -36,4 +43,16 @@ export const isURL = (str: string): boolean => {
 
     // Test the string against the regex
     return urlRegex.test(str);
+}
+
+
+export const formatDate = (date: string | Date) => {
+    return (new Date(date)).toLocaleDateString();;
+}
+
+export const addYearsToDate = (date: string | Date, years = 1) => {
+    const originalDate = new Date(date);
+    const newDate = new Date(originalDate);
+    newDate.setFullYear(originalDate.getFullYear() + years);
+    return newDate.toLocaleDateString();
 }

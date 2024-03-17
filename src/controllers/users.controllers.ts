@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express';
-import { AccountModel, BusinessDetailsModel, TalentDetailsModel } from '../mongodb/models';
+import { AccountModel, BusinessModel, TalentDetailsModel } from '../mongodb/models';
 import { uploadMedia } from '../services';
 import { AppConfig } from '../utilities/config';
 
@@ -8,7 +8,7 @@ export const profileController: RequestHandler = async (req: any, res: any) => {
     try {
         const user = req.user
         const talentProfile = await TalentDetailsModel.findOne({ accountId: req.user.id })
-        const businessProfile = await BusinessDetailsModel.findOne({ accountId: req.user.id })
+        const businessProfile = await BusinessModel.findOne({ accountId: req.user.id })
         const data = {
             ...user.toJSON(),
             talentProfile,
@@ -68,7 +68,7 @@ export const profileUpdateController: RequestHandler = async (req: any, res: any
 
             let businessProfile
             if (user.type === AppConfig.ACCOUNT_TYPES.BUSINESS) {
-                businessProfile = await BusinessDetailsModel.findOne({ accountId: req.user.id })
+                businessProfile = await BusinessModel.findOne({ accountId: req.user.id })
                 const uploadedLogo = await uploadMedia(logo)
                 if (businessProfile) {
                     businessProfile.name = companyName || businessProfile.name

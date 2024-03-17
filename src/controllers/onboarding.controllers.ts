@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { BusinessDetailsModel, TalentDetailsModel } from "../mongodb/models";
+import { BusinessModel, TalentDetailsModel } from "../mongodb/models";
 import { uploadMedia } from "../services";
 import { AppConfig } from "../utilities/config";
 import { talentUpgradeSchema } from "../validations/upgrades.validations";
@@ -126,7 +126,7 @@ export const businessOnboardingController: RequestHandler = async (req: any, res
             return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.BadRequestError });
         }
         const logoUrl = await uploadMedia(logo)
-        const talent = await BusinessDetailsModel.create({
+        const talent = await BusinessModel.create({
             account: user.id,
             name: companyName,
             logo: logoUrl,

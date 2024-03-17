@@ -293,7 +293,6 @@ export const resetPasswordController: RequestHandler = async (req, res) => {
         const user = await AccountModel.findById(req.params.accountId);
         if (!user) return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.InvalidLinkProvided });
 
-
         const token = await TokenModel.findOne({
             account: req.params.accountId,
             token: req.params.token,

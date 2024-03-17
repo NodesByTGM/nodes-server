@@ -1,3 +1,57 @@
+const onboardingUserSchema = {
+    type: 'object',
+    properties: {
+        skills: {
+            type: 'array',
+            items: {
+                type: 'string',
+            },
+            description: 'List of skills associated with the talent account.',
+            example: ['JavaScript', 'React', 'Node.js'],
+        },
+        location: {
+            type: 'string',
+            description: 'The location of the talent (e.g., city, country).',
+            example: 'San Francisco, CA',
+        },
+        avatar: {
+            type: 'string',
+            description: 'URL or path to the talent\'s avatar.',
+            example: 'https://example.com/avatar/talent_user.jpg',
+        },
+        linkedIn: {
+            type: 'string',
+            description: 'LinkedIn profile URL of the talent.',
+            example: 'https://www.linkedin.com/in/talent_user',
+        },
+        instagram: {
+            type: 'string',
+            description: 'Instagram profile URL of the talent.',
+            example: 'https://www.instagram.com/talent_user',
+        },
+        twitter: {
+            type: 'string',
+            description: 'Twitter profile URL of the talent.',
+            example: 'https://twitter.com/talent_user',
+        },
+        otherPurpose: {
+            type: 'string',
+            description: 'My actual reason for being here',
+            example: 'I just want to play',
+        },
+        step: {
+            type: 'number',
+            description: 'Progress on the onboarding form.',
+            example: 0,
+        },
+        onboardingPurpose: {
+            type: 'number',
+            description: 'Purpose for onboarding.',
+            example: 0,
+        },
+    },
+    required: ['onboardingPurpose'],
+}
 export const onboardingSwagger = {
     paths: {
         '/api/v1/onboarding': {
@@ -14,60 +68,7 @@ export const onboardingSwagger = {
                     required: true,
                     content: {
                         'application/json': {
-                            schema: {
-                                type: 'object',
-                                properties: {
-                                    skills: {
-                                        type: 'array',
-                                        items: {
-                                            type: 'string',
-                                        },
-                                        description: 'List of skills associated with the talent account.',
-                                        example: ['JavaScript', 'React', 'Node.js'],
-                                    },
-                                    location: {
-                                        type: 'string',
-                                        description: 'The location of the talent (e.g., city, country).',
-                                        example: 'San Francisco, CA',
-                                    },
-                                    avatar: {
-                                        type: 'string',
-                                        description: 'URL or path to the talent\'s avatar.',
-                                        example: 'https://example.com/avatar/talent_user.jpg',
-                                    },
-                                    linkedIn: {
-                                        type: 'string',
-                                        description: 'LinkedIn profile URL of the talent.',
-                                        example: 'https://www.linkedin.com/in/talent_user',
-                                    },
-                                    instagram: {
-                                        type: 'string',
-                                        description: 'Instagram profile URL of the talent.',
-                                        example: 'https://www.instagram.com/talent_user',
-                                    },
-                                    twitter: {
-                                        type: 'string',
-                                        description: 'Twitter profile URL of the talent.',
-                                        example: 'https://twitter.com/talent_user',
-                                    },
-                                    otherPurpose: {
-                                        type: 'string',
-                                        description: 'My actual reason for being here',
-                                        example: 'I just want to play',
-                                    },
-                                    step: {
-                                        type: 'number',
-                                        description: 'Progress on the onboarding form.',
-                                        example: 0,
-                                    },
-                                    onboardingPurpose: {
-                                        type: 'number',
-                                        description: 'Purpose for onboarding.',
-                                        example: 0,
-                                    },
-                                },
-                                required: ['onboardingPurpose'],
-                            },
+                            schema: onboardingUserSchema,
                         },
                     },
                 },
@@ -101,60 +102,7 @@ export const onboardingSwagger = {
                     required: true,
                     content: {
                         'application/json': {
-                            schema: {
-                                type: 'object',
-                                properties: {
-                                    skills: {
-                                        type: 'array',
-                                        items: {
-                                            type: 'string',
-                                        },
-                                        description: 'List of skills associated with the talent account.',
-                                        example: ['JavaScript', 'React', 'Node.js'],
-                                    },
-                                    location: {
-                                        type: 'string',
-                                        description: 'The location of the talent (e.g., city, country).',
-                                        example: 'San Francisco, CA',
-                                    },
-                                    avatar: {
-                                        type: 'string',
-                                        description: 'URL or path to the talent\'s avatar.',
-                                        example: 'https://example.com/avatar/talent_user.jpg',
-                                    },
-                                    linkedIn: {
-                                        type: 'string',
-                                        description: 'LinkedIn profile URL of the talent.',
-                                        example: 'https://www.linkedin.com/in/talent_user',
-                                    },
-                                    instagram: {
-                                        type: 'string',
-                                        description: 'Instagram profile URL of the talent.',
-                                        example: 'https://www.instagram.com/talent_user',
-                                    },
-                                    twitter: {
-                                        type: 'string',
-                                        description: 'Twitter profile URL of the talent.',
-                                        example: 'https://twitter.com/talent_user',
-                                    },
-                                    otherPurpose: {
-                                        type: 'string',
-                                        description: 'My actual reason for being here',
-                                        example: 'I just want to play',
-                                    },
-                                    step: {
-                                        type: 'number',
-                                        description: 'Progress on the onboarding form.',
-                                        example: 0,
-                                    },
-                                    onboardingPurpose: {
-                                        type: 'number',
-                                        description: 'Purpose for onboarding.',
-                                        example: 0,
-                                    },
-                                },
-                                required: ['onboardingPurpose'],
-                            },
+                            schema: onboardingUserSchema,
                         },
                     },
                 },

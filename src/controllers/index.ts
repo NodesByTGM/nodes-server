@@ -27,3 +27,28 @@ export {
     uploadMediaController,
     deleteMediaController
 } from './uploads.controllers';
+
+export {
+    verifyTransactionController,
+    verifyInternalTransactionController,
+    paystackWebhookController,
+    subscribeToPackage,
+} from './transactions.controllers'
+
+export {
+    jobCreateController,
+    jobUpdateController,
+    deleteJobController,
+    applyToJobController,
+    getJobsController,
+    getJobController
+} from './jobs.controllers'
+
+export {
+    eventCreateController,
+    eventUpdateController,
+    deleteEventController,
+    saveEventController,
+    getEventsController,
+    getEventController
+} from './events.controllers'
