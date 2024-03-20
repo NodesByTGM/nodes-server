@@ -25,7 +25,7 @@ router.post('/forgot-password', forgotPasswordController);
 router.post('/change-password', authenticate, changePasswordController);
 router.post('/refresh-token', getTokenController)
 router.post('/send-otp', sendOTPController)
-router.post('/veirfy-otp', verifyOTPController)
+router.post('/verify-otp', verifyOTPController)
 router.post('/verify-email', authenticate, verifyEmailController)
 
 
