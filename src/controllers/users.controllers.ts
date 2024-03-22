@@ -37,6 +37,7 @@ export const profileUpdateController: RequestHandler = async (req: any, res: any
             website,
             spaces,
             comments,
+            visible,
             logo,
             companyName,
 
@@ -64,7 +65,9 @@ export const profileUpdateController: RequestHandler = async (req: any, res: any
             user.age = age || user.age
 
             user.spaces = spaces !== undefined ? spaces : user.spaces
-            user.comments = comments !== undefined ? comments: user.comments
+            user.comments = comments !== undefined ? comments : user.comments
+            user.visible = visible !== undefined ? visible : user.visible
+
 
             let businessProfile
             if (user.type === AppConfig.ACCOUNT_TYPES.BUSINESS) {

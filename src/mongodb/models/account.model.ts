@@ -30,6 +30,7 @@ export const AccountSchema = new mongoose.Schema({
     website: { type: String, required: false, default: '' },
     spaces: { type: Boolean, required: false, default: false },
     comments: { type: Boolean, required: false, default: false },
+    visible: { type: Boolean, required: false, default: false },
 
 
     subscription: { type: SubscriptionSchema, default: null },
