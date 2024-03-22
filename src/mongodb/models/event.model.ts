@@ -8,9 +8,13 @@ const EventSchema = new mongoose.Schema({
     location: { type: String, required: true },
     dateTime: { type: Date, required: true },
     workRate: { type: String, required: true },
-    saves: { type: [AccountSchema], default: [] },
     thumbnail: { type: fileSchema, required: false, default: null },
-
+    saves: {
+        type: [Schema.Types.ObjectId],
+        required: true,
+        ref: 'Account',
+        default: []
+    },
     business: {
         type: Schema.Types.ObjectId,
         required: true,

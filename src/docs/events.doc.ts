@@ -241,5 +241,57 @@ export const eventSwagger = {
                 },
             },
         },
+        "/api/v1/events/saved": {
+            get: {
+                summary: "Get saved events",
+                tags: ['Events'],
+                responses: {
+                    200: {
+                        description: "A list of saved events",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        events: {
+                                            type: "array",
+                                            items: {
+                                                $ref: eventSchema,
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        "/api/v1/events/mine": {
+            get: {
+                summary: "Get events created by you",
+                tags: ['Events'],
+                responses: {
+                    200: {
+                        description: "A list of applied events",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        events: {
+                                            type: "array",
+                                            items: {
+                                                $ref: eventSchema,
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
     }
 };

@@ -40,8 +40,12 @@ export {
     jobUpdateController,
     deleteJobController,
     applyToJobController,
+    saveJobController,
     getJobsController,
-    getJobController
+    getJobController,
+    getSavedJobsController,
+    getAppliedJobsController,
+    getMyJobsController
 } from './jobs.controllers'
 
 export {
@@ -50,5 +54,7 @@ export {
     deleteEventController,
     saveEventController,
     getEventsController,
-    getEventController
+    getEventController,
+    getMyEventsController,
+    getSavedEventsController
 } from './events.controllers'

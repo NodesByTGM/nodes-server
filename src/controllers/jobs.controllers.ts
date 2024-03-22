@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
-import { AppConfig } from "../utilities/config";
 import { BusinessModel, JobModel } from "../mongodb/models";
+import { AppConfig } from "../utilities/config";
 
 export const jobCreateController: RequestHandler = async (req: any, res) => {
     try {
@@ -92,17 +92,41 @@ export const deleteJobController: RequestHandler = async (req: any, res) => {
 
 export const applyToJobController: RequestHandler = async (req: any, res) => {
     try {
+        let job = await JobModel.findOne({ _id: req.params.id })
+        if (!job) {
+            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.ResourceNotFound })
+        }
+        if (job.applicants.filter(x => x.toString() === req.user._id.toString()).length > 0) {
+            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.AlreadyApplied })
+        }
+        job.applicants.push(req.user.id)
+        await job.save()
+        const data: any = job.toJSON()
+        delete data.saves
+        delete data.applicants
+        return res.status(200).json({ message: AppConfig.STRINGS.Success, job:data })
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ error })
+    }
+}
+
+export const saveJobController: RequestHandler = async (req: any, res) => {
+    try {
         const job = await JobModel.findById(req.params.id)
         if (!job) {
             return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.ResourceNotFound })
         }
-        if (job.applicants.filter(x => x.username === req.user.username).length > 0) {
+        if (job.saves.filter(x => x.toString() === req.user.id.toString()).length > 0) {
             return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.AlreadyApplied })
         }
-        job.applicants.push(req.user)
+        job.saves.push(req.user.id)
         await job.save()
+        const data: any = job.toJSON()
+        delete data.saves
+        delete data.applicants
 
-        return res.status(200).json({ message: AppConfig.STRINGS.Success, job })
+        return res.status(200).json({ message: AppConfig.STRINGS.Success, job:data })
     } catch (error) {
         return res.status(400).json({ error })
     }
@@ -127,6 +151,34 @@ export const getJobController: RequestHandler = async (req: any, res) => {
         const job = await JobModel.findById(req.params.id).populate('business')
 
         return res.status(200).json({ message: AppConfig.STRINGS.Success, job })
+    } catch (error) {
+        return res.status(400).json({ error })
+    }
+}
+
+export const getAppliedJobsController: RequestHandler = async (req: any, res) => {
+    try {
+        const jobs = await JobModel.find({ 'applicants': req.user.id }).select('-saves -applicants')
+        return res.status(200).json({ message: AppConfig.STRINGS.Success, jobs })
+    } catch (error) {
+        return res.status(400).json({ error })
+    }
+}
+
+export const getSavedJobsController: RequestHandler = async (req: any, res) => {
+    try {
+        const jobs = await JobModel.find({ 'saves': req.user.id }).select('-saves -applicants')
+        return res.status(200).json({ message: AppConfig.STRINGS.Success, jobs })
+    } catch (error) {
+        return res.status(400).json({ error })
+    }
+}
+
+export const getMyJobsController: RequestHandler = async (req: any, res) => {
+    try {
+        const business = req.user.business
+        const jobs = await JobModel.find({ business }).populate('business saves applicants')
+        return res.status(200).json({ message: AppConfig.STRINGS.Success, jobs })
     } catch (error) {
         return res.status(400).json({ error })
     }

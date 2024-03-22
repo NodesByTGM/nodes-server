@@ -9,4 +9,5 @@ export { default as EventModel } from './event.model'
 export { default as JobModel } from './job.model'
 export { default as TransactionModel } from './transaction.model'
 export { default as SubscriptionModel } from './subscription.model'
+// export { default as MovienModel } from './movie.model'
 

@@ -95,18 +95,20 @@ export const saveEventController: RequestHandler = async (req: any, res) => {
         if (!event) {
             return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.ResourceNotFound })
         }
-        if (event.saves.filter(x => x.username === req.user.username).length > 0) {
+        if (event.saves.filter(x => x.toString() === req.user.id.toString()).length > 0) {
             return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.AlreadySaved })
         }
         event.saves.push(req.user)
         await event.save()
+        const data: any = event.toJSON()
+        delete data.saves
+        delete data.applicants
 
-        return res.status(200).json({ message: AppConfig.STRINGS.Success, event })
+        return res.status(200).json({ message: AppConfig.STRINGS.Success, event: data })
     } catch (error) {
         return res.status(400).json({ error })
     }
 }
-
 
 export const getEventsController: RequestHandler = async (req: any, res) => {
     try {
@@ -127,6 +129,26 @@ export const getEventController: RequestHandler = async (req: any, res) => {
         const event = await EventModel.findById(req.params.id).populate('business')
 
         return res.status(200).json({ message: AppConfig.STRINGS.Success, event })
+    } catch (error) {
+        return res.status(400).json({ error })
+    }
+}
+
+export const getMyEventsController: RequestHandler = async (req: any, res) => {
+    try {
+        const business = req.user.business
+        const events = await EventModel.find({ business }).populate('business saves')
+        return res.status(200).json({ message: AppConfig.STRINGS.Success, events })
+    } catch (error) {
+        return res.status(400).json({ error })
+    }
+}
+
+
+export const getSavedEventsController: RequestHandler = async (req: any, res) => {
+    try {
+        const jobs = await EventModel.find({ 'saves': req.user.id }).select('-saves')
+        return res.status(200).json({ message: AppConfig.STRINGS.Success, jobs })
     } catch (error) {
         return res.status(400).json({ error })
     }

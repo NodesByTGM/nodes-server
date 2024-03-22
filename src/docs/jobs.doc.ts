@@ -134,6 +134,105 @@ export const jobSwagger = {
                     // Add more response codes if necessary
                 }
             }
-        }
+        },
+        '/api/v1/jobs/save/{id}': {
+            post: {
+                summary: 'Save a job using a specific job by ID',
+                tags: ['Jobs'],
+                security: [{ bearerAuth: [] }],
+                parameters: [
+                    {
+                        name: 'id',
+                        in: 'path',
+                        required: true,
+                        schema: {
+                            type: 'string'
+                        }
+                    }
+                ],
+                responses: {
+                    200: { description: 'OK' },
+                    // Add more response codes if necessary
+                }
+            }
+        },
+        "/api/v1/jobs/saved": {
+            get: {
+                summary: "Get saved jobs",
+                tags: ['Jobs'],
+                responses: {
+                    200: {
+                        description: "A list of saved jobs",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        jobs: {
+                                            type: "array",
+                                            items: {
+                                                $ref: jobSchema,
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        "/api/v1/jobs/applied": {
+            get: {
+                summary: "Get applied jobs",
+                tags: ['Jobs'],
+                responses: {
+                    200: {
+                        description: "A list of applied jobs",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        jobs: {
+                                            type: "array",
+                                            items: {
+                                                $ref: jobSchema,
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        "/api/v1/jobs/mine": {
+            get: {
+                summary: "Get jobs created by you",
+                tags: ['Jobs'],
+                responses: {
+                    200: {
+                        description: "A list of applied jobs",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        jobs: {
+                                            type: "array",
+                                            items: {
+                                                $ref: jobSchema,
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
     }
 };

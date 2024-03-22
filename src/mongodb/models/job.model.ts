@@ -10,7 +10,18 @@ const JobSchema = new mongoose.Schema({
     workRate: { type: String, required: true },
     skills: { type: [String], required: true },
     jobType: { type: Number, required: true, enum: Object.values(AppConfig.JOB_TYPES) },
-    applicants: { type: [AccountSchema], default: [] },
+    applicants: {
+        type: [Schema.Types.ObjectId],
+        required: true,
+        ref: 'Account',
+        default: []
+    },
+    saves: {
+        type: [Schema.Types.ObjectId],
+        required: true,
+        ref: 'Account',
+        default: []
+    },
 
     business: {
         type: Schema.Types.ObjectId,
