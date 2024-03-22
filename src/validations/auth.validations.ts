@@ -1,5 +1,9 @@
 import Joi from "joi";
 
+export const emailSchema = Joi.object({
+    email: Joi.string().required(),
+});
+
 export const registerSchema = Joi.object({
     name: Joi.string().required(),
     username: Joi.string().required(),

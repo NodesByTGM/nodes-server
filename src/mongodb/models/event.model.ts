@@ -7,7 +7,7 @@ const EventSchema = new mongoose.Schema({
     description: { type: String, required: true },
     location: { type: String, required: true },
     dateTime: { type: Date, required: true },
-    workRate: { type: String, required: true },
+    paymentType: { type: String, required: true, enum: ['free', 'paid'] },
     thumbnail: { type: fileSchema, required: false, default: null },
     saves: {
         type: [Schema.Types.ObjectId],

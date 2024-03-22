@@ -14,12 +14,7 @@ const OTPSchema = new Schema({
         type: Boolean,
         required: false,
         default: false
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now(),
-        expires: 3600,
-    },
+    }
 }, {
     timestamps: true,
     toJSON: {

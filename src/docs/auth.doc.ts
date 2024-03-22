@@ -276,6 +276,46 @@ export const authSwagger = {
                 },
             },
         },
+        '/api/v1/auth/check-email': {
+            post: {
+                summary: 'Check if Email exists already',
+                description: 'Check if Email exists already using user\'s email address.',
+                tags: ['Authentication'],
+                requestBody: {
+                    required: true,
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: {
+                                    email: {
+                                        type: 'string',
+                                        format: 'email',
+                                        description: 'The email address to be checked.',
+                                        example: 'john@example.com',
+                                    },
+                                },
+                                required: ['email'],
+                            },
+                        },
+                    },
+                },
+                responses: {
+                    '200': {
+                        description: 'Email successfully verified.',
+                    },
+                    '400': {
+                        description: 'Bad request. Check the request payload for missing or invalid information.',
+                    },
+                    '401': {
+                        description: 'Unauthorized. The provided OTP is incorrect.',
+                    },
+                    '500': {
+                        description: 'Internal Server Error.',
+                    },
+                },
+            },
+        },
 
         '/api/v1/auth/verify-otp': {
             post: {

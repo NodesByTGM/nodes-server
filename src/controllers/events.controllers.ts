@@ -21,7 +21,7 @@ export const eventCreateController: RequestHandler = async (req: any, res) => {
             description,
             location,
             dateTime,
-            workRate,
+            paymentType,
             thumbnail
         } = req.body
         const imgUrl = await uploadMedia(thumbnail)
@@ -30,7 +30,7 @@ export const eventCreateController: RequestHandler = async (req: any, res) => {
             description,
             location,
             dateTime,
-            workRate,
+            paymentType,
             business: req.user.business,
             thumbnail: imgUrl
         })
@@ -50,7 +50,7 @@ export const eventUpdateController: RequestHandler = async (req: any, res) => {
             description,
             location,
             dateTime,
-            workRate,
+            paymentType,
             thumbnail
         } = req.body
         const event = await EventModel.findById(req.params.id)
@@ -66,7 +66,7 @@ export const eventUpdateController: RequestHandler = async (req: any, res) => {
         event.description = description || event.description
         event.location = location || event.location
         event.dateTime = dateTime || event.dateTime
-        event.workRate = workRate || event.workRate
+        event.paymentType = paymentType || event.paymentType
         event.thumbnail = imgUrl || event.thumbnail
         await event.save()
 

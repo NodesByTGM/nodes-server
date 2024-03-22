@@ -24,10 +24,10 @@ const eventSchema = {
             description: 'Date and time of the event.',
             example: '05/10/2024',
         },
-        workRate: {
+        paymentType: {
             type: 'string',
             description: 'Work rate for the event.',
-            example: '30hr/week',
+            example: 'free',
         },
         thumbnail: {
             type: 'object',
@@ -35,7 +35,7 @@ const eventSchema = {
             example: { 'id': '', url: '' },
         },
     },
-    required: ['name', 'description', 'location', 'dateTime', 'workRate']
+    required: ['name', 'description', 'location', 'dateTime', 'paymentType']
 };
 
 const paginatedEventSchema = {

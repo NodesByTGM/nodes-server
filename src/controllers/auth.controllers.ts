@@ -8,7 +8,7 @@ import { verifyRefreshToken } from '../services/auth.service';
 import { generateOTP } from '../utilities/common';
 import { AppConfig, MAIN_APP_URL } from '../utilities/config';
 import { loginSchema, registerSchema } from '../validations';
-import { sendOTPSchema, verifyEmailSchema, verifyOTPSchema } from '../validations/auth.validations';
+import { emailSchema, sendOTPSchema, verifyEmailSchema, verifyOTPSchema } from '../validations/auth.validations';
 
 export const registerController: RequestHandler = async (req, res) => {
     const { error } = registerSchema.validate(req.body);
@@ -23,13 +23,12 @@ export const registerController: RequestHandler = async (req, res) => {
         password,
     } = req.body;
     try {
-
+        let dbOTP;
         if (otp) {
-            const dbOTP = await OTPModel.findOne({ email, password: otp, used: false })
+            dbOTP = await OTPModel.findOne({ email, password: otp, used: false })
             if (!dbOTP) {
                 return res.status(401).json({ message: AppConfig.ERROR_MESSAGES.InvalidOTPProvided });
             }
-            await dbOTP.deleteOne()
         }
 
         const existing = await AccountModel.findOne({ email: email.toLowerCase() });
@@ -58,7 +57,9 @@ export const registerController: RequestHandler = async (req, res) => {
             password: hashedPassword,
         });
         await user.save();
-        console.log('user saved', user)
+        if (dbOTP) {
+            await dbOTP.deleteOne()
+        }
         // TODO: Remove this.
 
         const accessToken = generateAccessToken(user);
@@ -350,6 +351,23 @@ export const logoutController: RequestHandler = async (req: any, res, next) => {
         return res.status(200).json({ message: 'Logged out successfully!' });
     } catch (error) {
         console.error(error);
+        return res.status(500).json({ message: AppConfig.ERROR_MESSAGES.InternalServerError });
+    }
+};
+
+
+export const checkEmailExistsController: RequestHandler = async (req: any, res) => {
+    const { error } = emailSchema.validate(req.body);
+    if (error) return res.status(400).json({ message: error.details[0].message });
+
+    const { email } = req.body;
+    try {
+        const existing = await AccountModel.findOne({ email: email.toLowerCase() });
+        if (existing) {
+            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.UserAlreadyExists });
+        }
+        return res.status(200).json({ message: AppConfig.STRINGS.EmailVerified });
+    } catch (error) {
         return res.status(500).json({ message: AppConfig.ERROR_MESSAGES.InternalServerError });
     }
 };

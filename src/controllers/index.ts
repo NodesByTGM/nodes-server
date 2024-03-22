@@ -5,7 +5,8 @@ export {
     forgotPasswordController,
     resetPasswordController,
     changePasswordController,
-    logoutController
+    logoutController,
+    checkEmailExistsController
 } from './auth.controllers'
 export {
     profileController,

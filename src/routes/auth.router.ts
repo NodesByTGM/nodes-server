@@ -11,6 +11,7 @@ import {
     verifyEmailController,
     checkResetLinkController,
     verifyOTPController,
+    checkEmailExistsController
 } from '../controllers/auth.controllers';
 import { authenticate } from '../middlewares';
 
@@ -27,6 +28,7 @@ router.post('/refresh-token', getTokenController)
 router.post('/send-otp', sendOTPController)
 router.post('/verify-otp', verifyOTPController)
 router.post('/verify-email', authenticate, verifyEmailController)
+router.post('/check-email', authenticate, checkEmailExistsController)
 
 
 export default router;
