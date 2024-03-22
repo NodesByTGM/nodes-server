@@ -2,6 +2,7 @@ import { RequestHandler } from "express";
 import { AppConfig } from "../utilities/config";
 import { BusinessModel, EventModel } from "../mongodb/models";
 import { uploadMedia } from "../services";
+import { paginateData } from "../utilities/common";
 
 export const eventCreateController: RequestHandler = async (req: any, res) => {
     try {
@@ -33,6 +34,8 @@ export const eventCreateController: RequestHandler = async (req: any, res) => {
             business: req.user.business,
             thumbnail: imgUrl
         })
+        // const events = await EventModel.find({}).populate('business')
+        // const data = paginateData(req.query, events, 'events')
         return res.status(200).json({ message: AppConfig.STRINGS.Success, event })
     } catch (error) {
         console.log(error)
@@ -110,6 +113,15 @@ export const saveEventController: RequestHandler = async (req: any, res) => {
     }
 }
 
+export const getEventController: RequestHandler = async (req: any, res) => {
+    try {
+        const event = await EventModel.findById(req.params.id).populate('business')
+        return res.status(200).json({ message: AppConfig.STRINGS.Success, event })
+    } catch (error) {
+        return res.status(400).json({ error })
+    }
+}
+
 export const getEventsController: RequestHandler = async (req: any, res) => {
     try {
         let events;
@@ -118,17 +130,8 @@ export const getEventsController: RequestHandler = async (req: any, res) => {
         } else {
             events = await EventModel.find({}).populate('business')
         }
-        return res.status(200).json({ message: AppConfig.STRINGS.Success, events })
-    } catch (error) {
-        return res.status(400).json({ error })
-    }
-}
-
-export const getEventController: RequestHandler = async (req: any, res) => {
-    try {
-        const event = await EventModel.findById(req.params.id).populate('business')
-
-        return res.status(200).json({ message: AppConfig.STRINGS.Success, event })
+        const data = paginateData(req.query, events, 'events')
+        return res.status(200).json(data)
     } catch (error) {
         return res.status(400).json({ error })
     }
@@ -138,17 +141,18 @@ export const getMyEventsController: RequestHandler = async (req: any, res) => {
     try {
         const business = req.user.business
         const events = await EventModel.find({ business }).populate('business saves')
-        return res.status(200).json({ message: AppConfig.STRINGS.Success, events })
+        const data = paginateData(req.query, events, 'events')
+        return res.status(200).json(data)
     } catch (error) {
         return res.status(400).json({ error })
     }
 }
 
-
 export const getSavedEventsController: RequestHandler = async (req: any, res) => {
     try {
-        const jobs = await EventModel.find({ 'saves': req.user.id }).select('-saves')
-        return res.status(200).json({ message: AppConfig.STRINGS.Success, jobs })
+        const events = await EventModel.find({ 'saves': req.user.id }).select('-saves')
+        const data = paginateData(req.query, events, 'events')
+        return res.status(200).json(data)
     } catch (error) {
         return res.status(400).json({ error })
     }

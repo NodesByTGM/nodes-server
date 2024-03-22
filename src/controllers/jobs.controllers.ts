@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import { BusinessModel, JobModel } from "../mongodb/models";
 import { AppConfig } from "../utilities/config";
+import { paginateData } from "../utilities/common";
 
 export const jobCreateController: RequestHandler = async (req: any, res) => {
     try {
@@ -104,7 +105,7 @@ export const applyToJobController: RequestHandler = async (req: any, res) => {
         const data: any = job.toJSON()
         delete data.saves
         delete data.applicants
-        return res.status(200).json({ message: AppConfig.STRINGS.Success, job:data })
+        return res.status(200).json({ message: AppConfig.STRINGS.Success, job: data })
     } catch (error) {
         console.log(error)
         return res.status(400).json({ error })
@@ -126,21 +127,7 @@ export const saveJobController: RequestHandler = async (req: any, res) => {
         delete data.saves
         delete data.applicants
 
-        return res.status(200).json({ message: AppConfig.STRINGS.Success, job:data })
-    } catch (error) {
-        return res.status(400).json({ error })
-    }
-}
-
-export const getJobsController: RequestHandler = async (req: any, res) => {
-    try {
-        let jobs;
-        if (req.query.businessId) {
-            jobs = await JobModel.find({ business: req.query.businessId }).populate('business')
-        } else {
-            jobs = await JobModel.find({}).populate('business')
-        }
-        return res.status(200).json({ message: AppConfig.STRINGS.Success, jobs })
+        return res.status(200).json({ message: AppConfig.STRINGS.Success, job: data })
     } catch (error) {
         return res.status(400).json({ error })
     }
@@ -156,10 +143,26 @@ export const getJobController: RequestHandler = async (req: any, res) => {
     }
 }
 
+export const getJobsController: RequestHandler = async (req: any, res) => {
+    try {
+        let jobs;
+        if (req.query.businessId) {
+            jobs = await JobModel.find({ business: req.query.businessId }).populate('business')
+        } else {
+            jobs = await JobModel.find({}).populate('business')
+        }
+        const data = paginateData(req.query, jobs, 'jobs')
+        return res.status(200).json(data)
+    } catch (error) {
+        return res.status(400).json({ error })
+    }
+}
+
 export const getAppliedJobsController: RequestHandler = async (req: any, res) => {
     try {
         const jobs = await JobModel.find({ 'applicants': req.user.id }).select('-saves -applicants')
-        return res.status(200).json({ message: AppConfig.STRINGS.Success, jobs })
+        const data = paginateData(req.query, jobs, 'jobs')
+        return res.status(200).json(data)
     } catch (error) {
         return res.status(400).json({ error })
     }
@@ -168,7 +171,8 @@ export const getAppliedJobsController: RequestHandler = async (req: any, res) =>
 export const getSavedJobsController: RequestHandler = async (req: any, res) => {
     try {
         const jobs = await JobModel.find({ 'saves': req.user.id }).select('-saves -applicants')
-        return res.status(200).json({ message: AppConfig.STRINGS.Success, jobs })
+        const data = paginateData(req.query, jobs, 'jobs')
+        return res.status(200).json(data)
     } catch (error) {
         return res.status(400).json({ error })
     }
@@ -178,7 +182,8 @@ export const getMyJobsController: RequestHandler = async (req: any, res) => {
     try {
         const business = req.user.business
         const jobs = await JobModel.find({ business }).populate('business saves applicants')
-        return res.status(200).json({ message: AppConfig.STRINGS.Success, jobs })
+        const data = paginateData(req.query, jobs, 'jobs')
+        return res.status(200).json(data)
     } catch (error) {
         return res.status(400).json({ error })
     }

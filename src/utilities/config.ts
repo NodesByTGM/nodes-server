@@ -81,7 +81,7 @@ export const AppConfig = {
         AccountUpgradedBusiness: 'Your account has been upgraded to a Business account successfully.',
         Success: 'Success.',
     },
-    DEFAULT_PAGE_SIZE: 5,
+    DEFAULT_PAGE_SIZE: 20,
     OTP_LENGTH: 4,
     ACCOUNT_ROLES: {
         USER: 0,

@@ -1,3 +1,6 @@
+import { AppConfig } from "../utilities/config";
+import { paginationQueryParams } from "./common.doc";
+
 const eventSchema = {
     type: 'object',
     properties: {
@@ -35,6 +38,25 @@ const eventSchema = {
     required: ['name', 'description', 'location', 'dateTime', 'workRate']
 };
 
+const paginatedEventSchema = {
+    type: 'object',
+    properties: {
+        message: {
+            type: 'string',
+            description: 'Success',
+            example: 'Success',
+        },
+        items: {
+            type: 'array',
+            items: { type: 'object', properties: eventSchema.properties }
+        },
+        currentPage: { type: 'number', example: 1 },
+        pageSize: { type: 'number', example: AppConfig.DEFAULT_PAGE_SIZE },
+        totalPages: { type: 'number', example: 1 },
+        totalItems: { type: 'number', example: 1 },
+    }
+}
+
 export const eventSwagger = {
     paths: {
         '/api/v1/events/': {
@@ -57,6 +79,9 @@ export const eventSwagger = {
                 responses: {
                     '200': {
                         description: 'Event created successfully.',
+                        // content: {
+                        //     'application/json': { schema: paginatedEventSchema }
+                        // }
                     },
                     '400': {
                         description: 'Bad request. Check the request payload for missing or invalid information.',
@@ -72,6 +97,7 @@ export const eventSwagger = {
             get: {
                 summary: 'Get all events',
                 tags: ['Events'],
+                parameters: paginationQueryParams,
                 security: [
                     {
                         bearerAuth: [],
@@ -80,6 +106,9 @@ export const eventSwagger = {
                 responses: {
                     '200': {
                         description: 'OK',
+                        content: {
+                            'application/json': { schema: paginatedEventSchema }
+                        }
                     },
                     '401': {
                         description: 'Unauthorized. User authentication failed.',
@@ -245,24 +274,13 @@ export const eventSwagger = {
             get: {
                 summary: "Get saved events",
                 tags: ['Events'],
+                parameters: paginationQueryParams,
                 responses: {
                     200: {
                         description: "A list of saved events",
                         content: {
-                            "application/json": {
-                                schema: {
-                                    type: "object",
-                                    properties: {
-                                        events: {
-                                            type: "array",
-                                            items: {
-                                                $ref: eventSchema,
-                                            },
-                                        },
-                                    },
-                                },
-                            },
-                        },
+                            'application/json': { schema: paginatedEventSchema }
+                        }
                     },
                 },
             },
@@ -271,24 +289,13 @@ export const eventSwagger = {
             get: {
                 summary: "Get events created by you",
                 tags: ['Events'],
+                parameters: paginationQueryParams,
                 responses: {
                     200: {
                         description: "A list of applied events",
                         content: {
-                            "application/json": {
-                                schema: {
-                                    type: "object",
-                                    properties: {
-                                        events: {
-                                            type: "array",
-                                            items: {
-                                                $ref: eventSchema,
-                                            },
-                                        },
-                                    },
-                                },
-                            },
-                        },
+                            'application/json': { schema: paginatedEventSchema }
+                        }
                     },
                 },
             },

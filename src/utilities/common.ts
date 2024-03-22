@@ -56,3 +56,26 @@ export const addYearsToDate = (date: string | Date, years = 1) => {
     newDate.setFullYear(originalDate.getFullYear() + years);
     return newDate.toLocaleDateString();
 }
+
+export const paginateData = (query: any, items: any, nameSpace?: string) => {
+    const { page: _page, pageSize: _size } = query
+    const page = parseInt(_page) || 1;
+    const pageSize = parseInt(_size) || AppConfig.DEFAULT_PAGE_SIZE;
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const _items = items.slice(startIndex, endIndex);
+    const totalPages = Math.ceil(items.length / pageSize);
+
+    const data: any = {
+        message: AppConfig.STRINGS.Success,
+        items,
+        currentPage: page,
+        pageSize,
+        totalPages,
+        totalItems: items.length
+    }
+    if (nameSpace) {
+        data[nameSpace] = _items
+    }
+    return data
+}

@@ -1,3 +1,6 @@
+import { AppConfig } from "../utilities/config";
+import { paginationQueryParams } from "./common.doc";
+
 const jobSchema = {
     type: 'object',
     properties: {
@@ -11,6 +14,24 @@ const jobSchema = {
     },
     required: ['name', 'description', 'experience', 'payRate', 'workRate', 'skills', 'jobType']
 };
+const paginatedJobSchema = {
+    type: 'object',
+    properties: {
+        message: {
+            type: 'string',
+            description: 'Success',
+            example: 'Success',
+        },
+        items: {
+            type: 'array',
+            items: { type: 'object', properties: jobSchema.properties }
+        },
+        currentPage: { type: 'number', example: 1 },
+        pageSize: { type: 'number', example: AppConfig.DEFAULT_PAGE_SIZE },
+        totalPages: { type: 'number', example: 1 },
+        totalItems: { type: 'number', example: 1 },
+    }
+}
 
 export const jobSwagger = {
     paths: {
@@ -28,16 +49,21 @@ export const jobSwagger = {
                 },
                 responses: {
                     200: { description: 'OK' },
-                    // Add more response codes if necessary
+                    // content: {
+                    //     'application/json': { schema: paginatedJobSchema }
+                    // }
                 }
             },
             get: {
                 summary: 'Get all jobs',
                 tags: ['Jobs'],
+                parameters: paginationQueryParams,
                 security: [{ bearerAuth: [] }],
                 responses: {
                     200: { description: 'OK' },
-                    // Add more response codes if necessary
+                    content: {
+                        'application/json': { schema: paginatedJobSchema }
+                    }
                 }
             }
         },
@@ -160,24 +186,13 @@ export const jobSwagger = {
             get: {
                 summary: "Get saved jobs",
                 tags: ['Jobs'],
+                parameters: paginationQueryParams,
                 responses: {
                     200: {
                         description: "A list of saved jobs",
                         content: {
-                            "application/json": {
-                                schema: {
-                                    type: "object",
-                                    properties: {
-                                        jobs: {
-                                            type: "array",
-                                            items: {
-                                                $ref: jobSchema,
-                                            },
-                                        },
-                                    },
-                                },
-                            },
-                        },
+                            'application/json': { schema: paginatedJobSchema }
+                        }
                     },
                 },
             },
@@ -186,24 +201,13 @@ export const jobSwagger = {
             get: {
                 summary: "Get applied jobs",
                 tags: ['Jobs'],
+                parameters: paginationQueryParams,
                 responses: {
                     200: {
                         description: "A list of applied jobs",
                         content: {
-                            "application/json": {
-                                schema: {
-                                    type: "object",
-                                    properties: {
-                                        jobs: {
-                                            type: "array",
-                                            items: {
-                                                $ref: jobSchema,
-                                            },
-                                        },
-                                    },
-                                },
-                            },
-                        },
+                            'application/json': { schema: paginatedJobSchema }
+                        }
                     },
                 },
             },
@@ -212,24 +216,13 @@ export const jobSwagger = {
             get: {
                 summary: "Get jobs created by you",
                 tags: ['Jobs'],
+                parameters: paginationQueryParams,
                 responses: {
                     200: {
                         description: "A list of applied jobs",
                         content: {
-                            "application/json": {
-                                schema: {
-                                    type: "object",
-                                    properties: {
-                                        jobs: {
-                                            type: "array",
-                                            items: {
-                                                $ref: jobSchema,
-                                            },
-                                        },
-                                    },
-                                },
-                            },
-                        },
+                            'application/json': { schema: paginatedJobSchema }
+                        }
                     },
                 },
             },
