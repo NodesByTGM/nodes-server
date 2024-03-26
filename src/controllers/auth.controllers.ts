@@ -8,7 +8,7 @@ import { verifyRefreshToken } from '../services/auth.service';
 import { generateOTP } from '../utilities/common';
 import { AppConfig, MAIN_APP_URL } from '../utilities/config';
 import { loginSchema, registerSchema } from '../validations';
-import { emailSchema, sendOTPSchema, verifyEmailSchema, verifyOTPSchema } from '../validations/auth.validations';
+import { emailSchema, sendOTPSchema, usernameSchema, verifyEmailSchema, verifyOTPSchema } from '../validations/auth.validations';
 
 export const registerController: RequestHandler = async (req, res) => {
     const { error } = registerSchema.validate(req.body);
@@ -367,6 +367,22 @@ export const checkEmailExistsController: RequestHandler = async (req: any, res) 
             return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.UserAlreadyExists });
         }
         return res.status(200).json({ message: AppConfig.STRINGS.EmailVerified });
+    } catch (error) {
+        return res.status(500).json({ message: AppConfig.ERROR_MESSAGES.InternalServerError });
+    }
+};
+
+export const checkUsernameExistsController: RequestHandler = async (req: any, res) => {
+    const { error } = usernameSchema.validate(req.body);
+    if (error) return res.status(400).json({ message: error.details[0].message });
+
+    const { username } = req.body;
+    try {
+        const existing = await AccountModel.findOne({ username: username.toLowerCase() });
+        if (existing) {
+            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.UserAlreadyExistsUsername });
+        }
+        return res.status(200).json({ message: AppConfig.STRINGS.UsernameVerified });
     } catch (error) {
         return res.status(500).json({ message: AppConfig.ERROR_MESSAGES.InternalServerError });
     }

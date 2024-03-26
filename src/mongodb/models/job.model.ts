@@ -37,6 +37,13 @@ const JobSchema = new mongoose.Schema({
             object.jobType = JobType[jobType]
             return object;
         }
+    },
+    toObject: {
+        transform: (_: any, rec: Record<string, any>) => {
+            const { __v, _id, ...object } = rec;
+            object.id = _id
+            return object;
+        }
     }
 });
 

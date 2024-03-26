@@ -7,7 +7,7 @@ const EventSchema = new mongoose.Schema({
     description: { type: String, required: true },
     location: { type: String, required: true },
     dateTime: { type: Date, required: true },
-    paymentType: { type: String, required: false, enum: ['free', 'paid'], default:'free' },
+    paymentType: { type: String, required: false, enum: ['free', 'paid'], default: 'free' },
     thumbnail: { type: fileSchema, required: false, default: null },
     saves: {
         type: [Schema.Types.ObjectId],
@@ -23,6 +23,13 @@ const EventSchema = new mongoose.Schema({
 }, {
     timestamps: true,
     toJSON: {
+        transform: (_: any, rec: Record<string, any>) => {
+            const { __v, _id, ...object } = rec;
+            object.id = _id
+            return object;
+        }
+    },
+    toObject: {
         transform: (_: any, rec: Record<string, any>) => {
             const { __v, _id, ...object } = rec;
             object.id = _id

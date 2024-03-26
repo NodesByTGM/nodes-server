@@ -76,6 +76,7 @@ export const AppConfig = {
         PasswordLinkEmailTitle: 'Password reset.',
         EmailVerificationSent: 'An OTP has been sent to your email for your verification.',
         EmailVerified: 'Your email has been verified successfully.',
+        UsernameVerified: 'Your username has been verified successfully.',
         OTPVerified: 'Your OTP has been verified successfully.',
         AccountUpgradedTalent: 'Your account has been upgraded to a Talent account successfully.',
         OnboardingSuccessful: 'Your account has been onboarded successfully.',

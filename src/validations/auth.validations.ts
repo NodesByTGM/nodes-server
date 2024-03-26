@@ -4,6 +4,11 @@ export const emailSchema = Joi.object({
     email: Joi.string().required(),
 });
 
+
+export const usernameSchema = Joi.object({
+    username: Joi.string().required(),
+});
+
 export const registerSchema = Joi.object({
     name: Joi.string().required(),
     username: Joi.string().required(),

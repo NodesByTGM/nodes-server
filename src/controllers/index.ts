@@ -6,7 +6,8 @@ export {
     resetPasswordController,
     changePasswordController,
     logoutController,
-    checkEmailExistsController
+    checkEmailExistsController,
+    checkUsernameExistsController
 } from './auth.controllers'
 export {
     profileController,

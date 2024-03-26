@@ -113,6 +113,28 @@ export const saveEventController: RequestHandler = async (req: any, res) => {
     }
 }
 
+export const unsaveEventController: RequestHandler = async (req: any, res) => {
+    try {
+        const event = await EventModel.findById(req.params.id)
+        if (!event) {
+            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.ResourceNotFound })
+        }
+        if (event.saves.filter(x => x.toString() === req.user.id.toString()).length === 0) {
+            event.saves = event.saves.filter(x => x.toString() !== req.user.id.toString())
+            await event.save()
+        }
+        const data: any = event.toJSON()
+        delete data.saves
+        delete data.applicants
+        data.saved = false
+
+        return res.status(200).json({ message: AppConfig.STRINGS.Success, event: data })
+    } catch (error) {
+        return res.status(400).json({ error })
+    }
+}
+
+
 export const getEventController: RequestHandler = async (req: any, res) => {
     try {
         const event = await EventModel.findById(req.params.id).populate('business')

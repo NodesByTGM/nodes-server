@@ -135,6 +135,27 @@ export const saveJobController: RequestHandler = async (req: any, res) => {
     }
 }
 
+export const unsaveJobController: RequestHandler = async (req: any, res) => {
+    try {
+        const job = await JobModel.findById(req.params.id)
+        if (!job) {
+            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.ResourceNotFound })
+        }
+        if (job.saves.filter(x => x.toString() === req.user.id.toString()).length === 0) {
+            job.saves = job.saves.filter(x => x.toString() !== req.user.id.toString())
+            await job.save()
+        }
+        const data: any = job.toJSON()
+        delete data.saves
+        delete data.applicants
+        data.saved = false
+
+        return res.status(200).json({ message: AppConfig.STRINGS.Success, job: data })
+    } catch (error) {
+        return res.status(400).json({ error })
+    }
+}
+
 export const getJobController: RequestHandler = async (req: any, res) => {
     try {
         const job = await JobModel.findById(req.params.id).populate('business')
