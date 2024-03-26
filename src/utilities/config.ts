@@ -61,6 +61,7 @@ export const AppConfig = {
         UnverifiedEmail: 'Please verify your email first before proceeding.',
         AlreadySaved: 'You\'ve already saved this event.',
         AlreadyApplied: 'You\'ve already applied for this job.',
+        AlreadySavedJob: 'You\'ve already saved this job.',
     },
     STRINGS: {
         NewContactSubmission: 'New Contact Submission.',

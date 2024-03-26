@@ -1,8 +1,8 @@
 import { RequestHandler } from "express";
-import { AppConfig } from "../utilities/config";
 import { BusinessModel, EventModel } from "../mongodb/models";
 import { uploadMedia } from "../services";
 import { paginateData } from "../utilities/common";
+import { AppConfig } from "../utilities/config";
 
 export const eventCreateController: RequestHandler = async (req: any, res) => {
     try {
@@ -38,7 +38,6 @@ export const eventCreateController: RequestHandler = async (req: any, res) => {
         // const data = paginateData(req.query, events, 'events')
         return res.status(200).json({ message: AppConfig.STRINGS.Success, event })
     } catch (error) {
-        console.log(error)
         return res.status(400).json({ error })
     }
 }
@@ -106,6 +105,7 @@ export const saveEventController: RequestHandler = async (req: any, res) => {
         const data: any = event.toJSON()
         delete data.saves
         delete data.applicants
+        data.saved = true
 
         return res.status(200).json({ message: AppConfig.STRINGS.Success, event: data })
     } catch (error) {
@@ -116,7 +116,15 @@ export const saveEventController: RequestHandler = async (req: any, res) => {
 export const getEventController: RequestHandler = async (req: any, res) => {
     try {
         const event = await EventModel.findById(req.params.id).populate('business')
-        return res.status(200).json({ message: AppConfig.STRINGS.Success, event })
+        if (!event) {
+            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.ResourceNotFound })
+        }
+        const data = {
+            ...event?.toJSON(),
+            saved: event.saves.map((y: any) => y.toString()).includes(req.user.id),
+            saves: event.business === req.user.business ? event.saves : undefined
+        }
+        return res.status(200).json({ message: AppConfig.STRINGS.Success, event: data })
     } catch (error) {
         return res.status(400).json({ error })
     }
@@ -126,10 +134,15 @@ export const getEventsController: RequestHandler = async (req: any, res) => {
     try {
         let events;
         if (req.query.businessId) {
-            events = await EventModel.find({ business: req.query.businessId }).populate('business')
+            events = await EventModel.find({ business: req.query.businessId }).populate('business').lean()
         } else {
-            events = await EventModel.find({}).populate('business')
+            events = await EventModel.find({}).populate('business').lean()
         }
+        events = events.map(x => ({
+            ...x,
+            saved: x.saves.map((y: any) => y.toString()).includes(req.user.id),
+            saves: undefined
+        }))
         const data = paginateData(req.query, events, 'events')
         return res.status(200).json(data)
     } catch (error) {
@@ -140,7 +153,11 @@ export const getEventsController: RequestHandler = async (req: any, res) => {
 export const getMyEventsController: RequestHandler = async (req: any, res) => {
     try {
         const business = req.user.business
-        const events = await EventModel.find({ business }).populate('business saves')
+        let events = await EventModel.find({ business }).populate('business saves').lean()
+        events = events.map((x: any) => ({
+            ...x,
+            saved: x.saves.map((y: any) => y._id.toString()).includes(req.user.id)
+        }))
         const data = paginateData(req.query, events, 'events')
         return res.status(200).json(data)
     } catch (error) {
@@ -150,7 +167,12 @@ export const getMyEventsController: RequestHandler = async (req: any, res) => {
 
 export const getSavedEventsController: RequestHandler = async (req: any, res) => {
     try {
-        const events = await EventModel.find({ 'saves': req.user.id }).select('-saves')
+        let events: any = await EventModel.find({ 'saves': req.user.id }).lean()
+        events = events.map((x: any) => ({
+            ...x,
+            saved: x.saves.map((y: any) => y.toString()).includes(req.user.id),
+            saves: undefined
+        }))
         const data = paginateData(req.query, events, 'events')
         return res.status(200).json(data)
     } catch (error) {
