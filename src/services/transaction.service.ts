@@ -135,7 +135,7 @@ export const checkTxnExists = async (reference: string) => {
 }
 
 export const getBusiness = async (user: any, planName: string) => {
-    if (planName !== 'business') {
+    if (planName !== 'Business') {
         return null
     }
     let business;
