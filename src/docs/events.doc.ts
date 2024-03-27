@@ -270,6 +270,42 @@ export const eventSwagger = {
                 },
             },
         },
+        '/api/v1/events/unsave/{id}': {
+            post: {
+                summary: 'Unsave an event',
+                tags: ['Events'],
+                security: [
+                    {
+                        bearerAuth: [],
+                    },
+                ],
+                parameters: [
+                    {
+                        name: 'id',
+                        in: 'path',
+                        required: true,
+                        schema: {
+                            type: 'string',
+                        },
+                        description: 'ID of the event to save.',
+                    }
+                ],
+                responses: {
+                    '200': {
+                        description: 'Event saved successfully.',
+                    },
+                    '401': {
+                        description: 'Unauthorized. User authentication failed.',
+                    },
+                    '404': {
+                        description: 'Event not found.',
+                    },
+                    '500': {
+                        description: 'Internal Server Error.',
+                    },
+                },
+            },
+        },
         "/api/v1/events/saved": {
             get: {
                 summary: "Get saved events",

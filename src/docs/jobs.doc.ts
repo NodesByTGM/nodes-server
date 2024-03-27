@@ -182,6 +182,27 @@ export const jobSwagger = {
                 }
             }
         },
+        '/api/v1/jobs/unsave/{id}': {
+            post: {
+                summary: 'Unsave a job using a specific job by ID',
+                tags: ['Jobs'],
+                security: [{ bearerAuth: [] }],
+                parameters: [
+                    {
+                        name: 'id',
+                        in: 'path',
+                        required: true,
+                        schema: {
+                            type: 'string'
+                        }
+                    }
+                ],
+                responses: {
+                    200: { description: 'OK' },
+                    // Add more response codes if necessary
+                }
+            }
+        },
         "/api/v1/jobs/saved": {
             get: {
                 summary: "Get saved jobs",
