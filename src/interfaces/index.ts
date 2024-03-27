@@ -1,4 +1,3 @@
-export { IPaystackPayment } from './paystack'
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 
 export interface Quote {

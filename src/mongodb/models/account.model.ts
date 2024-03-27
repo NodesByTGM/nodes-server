@@ -1,8 +1,6 @@
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import { AppConfig } from '../../utilities/config';
 import { fileSchema } from './file.model';
-import { SubscriptionSchema } from './subscription.model';
-import { BusinessSchema } from './business.model';
 
 export const AccountSchema = new mongoose.Schema({
     name: { type: String, required: true },
@@ -32,9 +30,8 @@ export const AccountSchema = new mongoose.Schema({
     comments: { type: Boolean, required: false, default: false },
     visible: { type: Boolean, required: false, default: true },
 
-
-    subscription: { type: SubscriptionSchema, default: null },
-    business: { type: BusinessSchema, default: null },
+    subscription: { type: Types.ObjectId, ref: 'Subscription', autopopulate: true },
+    business: { type: Types.ObjectId, ref: 'Business', autopopulate: true },
 
     role: {
         type: Number,
@@ -58,7 +55,7 @@ export const AccountSchema = new mongoose.Schema({
         }
     }
 });
-
+AccountSchema.plugin(require('mongoose-autopopulate'));
 // AccountSchema.index({ anime: 1, character: 1 })
 // AccountSchema.index({ charcter: 1, quote: 1 }, { unique: true });
 

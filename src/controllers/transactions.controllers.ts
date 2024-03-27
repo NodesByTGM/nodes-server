@@ -1,10 +1,11 @@
 import { RequestHandler } from 'express';
-import { PaystackWebhookEvent } from '../interfaces/paystack';
+import { ChargeSuccessEventData, PaystackWebhookEvent, SubscriptionDisabledEventData } from '../interfaces/paystack';
 import { AccountModel, SubscriptionModel, TransactionModel } from '../mongodb/models';
-import { addSubscription, sendEmail, verifyTxnByReference } from '../services';
+import { initiateSubscription, sendEmail, verifyTxnByReference } from '../services';
 import { sendHTMLEmail } from '../services/email.service';
 import { addYearsToDate, formatDate, verifyTransaction } from '../utilities/common';
 import { AppConfig } from '../utilities/config';
+import { getBusiness } from '../services/transaction.service';
 
 export const verifyTransactionController: RequestHandler = async (req, res) => {
     try {
@@ -51,11 +52,7 @@ export const paystackWebhookController: RequestHandler = async (req, res) => {
     }
 
     if (eventData.event === 'charge.success') {
-        const { data } = eventData
-        // socketServer.emit('payment_success', { email: data.customer.email })
-        // const transactionId = data.id;
-        // Process the successful transaction to maybe fund wallet and update your WalletModel
-        // console.log(`Transaction ${transactionId} was successful`);
+        const data: ChargeSuccessEventData = eventData.data
         let txnn = await TransactionModel.findOne({ apiId: data.id, status: data.status })
         if (txnn) {
             return res.sendStatus(200)
@@ -92,7 +89,11 @@ export const paystackWebhookController: RequestHandler = async (req, res) => {
             }
 
             txn.subscription = sub.id
-            user.subscription = sub
+            user.subscription = sub.id
+            const business = await getBusiness(user, data.plan.name)
+            if (business) {
+                user.business = business.id;
+            }
             await txn.save()
             await user.save()
 
@@ -111,6 +112,18 @@ export const paystackWebhookController: RequestHandler = async (req, res) => {
         }
     }
 
+    if (eventData.event === 'subscription.disable') {
+        const data: SubscriptionDisabledEventData = eventData.data
+        const user = await AccountModel.findOne({ email: data.customer.email })
+        if (user) {
+            const sub = await SubscriptionModel.findById(user.subscription)
+            if(sub){
+                sub.active = false
+                await sub.save()
+            }
+        }
+    }
+
     return res.sendStatus(200);
     // TODO: should it send back a fail to paystack when the system itself fails and not because it didnt recieve somethnig right?
     // Change the paystack pop up flow
@@ -118,12 +131,16 @@ export const paystackWebhookController: RequestHandler = async (req, res) => {
 
 export const subscribeToPackage: RequestHandler = async (req: any, res) => {
     try {
-        const authorizationURL = await addSubscription(req.user.email, req.params.planKey)
-        if (authorizationURL) {
-            return res.json({ message: AppConfig.STRINGS.Success, authorizationURL })
+        const { planKey } = req.params
+        if (planKey === 'pro' || planKey === 'business') {
+            const authorizationURL = await initiateSubscription(req.user.email, planKey)
+            if (authorizationURL) {
+                return res.json({ message: AppConfig.STRINGS.Success, authorizationURL })
+            }
         }
         return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.BadRequestError })
     } catch (error) {
         return res.status(500).json({ message: AppConfig.ERROR_MESSAGES.InternalServerError })
     }
 }
+

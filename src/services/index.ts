@@ -10,4 +10,4 @@ export {
 export { generateAccessToken, generateRefreshToken } from './auth.service'
 export { sendEmail } from './email.service'
 export { uploadMedia, deleteMedia } from './cloudinary.service'
-export { addSubscription, verifyTxnByReference } from './transaction.service'
+export { initiateSubscription, verifyTxnByReference } from './transaction.service'

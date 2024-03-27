@@ -12,7 +12,8 @@ import {
   uploadsRouter,
   userRouter,
   eventsRouter,
-  jobsRouter
+  jobsRouter,
+  transactionsRouter
 } from "./routes";
 import swaggerSpec from "./docs/swagger";
 
@@ -57,6 +58,9 @@ app.use('/api/v1/events', eventsRouter);
 
 // Define jobs routes
 app.use('/api/v1/jobs', jobsRouter);
+
+// Define jobs routes
+app.use('/api/v1/transactions', transactionsRouter);
 
 // Swagger Docs
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));

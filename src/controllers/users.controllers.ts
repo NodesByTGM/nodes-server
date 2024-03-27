@@ -71,7 +71,7 @@ export const profileUpdateController: RequestHandler = async (req: any, res: any
 
             let businessProfile
             if (user.type === AppConfig.ACCOUNT_TYPES.BUSINESS) {
-                businessProfile = await BusinessModel.findOne({ accountId: req.user.id })
+                businessProfile = await BusinessModel.findOne({ account: req.user.id })
                 const uploadedLogo = await uploadMedia(logo)
                 if (businessProfile) {
                     businessProfile.name = companyName || businessProfile.name

@@ -6,6 +6,7 @@ import { deleteMediaSwagger, uploadMediaSwagger } from './uploads.doc';
 import { projectsSwagger } from './projects.doc'
 import { jobSwagger } from './jobs.doc';
 import { eventSwagger } from './events.doc';
+import { transactionSwagger } from './transactions.doc';
 // import pjson from '../../package.json';
 
 const options = {
@@ -35,12 +36,13 @@ const options = {
             ...authSwagger.paths,
             ...onboardingSwagger.paths,
             ...usersSwagger.paths,
-            // ...upgradesSwagger.paths,
-            ...uploadMediaSwagger.paths,
-            ...deleteMediaSwagger.paths,
             ...projectsSwagger.paths,
             ...eventSwagger.paths,
             ...jobSwagger.paths,
+            ...transactionSwagger.paths,
+            ...uploadMediaSwagger.paths,
+            ...deleteMediaSwagger.paths,
+            // ...upgradesSwagger.paths,
         }
     },
     // If this was in the folder same as index.ts

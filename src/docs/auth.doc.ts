@@ -1,3 +1,4 @@
+import { authUserSchema, userSchemaExample } from "./common.doc";
 
 export const authSwagger = {
     paths: {
@@ -58,19 +59,7 @@ export const authSwagger = {
                         content: {
                             'application/json': {
                                 example: {
-                                    user: {
-                                        id: '123456789',
-                                        name: 'John Doe',
-                                        email: 'john.doe@example.com',
-                                        username: 'johndoe',
-                                        dob: '1990-01-01',
-                                        type: 1,
-                                        avatar: 'https://example.com/avatar.jpg',
-                                        verified: true,
-                                        createdAt: '2024-02-14T12:00:00Z',
-                                        updatedAt: '2024-02-14T12:30:00Z',
-                                        accessToken: 'your_access_token_here',
-                                    },
+                                    user: userSchemaExample,
                                 },
                             },
                         },
@@ -116,23 +105,12 @@ export const authSwagger = {
                 },
                 responses: {
                     '200': {
-                        description: 'User successfully registered.',
+                        description: 'User successfully logged in.',
                         content: {
                             'application/json': {
+                                // schema: authUserSchema,
                                 example: {
-                                    user: {
-                                        id: '123456789',
-                                        name: 'John Doe',
-                                        email: 'john.doe@example.com',
-                                        username: 'johndoe',
-                                        dob: '1990-01-01',
-                                        type: 1,
-                                        avatar: 'https://example.com/avatar.jpg',
-                                        verified: true,
-                                        createdAt: '2024-02-14T12:00:00Z',
-                                        updatedAt: '2024-02-14T12:30:00Z',
-                                        accessToken: 'your_access_token_here',
-                                    },
+                                    user: { ...userSchemaExample, accessToken: 'yourAccessToken' },
                                 },
                             },
                         },

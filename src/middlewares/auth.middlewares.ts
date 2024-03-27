@@ -29,4 +29,6 @@ const authenticate = async (req: RequestWithUser | Request, res: Response, next:
     }
 };
 
+// create a middleware for active subscriptions
+
 export default authenticate;

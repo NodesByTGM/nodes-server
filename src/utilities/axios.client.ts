@@ -18,7 +18,7 @@ export const getClient = (
             return response;
         },
         (error) => {
-            console.log("error from axios.client: ", error)
+            // console.log("error from axios.client: ", error)
             if (error.code === "ERR_NETWORK") {
                 error['response'] = {
                     data: {

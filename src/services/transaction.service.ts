@@ -1,7 +1,7 @@
 import { AxiosResponse } from "axios"
 import dotenv from "dotenv"
-import { InitiateTransactionResult, PaystackWebhookEvent } from "../interfaces/paystack"
-import { AccountModel, SubscriptionModel, TransactionModel } from "../mongodb/models"
+import { InitiateTransactionResult, PaystackVerifiedTransaction } from "../interfaces/paystack"
+import { AccountModel, BusinessModel, SubscriptionModel, TransactionModel } from "../mongodb/models"
 import { mainClient } from "../utilities/axios.client"
 import { addYearsToDate, formatDate } from "../utilities/common"
 import { AppConfig } from "../utilities/config"
@@ -10,96 +10,10 @@ import { sendHTMLEmail } from "./email.service"
 
 dotenv.config();
 
-interface RootObject {
-    status: boolean;
-    message: string;
-    data: {
-        id: number;
-        domain: string;
-        status: string;
-        reference: string;
-        receipt_number?: any;
-        amount: number;
-        message: string;
-        gateway_response: string;
-        paid_at: string;
-        created_at: string;
-        channel: string;
-        currency: string;
-        ip_address: string;
-        metadata: {
-            referrer: string;
-        };
-        log: {
-            start_time: number;
-            time_spent: number;
-            attempts: number;
-            authentication: string;
-            errors: number;
-            success: boolean;
-            mobile: boolean;
-            input: any[];
-            history: any[];
-        };
-        fees: number;
-        fees_split?: any;
-        authorization: {
-            authorization_code: string;
-            bin: string;
-            last4: string;
-            exp_month: string;
-            exp_year: string;
-            channel: string;
-            card_type: string;
-            bank: string;
-            country_code: string;
-            brand: string;
-            reusable: boolean;
-            signature: string;
-            account_name?: any;
-            receiver_bank_account_number?: any;
-            receiver_bank?: any;
-        };
-        customer: {
-            id: number;
-            first_name: string;
-            last_name: string;
-            email: string;
-            customer_code: string;
-            phone: string;
-            metadata?: any;
-            risk_action: string;
-            international_format_phone?: any;
-        };
-        plan: string;
-        split: Split;
-        order_id?: any;
-        paidAt: string;
-        createdAt: string;
-        requested_amount: number;
-        pos_transaction_data?: any;
-        source?: any;
-        fees_breakdown?: any;
-        connect?: any;
-        transaction_date: string;
-        plan_object: {
-            id: number;
-            name: string;
-            plan_code: string;
-            description?: any;
-            amount: number;
-            interval: string;
-            send_invoices: boolean;
-            send_sms: boolean;
-            currency: string;
-        };
-        subaccount: Split;
-    };
+const PLANKS_KVP: any = {
+    'pro': process.env.PRO_PLAN,
+    'business': process.env.BUSINESS_PLAN,
 }
-
-interface Split {
-}
-
 
 export const verifyTxnByReference = async (reference: string) => {
     const url = `https://api.paystack.co/transaction/verify/${reference}`
@@ -108,8 +22,9 @@ export const verifyTxnByReference = async (reference: string) => {
     }
     try {
         const req = await mainClient.get(url, { headers })
+        console.log(req.data)
         if (req.status === 200) {
-            const reqData: RootObject = req.data;
+            const reqData: PaystackVerifiedTransaction = req.data;
             if (reqData.status) {
                 await createTransaction(reqData)
                 return { status: reqData.status }
@@ -122,7 +37,7 @@ export const verifyTxnByReference = async (reference: string) => {
     }
 }
 
-export const createTransaction = async (reqData: RootObject) => {
+export const createTransaction = async (reqData: PaystackVerifiedTransaction) => {
     const { data } = reqData
     if (!data) {
         return
@@ -147,7 +62,7 @@ export const createTransaction = async (reqData: RootObject) => {
                 source: data.customer.email,
                 destination: 'COMPANY'
             })
-            
+
             let sub = await SubscriptionModel.findOne({ account: user.id })
             if (sub) {
                 sub.plan = data.plan_object.name
@@ -165,7 +80,11 @@ export const createTransaction = async (reqData: RootObject) => {
             }
 
             txn.subscription = sub.id
-            user.subscription = sub
+            user.subscription = sub.id
+            const business = await getBusiness(user, data.plan_object.name)
+            if (business) {
+                user.business = business.id;
+            }
             await user.save()
             await txn.save()
 
@@ -186,34 +105,7 @@ export const createTransaction = async (reqData: RootObject) => {
     return
 }
 
-export const initiateTransaction = async (amount: number, plan: string) => {
-
-}
-
-export type PlanKeyType = 'new-talent' |
-    'creative-starter-pack' |
-    'aspiring-entrepreneur' |
-    'cef'
-
-const PLANKS_KVP: any = {
-    'new-talent': process.env.NEW_TALENT_PLAN,
-    'creative-starter-pack': process.env.CREATIVE_STARTER_PLAN,
-    'aspiring-entrepreneur': process.env.ASPIRING_ENTREPRENEUR_PACK_PLAN,
-    'cef': process.env.CREATIVE_ENTREPRENEUR_PLAN,
-}
-
-const reverse_kvp = {
-    [`${process.env.NEW_TALENT_PLAN}`]: 'new-talent',
-    [`${process.env.CREATIVE_STARTER_PLAN}`]: 'creative-starter-pack',
-    [`${process.env.ASPIRING_ENTREPRENEUR_PACK_PLAN}`]: 'aspiring-entrepreneur',
-    [`${process.env.CREATIVE_ENTREPRENEUR_PLAN}`]: 'cef',
-    '': process.env.CREATIVE_STARTER_PLAN,
-
-}
-
-
-
-export const addSubscription = async (email: string, planKey: PlanKeyType) => {
+export const initiateSubscription = async (email: string, planKey: 'pro' | 'business') => {
     try {
         const result: AxiosResponse<InitiateTransactionResult> = await mainClient.post('https://api.paystack.co/transaction/initialize', {
             email,
@@ -229,7 +121,8 @@ export const addSubscription = async (email: string, planKey: PlanKeyType) => {
         return ""
     } catch (error) {
         // console.log(error)
-        return ""
+        throw error
+        // return ""
     }
 }
 
@@ -241,13 +134,14 @@ export const checkTxnExists = async (reference: string) => {
     return false
 }
 
-// export const getPlanName = (key: string) => {
-//     switch (key) {
-//         case 'pro':
-//             return 'Pro '
-//             break;
-    
-//         default:
-//             break;
-//     }
-// }
+export const getBusiness = async (user: any, planName: string) => {
+    if (planName !== 'business') {
+        return null
+    }
+    let business;
+    business = await BusinessModel.findOne({ account: user.id })
+    if (!business) {
+        business = await BusinessModel.create({ account: user.id })
+    }
+    return business
+}
