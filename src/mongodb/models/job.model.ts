@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import { AppConfig, JobType } from '../../utilities/config';
-import { AccountSchema } from './account.model';
+import { mongooseLeanId } from './plugin';
 
 const JobSchema = new mongoose.Schema({
     name: { type: String, required: true },
@@ -38,14 +38,16 @@ const JobSchema = new mongoose.Schema({
             return object;
         }
     },
-    toObject: {
-        transform: (_: any, rec: Record<string, any>) => {
-            const { __v, _id, ...object } = rec;
-            object.id = _id
-            return object;
-        }
-    }
+    // toObject: {
+    //     transform: (_: any, rec: Record<string, any>) => {
+    //         const { __v, _id, ...object } = rec;
+    //         object.id = _id
+    //         return object;
+    //     }
+    // }
 });
+
+JobSchema.plugin(mongooseLeanId);
 
 const JobModel = mongoose.model('Job', JobSchema);
 

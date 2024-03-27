@@ -1,6 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 import { AccountSchema } from './account.model';
 import { fileSchema } from './file.model';
+import { mongooseLeanId } from './plugin';
 
 const EventSchema = new mongoose.Schema({
     name: { type: String, required: true },
@@ -37,6 +38,8 @@ const EventSchema = new mongoose.Schema({
         }
     }
 });
+
+EventSchema.plugin(mongooseLeanId);
 
 const EventModel = mongoose.model('Event', EventSchema);
 

@@ -1,5 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import { fileSchema } from './file.model';
+import { mongooseLeanId } from './plugin';
 
 export const BusinessSchema = new mongoose.Schema({
     name: { type: String, required: true },
@@ -20,6 +21,8 @@ export const BusinessSchema = new mongoose.Schema({
         }
     }
 });
+
+BusinessSchema.plugin(mongooseLeanId);
 
 const BusinessModel = mongoose.model('Business', BusinessSchema);
 
