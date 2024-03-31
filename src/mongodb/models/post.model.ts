@@ -1,16 +1,15 @@
 import mongoose, { Schema } from 'mongoose';
 import { fileSchema } from './file.model';
+import { mongooseLeanId } from './plugin';
 
 const PostSchema = new Schema({
     body: { type: String, required: true },
     attachments: { type: [fileSchema], default: [] },
-    parentId: { type: Schema.Types.ObjectId, ref: 'Post', },
-    comments: { type: [Schema.Types.ObjectId], ref: 'Post', },
-    account: {
-        type: Schema.Types.ObjectId,
-        required: true,
-        ref: 'Account',
-    },
+    hashtags: { type: [String], required: false, default: [] },
+    parent: { type: Schema.Types.ObjectId, ref: 'Post', default: null },
+    likes: { type: [Schema.Types.ObjectId], ref: 'Account', default: [] },
+    comments: { type: [Schema.Types.ObjectId], ref: 'Post', autopopulate: true, default: [] },
+    author: { type: Schema.Types.ObjectId, required: true, ref: 'Account', autopopulate: true },
 }, {
     timestamps: true,
     toJSON: {
@@ -21,7 +20,8 @@ const PostSchema = new Schema({
         }
     }
 });
+PostSchema.plugin(require('mongoose-autopopulate'));
+// PostSchema.plugin(mongooseLeanId);
+const PostModel = mongoose.model('Post', PostSchema);
 
-const CommentModel = mongoose.model('Post', PostSchema);
-
-export default CommentModel;
+export default PostModel;

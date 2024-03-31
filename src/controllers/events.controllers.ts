@@ -104,7 +104,6 @@ export const saveEventController: RequestHandler = async (req: any, res) => {
         await event.save()
         const data: any = event.toJSON()
         delete data.saves
-        delete data.applicants
         data.saved = true
 
         return res.status(200).json({ message: AppConfig.STRINGS.Success, event: data })
@@ -125,7 +124,6 @@ export const unsaveEventController: RequestHandler = async (req: any, res) => {
         }
         const data: any = event.toJSON()
         delete data.saves
-        delete data.applicants
         data.saved = false
 
         return res.status(200).json({ message: AppConfig.STRINGS.Success, event: data })

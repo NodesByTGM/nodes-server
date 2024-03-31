@@ -14,10 +14,11 @@ function attachId(this: any, res: any) {
                 if (v._id) {
                     v.id = v._id.toString();
                     // v._id = undefined
-                }
-                if(v.__v){
                     v.__v = undefined
                 }
+                // if(v.__v){
+                //     v.__v = undefined
+                // }
                 Object.keys(v).map(k => {
                     if (Array.isArray(v[k])) {
                         replaceId(v[k]);
@@ -30,10 +31,11 @@ function attachId(this: any, res: any) {
             }
             if (res._id) {
                 res.id = res._id.toString();
-            }
-            if(res.__v){
                 res.__v = undefined
             }
+            // if(res.__v){
+            //     res.__v = undefined
+            // }
             Object.keys(res).map(k => {
                 if (Array.isArray(res[k])) {
                     replaceId(res[k]);

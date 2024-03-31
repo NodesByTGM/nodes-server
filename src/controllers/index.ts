@@ -60,3 +60,11 @@ export {
     getMyEventsController,
     getSavedEventsController
 } from './events.controllers'
+
+export {
+    getPostController,
+    getPostsController,
+    createPostController,
+    likePostController,
+    unlikePostController
+} from './community.controllers'

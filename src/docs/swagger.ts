@@ -7,8 +7,8 @@ import { projectsSwagger } from './projects.doc'
 import { jobSwagger } from './jobs.doc';
 import { eventSwagger } from './events.doc';
 import { transactionSwagger } from './transactions.doc';
+import { communitySwagger } from './community.doc';
 // import pjson from '../../package.json';
-
 const options = {
     definition: {
         openapi: '3.0.0',
@@ -46,6 +46,7 @@ const options = {
             ...transactionSwagger.paths,
             ...uploadMediaSwagger.paths,
             ...deleteMediaSwagger.paths,
+            ...communitySwagger.paths
             // ...upgradesSwagger.paths,
         }
     },
