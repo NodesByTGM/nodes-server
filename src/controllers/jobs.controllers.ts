@@ -141,7 +141,7 @@ export const unsaveJobController: RequestHandler = async (req: any, res) => {
         if (!job) {
             return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.ResourceNotFound })
         }
-        if (job.saves.filter(x => x.toString() === req.user.id.toString()).length === 0) {
+        if (job.saves.filter(x => x.toString() === req.user.id.toString()).length > 0) {
             job.saves = job.saves.filter(x => x.toString() !== req.user.id.toString())
             await job.save()
         }

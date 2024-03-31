@@ -10,6 +10,7 @@ import {
     getMyEventsController
 } from '../controllers';
 import { authenticate } from '../middlewares';
+import { unsaveEventController } from '../controllers/events.controllers';
 
 const router = Router();
 
@@ -21,6 +22,7 @@ router.get('/:id', authenticate, getEventController);
 router.put('/:id', authenticate, eventUpdateController);
 router.delete('/:id', authenticate, deleteEventController);
 router.post('/save/:id', authenticate, saveEventController);
+router.post('/unsave/:id', authenticate, unsaveEventController);
 
 
 export default router;

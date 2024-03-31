@@ -1,9 +1,12 @@
 import mongoose, { Schema } from 'mongoose';
+import { fileSchema } from './file.model';
 
-const CommentSchema = new mongoose.Schema({
+const PostSchema = new Schema({
     body: { type: String, required: true },
-    description: { type: String, required: true },
-    business: {
+    attachments: { type: [fileSchema], default: [] },
+    parentId: { type: Schema.Types.ObjectId, ref: 'Post', },
+    comments: { type: [Schema.Types.ObjectId], ref: 'Post', },
+    account: {
         type: Schema.Types.ObjectId,
         required: true,
         ref: 'Account',
@@ -19,6 +22,6 @@ const CommentSchema = new mongoose.Schema({
     }
 });
 
-const CommentModel = mongoose.model('Comment', CommentSchema);
+const CommentModel = mongoose.model('Post', PostSchema);
 
 export default CommentModel;

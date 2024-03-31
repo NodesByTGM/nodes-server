@@ -119,7 +119,7 @@ export const unsaveEventController: RequestHandler = async (req: any, res) => {
         if (!event) {
             return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.ResourceNotFound })
         }
-        if (event.saves.filter(x => x.toString() === req.user.id.toString()).length === 0) {
+        if (event.saves.filter(x => x.toString() === req.user.id.toString()).length > 0) {
             event.saves = event.saves.filter(x => x.toString() !== req.user.id.toString())
             await event.save()
         }

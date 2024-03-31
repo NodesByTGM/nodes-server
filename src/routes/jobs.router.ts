@@ -12,6 +12,7 @@ import {
     saveJobController
 } from '../controllers';
 import { authenticate } from '../middlewares';
+import { unsaveJobController } from '../controllers/jobs.controllers';
 
 const router = Router();
 
@@ -25,6 +26,7 @@ router.put('/:id', authenticate, jobUpdateController);
 router.delete('/:id', authenticate, deleteJobController);
 router.post('/apply/:id', authenticate, applyToJobController);
 router.post('/save/:id', authenticate, saveJobController);
+router.post('/unsave/:id', authenticate, unsaveJobController);
 
 
 export default router;

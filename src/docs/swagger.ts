@@ -29,6 +29,10 @@ const options = {
             },
             {
                 url: "https://nodes-server-v1.onrender.com/",
+                description: "Dev server"
+            },
+            {
+                url: "https://nodes-api.thegridmanagement.com/",
                 description: "Live server"
             },
         ],
