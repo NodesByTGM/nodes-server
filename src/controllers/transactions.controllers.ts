@@ -35,8 +35,9 @@ export const verifyInternalTransactionController: RequestHandler = async (req: a
         if (!verifiedTxn?.status) {
             return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.BadRequestError })
         }
-        // const data = await getUserFullProfile(req.user)
-        return res.json({ message: AppConfig.STRINGS.Success, data: req.user })
+        const user = await AccountModel.findById(req.user.id)
+        // const data = await getUserFullProfile(user)
+        return res.json({ message: AppConfig.STRINGS.Success, data: user })
     } catch (error) {
         return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.BadRequestError })
     }
@@ -117,7 +118,7 @@ export const paystackWebhookController: RequestHandler = async (req, res) => {
         const user = await AccountModel.findOne({ email: data.customer.email })
         if (user) {
             const sub = await SubscriptionModel.findById(user.subscription)
-            if(sub){
+            if (sub) {
                 sub.active = false
                 await sub.save()
             }
