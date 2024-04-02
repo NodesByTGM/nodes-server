@@ -50,10 +50,12 @@ export const AccountSchema = new mongoose.Schema({
     toJSON: {
         transform: (_: any, rec: Record<string, any>) => {
             const { __v, _id, password, role, ...object } = rec;
+            console.log(object.business)
             object.id = _id
             return object;
         }
-    }
+    },
+    // validateBeforeSave:false
 });
 AccountSchema.plugin(require('mongoose-autopopulate'));
 // AccountSchema.index({ anime: 1, character: 1 })

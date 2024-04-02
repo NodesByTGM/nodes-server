@@ -84,6 +84,7 @@ export const createTransaction = async (reqData: PaystackVerifiedTransaction) =>
             const business = await getBusiness(user, data.plan_object.name)
             if (business) {
                 user.business = business.id;
+                user.type = AppConfig.ACCOUNT_TYPES.BUSINESS
             }
             await user.save()
             await txn.save()

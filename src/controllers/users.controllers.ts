@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import { AccountModel, BusinessModel, TalentDetailsModel } from '../mongodb/models';
 import { uploadMedia } from '../services';
 import { AppConfig } from '../utilities/config';
+import { Schema } from 'mongoose';
 
 export const profileController: RequestHandler = async (req: any, res: any) => {
     // res.json({ message: `Welcome ${req.user.username}` });
@@ -23,6 +24,7 @@ export const profileController: RequestHandler = async (req: any, res: any) => {
 
 export const profileUpdateController: RequestHandler = async (req: any, res: any) => {
     // res.json({ message: `Welcome ${req.user.username}` });
+    console.log(req.body)
     try {
         const {
             name,
@@ -69,22 +71,22 @@ export const profileUpdateController: RequestHandler = async (req: any, res: any
             user.visible = visible !== undefined ? visible : user.visible
 
 
-            let businessProfile
+            let business
             if (user.type === AppConfig.ACCOUNT_TYPES.BUSINESS) {
-                businessProfile = await BusinessModel.findOne({ account: req.user.id })
+                business = await BusinessModel.findOne({ account: req.user.id })
                 const uploadedLogo = await uploadMedia(logo)
-                if (businessProfile) {
-                    businessProfile.name = companyName || businessProfile.name
-                    businessProfile.logo = uploadedLogo || businessProfile.logo
-                    businessProfile.yoe = yoe || businessProfile.yoe
-                    await businessProfile.save()
-                    businessProfile = businessProfile.toJSON()
+                if (business) {
+                    business.name = companyName || business.name
+                    business.logo = uploadedLogo || business.logo
+                    business.yoe = yoe || business.yoe
+                    await business.save()
+                    business = business.toJSON()
                 }
             }
-            await user.save()
+            const r = await user.save()
             const data = {
-                ...user.toJSON(),
-                businessProfile
+                ...r.toJSON(),
+                business
 
             }
             return res.json({ user: data });
@@ -92,13 +94,27 @@ export const profileUpdateController: RequestHandler = async (req: any, res: any
         return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.BadRequestError });
 
     } catch (error) {
-        return res.json({ error: JSON.stringify(error) })
+        return res.status(500).json({ error: JSON.stringify(error) })
     }
 };
 
 export const allUsersContoller: RequestHandler = async (req, res) => {
     try {
-        const users = await AccountModel.find({}, { password: 0 })
+        const users = await AccountModel.find()
+        for (let user of users) {
+            if (user.business) {
+                const business = await BusinessModel.findOne({ account: user.id })
+                if (business) {
+                    // user.business = null
+                    // await user.save()
+
+                    // user.business = business.id
+                    user.type = AppConfig.ACCOUNT_TYPES.BUSINESS
+                    console.log("user.business", user.business)
+                    await user.save()
+                }
+            }
+        }
         return res.json({ message: users });
     } catch (error) {
         return res.json({ error: JSON.stringify(error) })

@@ -94,6 +94,7 @@ export const paystackWebhookController: RequestHandler = async (req, res) => {
             const business = await getBusiness(user, data.plan.name)
             if (business) {
                 user.business = business.id;
+                user.type = AppConfig.ACCOUNT_TYPES.BUSINESS
             }
             await txn.save()
             await user.save()

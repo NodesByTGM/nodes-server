@@ -27,7 +27,7 @@ connectDB();
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",");
 // Parse JSON request body
-app.use(json());
+app.use(json({limit:'10mb'}));
 app.use(cors({
   origin: allowedOrigins,
   credentials: true
