@@ -67,15 +67,15 @@ export const paginateData = (query: any, items: any, nameSpace?: string) => {
     const totalPages = Math.ceil(items.length / pageSize);
 
     const data: any = {
-        message: AppConfig.STRINGS.Success,
-        items,
+        // message: AppConfig.STRINGS.Success,
         currentPage: page,
         pageSize,
         totalPages,
-        totalItems: items.length
+        totalItems: items.length,
+        items,
     }
-    if (nameSpace) {
-        data[nameSpace] = _items
-    }
+    // if (nameSpace) {
+    //     data[nameSpace] = _items
+    // }
     return data
 }

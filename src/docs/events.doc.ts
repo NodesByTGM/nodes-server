@@ -1,7 +1,6 @@
-import { AppConfig } from "../utilities/config";
-import { paginationQueryParams } from "./common.doc";
+import { businessSchema, constructResponseSchema, fileSwaggerSchema, paginationQueryParams } from "./common.doc";
 
-const eventSchema = {
+const eventRequestSchema = {
     type: 'object',
     properties: {
         name: {
@@ -38,24 +37,25 @@ const eventSchema = {
     required: ['name', 'description', 'location', 'dateTime', 'paymentType']
 };
 
-const paginatedEventSchema = {
+export const eventSchema = {
     type: 'object',
     properties: {
-        message: {
-            type: 'string',
-            description: 'Success',
-            example: 'Success',
-        },
-        items: {
-            type: 'array',
-            items: { type: 'object', properties: eventSchema.properties }
-        },
-        currentPage: { type: 'number', example: 1 },
-        pageSize: { type: 'number', example: AppConfig.DEFAULT_PAGE_SIZE },
-        totalPages: { type: 'number', example: 1 },
-        totalItems: { type: 'number', example: 1 },
+        //   _id: { type: 'string' },
+        name: { type: 'string' },
+        description: { type: 'string' },
+        location: { type: 'string' },
+        dateTime: { type: 'string', format: 'date-time' },
+        workRate: { type: 'string' },
+        thumbnail: fileSwaggerSchema,
+        business: businessSchema,
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
+        paymentType: { type: 'string' },
+        id: { type: 'string' },
+        saved: { type: 'boolean' }
     }
-}
+};
+
 
 export const eventSwagger = {
     paths: {
@@ -72,16 +72,16 @@ export const eventSwagger = {
                     required: true,
                     content: {
                         'application/json': {
-                            schema: eventSchema
+                            schema: constructResponseSchema(eventRequestSchema)
                         }
                     }
                 },
                 responses: {
-                    '200': {
+                    '201': {
                         description: 'Event created successfully.',
-                        // content: {
-                        //     'application/json': { schema: paginatedEventSchema }
-                        // }
+                        content: {
+                            'application/json': { schema: constructResponseSchema(eventSchema) }
+                        }
                     },
                     '400': {
                         description: 'Bad request. Check the request payload for missing or invalid information.',
@@ -107,7 +107,7 @@ export const eventSwagger = {
                     '200': {
                         description: 'OK',
                         content: {
-                            'application/json': { schema: paginatedEventSchema }
+                            'application/json': { schema: constructResponseSchema(eventSchema,true) }
                         }
                     },
                     '401': {
@@ -142,6 +142,9 @@ export const eventSwagger = {
                 responses: {
                     '200': {
                         description: 'OK',
+                        content: {
+                            'application/json': { schema: constructResponseSchema(eventSchema) }
+                        }
                     },
                     '401': {
                         description: 'Unauthorized. User authentication failed.',
@@ -177,13 +180,16 @@ export const eventSwagger = {
                     required: true,
                     content: {
                         'application/json': {
-                            schema: eventSchema
+                            schema: eventRequestSchema
                         }
                     }
                 },
                 responses: {
                     '200': {
                         description: 'Event updated successfully.',
+                        content: {
+                            'application/json': { schema: constructResponseSchema(eventSchema) }
+                        }
                     },
                     '400': {
                         description: 'Bad request. Check the request payload for missing or invalid information.',
@@ -257,6 +263,9 @@ export const eventSwagger = {
                 responses: {
                     '200': {
                         description: 'Event saved successfully.',
+                        content: {
+                            'application/json': { schema: constructResponseSchema(eventSchema) }
+                        }
                     },
                     '401': {
                         description: 'Unauthorized. User authentication failed.',
@@ -293,6 +302,9 @@ export const eventSwagger = {
                 responses: {
                     '200': {
                         description: 'Event saved successfully.',
+                        content: {
+                            'application/json': { schema: constructResponseSchema(eventSchema) }
+                        }
                     },
                     '401': {
                         description: 'Unauthorized. User authentication failed.',
@@ -315,7 +327,7 @@ export const eventSwagger = {
                     200: {
                         description: "A list of saved events",
                         content: {
-                            'application/json': { schema: paginatedEventSchema }
+                            'application/json': { schema: constructResponseSchema(eventSchema, true) }
                         }
                     },
                 },
@@ -330,7 +342,7 @@ export const eventSwagger = {
                     200: {
                         description: "A list of applied events",
                         content: {
-                            'application/json': { schema: paginatedEventSchema }
+                            'application/json': { schema: constructResponseSchema(eventSchema, true) }
                         }
                     },
                 },

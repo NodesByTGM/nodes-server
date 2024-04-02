@@ -19,14 +19,11 @@ export const sendEmail = async (email: string, subject: string, text: string) =>
             subject: subject,
             text: text,
         });
-        // console.log(sent)
-
-        // console.log('email sent sucessfully');
+        
         if (sent) {
             return true
         }
     } catch (error) {
-        // console.log(error, 'email not sent');
         return false
     }
 };
@@ -76,7 +73,6 @@ export const sendHTMLEmail = async ({
             subject: subject,
             html: filledTemplate,
         });
-        // console.log(sent)
         if (sent) {
             console.log('[email]: Email sent sucessfully!');
             return true

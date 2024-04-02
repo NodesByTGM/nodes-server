@@ -23,159 +23,206 @@ export const paginationQueryParams = [
     }
 ]
 
+export const fileSwaggerSchema = {
+    anyOf: [
+        { type: 'null' },
+        {
+            type: 'object',
+            properties: {
+                id: { type: 'string' },
+                url: { type: 'string', format: 'uri' }
+            }
+        }
+    ]
+}
+
+export const trueFileSwaggerSchema = {
+    anyOf: [
+        { type: 'null' },
+        {
+            type: 'object',
+            properties: {
+                id: { type: 'string' },
+                url: { type: 'string', format: 'uri' }
+            }
+        }
+    ]
+}
+
+export const businessSchema = {
+    type: 'object',
+    properties: {
+        // _id: { type: 'string' },
+        name: { type: 'string' },
+        yoe: { type: 'string', format: 'date-time' },
+        account: { type: 'string' },
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
+        id: { type: 'string' }
+    }
+}
+
+
+
+export const subscriptionSchema = {
+    type: 'object',
+    properties: {
+        plan: { type: 'string' },
+        active: { type: 'boolean' },
+        paidAt: { type: 'string', format: 'date-time' },
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
+        id: { type: 'string' }
+    }
+}
+
+export const profileRequestSchema = {
+    type: 'object',
+    properties: {
+        name: { type: 'string' },
+        avatar: { type: 'string' }, // Assuming avatar is a URL string
+        skills: {
+            type: 'array',
+            items: { type: 'string' } // Assuming skills are strings
+        },
+        location: { type: 'string' },
+        linkedIn: { type: 'string', format: 'uri' },
+        instagram: { type: 'string', format: 'uri' },
+        twitter: { type: 'string', format: 'uri' },
+        headline: { type: 'string' },
+        bio: { type: 'string' },
+        website: { type: 'string', format: 'uri' },
+        spaces: { type: 'boolean' },
+        comments: { type: 'boolean' },
+        visible: { type: 'boolean' },
+        logo: { type: 'string' }, // Assuming logo is a URL string
+        companyName: { type: 'string' },
+        height: { type: 'string' },
+        age: { type: 'string' },
+        yoe: { type: 'string', format: 'date-time' } // Assuming yoe is a date-time string
+    }
+};
+
 export const userSchema = {
     type: 'object',
     properties: {
-        name: {
-            type: 'string',
-            description: 'Name of the user',
+        onboardingPurposes: {
+            type: 'array',
+            items: {
+                type: 'string'
+            }
         },
-        avatar: {
-            type: 'object',
-            properties: {
-                id: {
-                    type: 'string',
-                    description: 'Unique identifier for the user\'s avatar',
-                },
-                url: {
-                    type: 'string',
-                    description: 'URL or binary data for the user\'s avatar',
-                },
-            },
-        },
+        name: { type: 'string' },
+        username: { type: 'string' },
+        email: { type: 'string', format: 'email' },
+        dob: { type: 'string', format: 'date-time' },
+        avatar: fileSwaggerSchema,
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
+        verified: { type: 'boolean' },
+        type: { type: 'integer' },
+        age: { type: 'string' },
+        bio: { type: 'string' },
+        comments: { type: 'boolean' },
+        headline: { type: 'string' },
+        height: { type: 'string' },
+        instagram: { type: 'string', format: 'uri' },
+        linkedIn: { type: 'string', format: 'uri' },
+        location: { type: 'string' },
+        onboardingPurpose: { type: 'integer' },
+        otherPurpose: { type: 'string' },
         skills: {
             type: 'array',
             items: {
-                type: 'string',
-            },
-            description: 'Array of user skills',
+                type: 'string'
+            }
         },
-        location: {
-            type: 'string',
-            description: 'Location of the user',
+        spaces: { type: 'boolean' },
+        step: { type: 'integer' },
+        twitter: { type: 'string', format: 'uri' },
+        website: { type: 'string', format: 'uri' },
+        business: {
+            anyOf: [
+                { type: 'null' },
+                businessSchema
+            ]
         },
-        linkedIn: {
-            type: 'string',
-            description: 'LinkedIn profile URL',
+        subscription: {
+            anyOf: [
+                { type: 'null' },
+                subscriptionSchema
+            ]
         },
-        instagram: {
-            type: 'string',
-            description: 'Instagram profile URL',
-        },
-        twitter: {
-            type: 'string',
-            description: 'Twitter profile URL',
-        },
-        headline: {
-            type: 'string',
-            description: 'User\'s professional headline',
-        },
-        bio: {
-            type: 'string',
-            description: 'User\'s biography',
-        },
-        website: {
-            type: 'string',
-            description: 'User\'s personal website URL',
-        },
-        spaces: {
-            type: 'boolean',
-            description: 'Boolean indicating user\'s spaces',
-        },
-        comments: {
-            type: 'boolean',
-            description: 'Boolean indicating user\'s comments',
-        },
-        visible: {
-            type: 'boolean',
-            description: 'Boolean indicating user\'s profile visibility',
-        },
-        height: {
-            type: 'string',
-            description: 'Height of the user',
-        },
-        companyName: {
-            type: 'string',
-            description: 'Name of the company the user owns (Pro Plan)',
-        },
-        logo: {
-            type: 'string',
-            description: 'URL or binary data for the company logo (Pro Plan)',
-        },
-        yoe: {
-            type: 'integer',
-            description: 'Years of experience (Pro Plan)',
-        },
-    },
+        visible: { type: 'boolean' },
+        id: { type: 'string' }
+    }
+};
+
+export const responseSchema = {
+    type: 'object',
+    properties: {
+        apiObject: { type: 'string' },
+        code: { type: 'integer' },
+        status: { type: 'string' },
+        isError: { type: 'boolean' },
+        message: { type: 'string' },
+        result: { type: 'object' }
+        // You might want to specify the schema for result if it's not always an empty object
+    }
 }
+export const tokensSchema = {
+    type: 'object',
+    properties: {
+        accessToken: { type: 'string' },
+        refreshToken: { type: 'string' }
+    }
+}
+
 
 export const authUserSchema = {
     type: 'object',
     properties: {
-        ...userSchema.properties,
-        accessToken: {
-            type: 'string',
-            description: 'Your access token',
-        },
-        business: {
-            type: 'object|null',
-            properties: {
-                name: {
-                    type: 'string',
-                    description: 'Name of the user\'s business',
-                },
-                yoe: {
-                    type: 'string',
-                    description: 'Establishment year of the business',
-                },
-                account: {
-                    type: 'string',
-                    description: 'Owner\'s Id',
-                },
-                id: {
-                    type: 'string',
-                    description: 'Business\'s Id',
-                },
-                createdAt: {
-                    type: 'string',
-                    description: 'Creation DateTime',
-                },
-                updatedAt: {
-                    type: 'string',
-                    description: 'Updated DateTime',
-                },
-            },
-        },
-        subscription: {
-            type: 'object|null',
-            properties: {
-                plan: {
-                    type: 'string',
-                    description: 'Subscription Plan',
-                },
-                active: {
-                    type: 'boolean',
-                    description: 'Boolean to show whether subscription is active or not',
-                },
-                account: {
-                    type: 'string',
-                    description: 'Owner\'s Id',
-                },
-                id: {
-                    type: 'string',
-                    description: 'Business\'s Id',
-                },
-                createdAt: {
-                    type: 'string',
-                    description: 'Creation DateTime',
-                },
-                updatedAt: {
-                    type: 'string',
-                    description: 'Updated DateTime',
-                },
-            },
+        user: userSchema.properties,
+        accessToken: { type: 'string' },
+        refreshToken: { type: 'string' }
+    }
+}
+
+export const paginatedSchema = {
+    type: 'object',
+    properties: {
+        currentPage: { type: 'number' },
+        pageSize: { type: 'number' },
+        totalPages: { type: 'number' },
+        totalItems: { type: 'number' },
+        items: {
+            type: 'array',
+            items: { type: 'object' }
         }
-    },
+    }
+}
+export const paginateSchema = (schema: any) => {
+    return {
+        type: 'object',
+        properties: {
+            ...paginatedSchema.properties,
+            items: {
+                type: 'array',
+                items: schema
+
+            }
+        }
+    }
+}
+
+export const constructResponseSchema = (schema: any, paginate = false) => {
+    return {
+        type: 'object',
+        properties: {
+            ...responseSchema.properties,
+            result: paginate ? paginateSchema(schema) : schema
+        }
+    }
 }
 
 export const userSchemaExample = {

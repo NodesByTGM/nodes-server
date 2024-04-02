@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import { BusinessModel, EventModel } from "../mongodb/models";
-import { uploadMedia } from "../services";
+import { constructResponse, uploadMedia } from "../services";
 import { paginateData } from "../utilities/common";
 import { AppConfig } from "../utilities/config";
 
@@ -36,9 +36,21 @@ export const eventCreateController: RequestHandler = async (req: any, res) => {
         })
         // const events = await EventModel.find({}).populate('business')
         // const data = paginateData(req.query, events, 'events')
-        return res.status(200).json({ message: AppConfig.STRINGS.Success, event })
+        return constructResponse({
+            res,
+            data: event,
+            code: 201,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Event
+        })
     } catch (error) {
-        return res.status(400).json({ error })
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Event
+        })
     }
 }
 
@@ -54,10 +66,22 @@ export const eventUpdateController: RequestHandler = async (req: any, res) => {
         } = req.body
         const event = await EventModel.findById(req.params.id)
         if (!event) {
-            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.ResourceNotFound })
+            return constructResponse({
+                res,
+                data: event,
+                code: 400,
+                message: AppConfig.ERROR_MESSAGES.ResourceNotFound,
+                apiObject: AppConfig.API_OBJECTS.Event
+            })
         }
         if (event.business._id.toString() !== req.user.business?._id.toString()) {
-            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.UnauthorizedAccess })
+            return constructResponse({
+                res,
+                data: event,
+                code: 401,
+                message: AppConfig.ERROR_MESSAGES.UnauthorizedAccess,
+                apiObject: AppConfig.API_OBJECTS.Event
+            })
         }
         const imgUrl = await uploadMedia(thumbnail)
 
@@ -69,9 +93,21 @@ export const eventUpdateController: RequestHandler = async (req: any, res) => {
         event.thumbnail = imgUrl || event.thumbnail
         await event.save()
 
-        return res.status(200).json({ message: AppConfig.STRINGS.Success, event })
+        return constructResponse({
+            res,
+            data: event,
+            code: 200,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Event
+        })
     } catch (error) {
-        return res.status(400).json({ error })
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Event
+        })
     }
 }
 
@@ -79,15 +115,36 @@ export const deleteEventController: RequestHandler = async (req: any, res) => {
     try {
         const event = await EventModel.findById(req.params.id)
         if (!event) {
-            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.ResourceNotFound })
+            return constructResponse({
+                res,
+                code: 404,
+                message: AppConfig.ERROR_MESSAGES.NotFoundError,
+                apiObject: AppConfig.API_OBJECTS.Event
+            })
         }
         if (event.business._id.toString() !== req.user.business?._id.toString()) {
-            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.ResourceNotFound })
+            return constructResponse({
+                res,
+                code: 404,
+                message: AppConfig.ERROR_MESSAGES.NotFoundError,
+                apiObject: AppConfig.API_OBJECTS.Event
+            })
         }
         await event.deleteOne()
-        return res.status(200).json({ message: AppConfig.STRINGS.Success })
+        return constructResponse({
+            res,
+            code: 200,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Event
+        })
     } catch (error) {
-        return res.status(400).json({ error })
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Event
+        })
     }
 }
 
@@ -95,10 +152,20 @@ export const saveEventController: RequestHandler = async (req: any, res) => {
     try {
         const event = await EventModel.findById(req.params.id)
         if (!event) {
-            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.ResourceNotFound })
+            return constructResponse({
+                res,
+                code: 404,
+                message: AppConfig.ERROR_MESSAGES.NotFoundError,
+                apiObject: AppConfig.API_OBJECTS.Event
+            })
         }
         if (event.saves.filter(x => x.toString() === req.user.id.toString()).length > 0) {
-            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.AlreadySaved })
+            return constructResponse({
+                res,
+                code: 400,
+                message: AppConfig.ERROR_MESSAGES.AlreadySaved,
+                apiObject: AppConfig.API_OBJECTS.Event
+            })
         }
         event.saves.push(req.user)
         await event.save()
@@ -106,9 +173,21 @@ export const saveEventController: RequestHandler = async (req: any, res) => {
         delete data.saves
         data.saved = true
 
-        return res.status(200).json({ message: AppConfig.STRINGS.Success, event: data })
+        return constructResponse({
+            res,
+            data,
+            code: 200,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Event
+        })
     } catch (error) {
-        return res.status(400).json({ error })
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Event
+        })
     }
 }
 
@@ -116,7 +195,12 @@ export const unsaveEventController: RequestHandler = async (req: any, res) => {
     try {
         const event = await EventModel.findById(req.params.id)
         if (!event) {
-            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.ResourceNotFound })
+            return constructResponse({
+                res,
+                code: 404,
+                message: AppConfig.ERROR_MESSAGES.NotFoundError,
+                apiObject: AppConfig.API_OBJECTS.Event
+            })
         }
         if (event.saves.filter(x => x.toString() === req.user.id.toString()).length > 0) {
             event.saves = event.saves.filter(x => x.toString() !== req.user.id.toString())
@@ -126,9 +210,21 @@ export const unsaveEventController: RequestHandler = async (req: any, res) => {
         delete data.saves
         data.saved = false
 
-        return res.status(200).json({ message: AppConfig.STRINGS.Success, event: data })
+        return constructResponse({
+            res,
+            data,
+            code: 200,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Event
+        })
     } catch (error) {
-        return res.status(400).json({ error })
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Event
+        })
     }
 }
 
@@ -137,16 +233,33 @@ export const getEventController: RequestHandler = async (req: any, res) => {
     try {
         const event = await EventModel.findById(req.params.id).populate('business')
         if (!event) {
-            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.ResourceNotFound })
+            return constructResponse({
+                res,
+                code: 404,
+                message: AppConfig.ERROR_MESSAGES.NotFoundError,
+                apiObject: AppConfig.API_OBJECTS.Event
+            })
         }
         const data = {
             ...event?.toJSON(),
             saved: event.saves.map((y: any) => y.toString()).includes(req.user.id),
             saves: event.business === req.user.business ? event.saves : undefined
         }
-        return res.status(200).json({ message: AppConfig.STRINGS.Success, event: data })
+        return constructResponse({
+            res,
+            data,
+            code: 200,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Event
+        })
     } catch (error) {
-        return res.status(400).json({ error })
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Event
+        })
     }
 }
 
@@ -164,9 +277,22 @@ export const getEventsController: RequestHandler = async (req: any, res) => {
             saves: undefined
         }))
         const data = paginateData(req.query, events, 'events')
-        return res.status(200).json(data)
+
+        return constructResponse({
+            res,
+            data,
+            code: 200,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Event
+        })
     } catch (error) {
-        return res.status(400).json({ error })
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Event
+        })
     }
 }
 
@@ -179,9 +305,22 @@ export const getMyEventsController: RequestHandler = async (req: any, res) => {
             saved: x.saves.map((y: any) => y._id.toString()).includes(req.user.id)
         }))
         const data = paginateData(req.query, events, 'events')
-        return res.status(200).json(data)
+
+        return constructResponse({
+            res,
+            data,
+            code: 200,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Event
+        })
     } catch (error) {
-        return res.status(400).json({ error })
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Event
+        })
     }
 }
 
@@ -194,8 +333,21 @@ export const getSavedEventsController: RequestHandler = async (req: any, res) =>
             saves: undefined
         }))
         const data = paginateData(req.query, events, 'events')
-        return res.status(200).json(data)
+
+        return constructResponse({
+            res,
+            data,
+            code: 200,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Event
+        })
     } catch (error) {
-        return res.status(400).json({ error })
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Event
+        })
     }
 }

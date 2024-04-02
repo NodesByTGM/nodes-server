@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import { RequestHandler } from 'express';
 import Joi from 'joi';
 import { AccountModel, OTPModel, TokenModel } from '../mongodb/models';
-import { generateAccessToken, generateRefreshToken, sendEmail } from '../services';
+import { constructResponse, generateAccessToken, generateRefreshToken, sendEmail } from '../services';
 import { verifyRefreshToken } from '../services/auth.service';
 import { generateOTP } from '../utilities/common';
 import { AppConfig, MAIN_APP_URL } from '../utilities/config';
@@ -12,7 +12,14 @@ import { emailSchema, sendOTPSchema, usernameSchema, verifyEmailSchema, verifyOT
 
 export const registerController: RequestHandler = async (req, res) => {
     const { error } = registerSchema.validate(req.body);
-    if (error) return res.status(400).json({ message: error.details[0].message });
+    if (error) {
+        return constructResponse({
+            res,
+            code: 400,
+            message: error.details[0].message,
+            apiObject: AppConfig.API_OBJECTS.Auth
+        })
+    };
 
     const {
         name,
@@ -39,13 +46,23 @@ export const registerController: RequestHandler = async (req, res) => {
         //     ],
         //   });
         if (existing) {
-            return res.status(404).json({ message: AppConfig.ERROR_MESSAGES.UserAlreadyExists });
+            return constructResponse({
+                res,
+                code: 400,
+                message: AppConfig.ERROR_MESSAGES.UserAlreadyExists,
+                apiObject: AppConfig.API_OBJECTS.Auth
+            })
         }
 
         const existing1 = await AccountModel.findOne({ username: username.toLowerCase() });
 
         if (existing1) {
-            return res.status(404).json({ message: AppConfig.ERROR_MESSAGES.UserAlreadyExistsUsername });
+            return constructResponse({
+                res,
+                code: 400,
+                message: AppConfig.ERROR_MESSAGES.UserAlreadyExistsUsername,
+                apiObject: AppConfig.API_OBJECTS.Auth
+            })
         }
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = new AccountModel({
@@ -74,32 +91,60 @@ export const registerController: RequestHandler = async (req, res) => {
             path: '/',
         });
 
-        const data = { ...user.toJSON(), accessToken, refreshToken }
-        return res.json({ message: AppConfig.STRINGS.RegistrationSuccessful, user: data });
+        const data = { user, accessToken, refreshToken }
+        return constructResponse({
+            res,
+            data,
+            code: 201,
+            message: AppConfig.STRINGS.RegistrationSuccessful,
+            apiObject: AppConfig.API_OBJECTS.Auth
+        })
     } catch (error) {
-        console.log(error)
-        return res.status(500).json({ message: AppConfig.ERROR_MESSAGES.InternalServerError, error });
+        return constructResponse({
+            res,
+            data: error,
+            code: 500,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Auth
+        })
     }
 };
 
 export const loginController: RequestHandler = async (req, res, next) => {
     const { error } = loginSchema.validate(req.body);
-    if (error) return res.status(400).json({ message: error.details[0].message });
+    if (error) {
+        return constructResponse({
+            res,
+            code: 400,
+            message: error.details[0].message,
+            apiObject: AppConfig.API_OBJECTS.Auth
+        })
+    };
 
     const { email, password } = req.body;
     try {
         const user = await AccountModel.findOne({ email: email.toLowerCase() });
 
         if (!user) {
-            return res.status(401).json({ message: AppConfig.ERROR_MESSAGES.InvalidCredentialsProvided });
+            return constructResponse({
+                res,
+                code: 401,
+                message: AppConfig.ERROR_MESSAGES.InvalidCredentialsProvided,
+                apiObject: AppConfig.API_OBJECTS.Auth
+            })
         }
         const isPasswordCorrect = await bcrypt.compare(password, user.password);
         if (!isPasswordCorrect) {
-            return res.status(401).json({ message: AppConfig.ERROR_MESSAGES.InvalidCredentialsProvided });
+            return constructResponse({
+                res,
+                code: 401,
+                message: AppConfig.ERROR_MESSAGES.InvalidCredentialsProvided,
+                apiObject: AppConfig.API_OBJECTS.Auth
+            })
         }
 
         const accessToken = generateAccessToken(user);
-        // const refreshToken = generateRefreshToken(user);
+        const refreshToken = generateRefreshToken(user);
         // TODO: Refresh Tokens
         res.cookie('nodesToken', accessToken, {
             httpOnly: true,
@@ -109,11 +154,22 @@ export const loginController: RequestHandler = async (req, res, next) => {
             domain: process.env.NODE_ENV === 'development' ? 'localhost' : process.env.DOMAIN,
             path: '/',
         });
-        const data = { ...user.toJSON(), accessToken }
-        return res.status(200).json({ message: 'Login successful', user: data });
+        const data = { user, accessToken, refreshToken }
+        return constructResponse({
+            res,
+            data,
+            code: 200,
+            message: AppConfig.STRINGS.LoginSuccessful,
+            apiObject: AppConfig.API_OBJECTS.Auth
+        })
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: AppConfig.ERROR_MESSAGES.InternalServerError });
+        return constructResponse({
+            res,
+            data: error,
+            code: 500,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Auth
+        })
     }
 };
 
@@ -121,27 +177,46 @@ export const loginController: RequestHandler = async (req, res, next) => {
 export const getTokenController: RequestHandler = async (req, res) => {
     try {
         const refreshToken = req.body.refreshToken;
-        if (!refreshToken) return res.status(401).json({ message: AppConfig.ERROR_MESSAGES.InvalidCredentialsProvided });
-
-        // jwt.verify(refreshToken, `${process.env.REFRESH_TOKEN_SECRET}`, (err: any, user: any) => {
-        //     if (err) return res.status(401).json({ message: AppConfig.ERROR_MESSAGES.InvalidCredentialsProvided });
-
-        //     const accessToken = generateAccessToken(user);
-        //     res.json({ accessToken });
-        // });
+        if (!refreshToken) {
+            return constructResponse({
+                res,
+                code: 401,
+                message: AppConfig.ERROR_MESSAGES.InvalidCredentialsProvided,
+                apiObject: AppConfig.API_OBJECTS.Auth
+            })
+        }
 
         const decodedToken: any = verifyRefreshToken(refreshToken);
         const user: any = await AccountModel.findById(decodedToken?.accountId);
         if (!user) {
-            return res.status(404).json({ message: AppConfig.ERROR_MESSAGES.InvalidCredentialsProvided });
+            return constructResponse({
+                res,
+                code: 401,
+                message: AppConfig.ERROR_MESSAGES.InvalidCredentialsProvided,
+                apiObject: AppConfig.API_OBJECTS.Auth
+            })
         }
 
         const accessToken = generateAccessToken(user);
         const newRefreshToken = generateRefreshToken(user);
-        res.json({ accessToken, refreshToken: newRefreshToken });
+        const data = { accessToken, refreshToken: newRefreshToken };
+
+        return constructResponse({
+            res,
+            data,
+            code: 200,
+            message: AppConfig.STRINGS.LoginSuccessful,
+            apiObject: AppConfig.API_OBJECTS.Auth
+        })
 
     } catch (error) {
-        return res.status(500).json({ message: AppConfig.ERROR_MESSAGES.InvalidCredentialsProvided });
+        return constructResponse({
+            res,
+            data: error,
+            code: 500,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Token
+        })
     }
 };
 
@@ -149,7 +224,14 @@ export const getTokenController: RequestHandler = async (req, res) => {
 export const sendOTPController: RequestHandler = async (req: any, res) => {
 
     const { error } = sendOTPSchema.validate(req.body);
-    if (error) return res.status(400).json({ message: error.details[0].message });
+    if (error) {
+        return constructResponse({
+            res,
+            code: 400,
+            message: error.details[0].message,
+            apiObject: AppConfig.API_OBJECTS.Auth
+        })
+    };
     // const { email, name, password } = req.body;
     const { email } = req.body;
     try {
@@ -179,23 +261,46 @@ export const sendOTPController: RequestHandler = async (req: any, res) => {
             'Email Verification',
             `Please use this OTP For your verification: ${created.password}. Please note this is only valid for 1 hour.`
         )
-        return res.status(200).json({ message: AppConfig.STRINGS.EmailVerificationSent });
+        return constructResponse({
+            res,
+            code: 200,
+            message: AppConfig.STRINGS.EmailVerificationSent,
+            apiObject: AppConfig.API_OBJECTS.Auth
+        })
     } catch (error) {
-        return res.status(500).json({ message: AppConfig.ERROR_MESSAGES.InternalServerError });
+        return constructResponse({
+            res,
+            data: error,
+            code: 500,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Auth
+        })
     }
 };
 
 export const verifyEmailController: RequestHandler = async (req: any, res) => {
 
     const { error } = verifyEmailSchema.validate(req.body);
-    if (error) return res.status(400).json({ message: error.details[0].message });
+    if (error) {
+        return constructResponse({
+            res,
+            code: 400,
+            message: error.details[0].message,
+            apiObject: AppConfig.API_OBJECTS.Auth
+        })
+    };
 
     const { otp } = req.body;
     try {
         const dbOTP = await OTPModel.findOne({ email: req.user.email, password: otp, used: false })
 
         if (!dbOTP) {
-            return res.status(401).json({ message: AppConfig.ERROR_MESSAGES.InvalidOTPProvided });
+            return constructResponse({
+                res,
+                code: 401,
+                message: AppConfig.ERROR_MESSAGES.InvalidOTPProvided,
+                apiObject: AppConfig.API_OBJECTS.Auth
+            })
         }
 
         await dbOTP.deleteOne()
@@ -204,28 +309,64 @@ export const verifyEmailController: RequestHandler = async (req: any, res) => {
         user.verified = true
         await user.save()
 
-        return res.status(200).json({ message: AppConfig.STRINGS.EmailVerified });
+        return constructResponse({
+            res,
+            code: 200,
+            message: AppConfig.STRINGS.EmailVerified,
+            apiObject: AppConfig.API_OBJECTS.Auth
+        })
+
     } catch (error) {
-        return res.status(500).json({ message: AppConfig.ERROR_MESSAGES.InternalServerError });
+        return constructResponse({
+            res,
+            data: error,
+            code: 500,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Auth
+        })
     }
 };
 
 export const verifyOTPController: RequestHandler = async (req: any, res) => {
 
     const { error } = verifyOTPSchema.validate(req.body);
-    if (error) return res.status(400).json({ message: error.details[0].message });
+    if (error) {
+        return constructResponse({
+            res,
+            code: 400,
+            message: error.details[0].message,
+            apiObject: AppConfig.API_OBJECTS.Auth
+        })
+    };
 
     const { otp, email } = req.body;
     try {
         const dbOTP = await OTPModel.findOne({ email: email, password: otp, used: false })
 
         if (!dbOTP) {
-            return res.status(401).json({ message: AppConfig.ERROR_MESSAGES.InvalidOTPProvided });
+            return constructResponse({
+                res,
+                code: 400,
+                message: AppConfig.ERROR_MESSAGES.InvalidOTPProvided,
+                apiObject: AppConfig.API_OBJECTS.Auth
+            })
         }
         await dbOTP.deleteOne()
-        return res.status(200).json({ message: AppConfig.STRINGS.OTPVerified });
+
+        return constructResponse({
+            res,
+            code: 200,
+            message: AppConfig.STRINGS.OTPVerified,
+            apiObject: AppConfig.API_OBJECTS.Auth
+        })
     } catch (error) {
-        return res.status(500).json({ message: AppConfig.ERROR_MESSAGES.InternalServerError });
+        return constructResponse({
+            res,
+            data: error,
+            code: 500,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Auth
+        })
     }
 };
 
@@ -240,7 +381,12 @@ export const forgotPasswordController: RequestHandler = async (req, res) => {
         const user = await AccountModel.findOne({ email });
         if (!user) {
             // TODO: Change this to be if an email exist, we'll send it to you.
-            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.ResourceNotFound });
+            return constructResponse({
+                res,
+                code: 400,
+                message: AppConfig.ERROR_MESSAGES.ResourceNotFound,
+                apiObject: AppConfig.API_OBJECTS.Auth
+            })
         }
 
         let token = await TokenModel.findOne({ account: user._id });
@@ -252,15 +398,26 @@ export const forgotPasswordController: RequestHandler = async (req, res) => {
         }
 
         const link = `${MAIN_APP_URL}/auth/reset-password/${user._id}/${token.token}`;
-        console.log(link);
+        // console.log(link);
 
         // TODO: Customize email sent
         sendEmail(user.email, AppConfig.STRINGS.PasswordLinkEmailTitle, link);
 
-        return res.status(200).json({ message: AppConfig.STRINGS.PasswordLinkSent });
+        return constructResponse({
+            res,
+            code: 200,
+            message: AppConfig.STRINGS.PasswordLinkSent,
+            apiObject: AppConfig.API_OBJECTS.Auth
+        })
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ error: AppConfig.ERROR_MESSAGES.InternalServerError });
+        return constructResponse({
+            res,
+            data: error,
+            code: 500,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Auth
+        })
     }
 
 
@@ -269,19 +426,44 @@ export const forgotPasswordController: RequestHandler = async (req, res) => {
 export const checkResetLinkController: RequestHandler = async (req, res) => {
     try {
         const user = await AccountModel.findById(req.params.accountId);
-        if (!user) return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.InvalidLinkProvided });
+        if (!user) {
+            return constructResponse({
+                res,
+                code: 400,
+                message: AppConfig.ERROR_MESSAGES.InvalidLinkProvided,
+                apiObject: AppConfig.API_OBJECTS.Auth
+            })
+        };
 
         const token = await TokenModel.findOne({
             account: req.params.accountId,
             token: req.params.token,
         });
-        if (!token) return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.InvalidLinkProvided });
+        if (!token) {
+            return constructResponse({
+                res,
+                code: 400,
+                message: AppConfig.ERROR_MESSAGES.InvalidLinkProvided,
+                apiObject: AppConfig.API_OBJECTS.Auth
+            })
+        };
 
-        return res.status(200).json({ message: AppConfig.STRINGS.Success });
+        return constructResponse({
+            res,
+            code: 200,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Auth
+        })
     } catch (error) {
         console.error(error);
         // If an error occurs, send an error response
-        return res.status(500).json({ error: AppConfig.ERROR_MESSAGES.InternalServerError });
+        return constructResponse({
+            res,
+            data: error,
+            code: 500,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Auth
+        })
     }
 }
 
@@ -289,27 +471,62 @@ export const resetPasswordController: RequestHandler = async (req, res) => {
     try {
         const schema = Joi.object({ password: Joi.string().required() });
         const { error } = schema.validate(req.body);
-        if (error) return res.status(400).json({ message: error.details[0].message });
+        if (error) {
+
+            return constructResponse({
+                res,
+                code: 400,
+                message: error.details[0].message,
+                apiObject: AppConfig.API_OBJECTS.Auth
+            })
+        };
 
         const user = await AccountModel.findById(req.params.accountId);
-        if (!user) return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.InvalidLinkProvided });
+        if (!user) {
+
+            return constructResponse({
+                res,
+                code: 400,
+                message: AppConfig.ERROR_MESSAGES.InvalidLinkProvided,
+                apiObject: AppConfig.API_OBJECTS.Auth
+            })
+        };
 
         const token = await TokenModel.findOne({
             account: req.params.accountId,
             token: req.params.token,
         });
-        if (!token) return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.InvalidLinkProvided });
+        if (!token) {
+
+            return constructResponse({
+                res,
+                code: 400,
+                message: AppConfig.ERROR_MESSAGES.InvalidLinkProvided,
+                apiObject: AppConfig.API_OBJECTS.Auth
+            })
+        };
 
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
         user.password = hashedPassword;
         await user.save();
         await token.deleteOne();
-
-        return res.status(200).json({ message: AppConfig.STRINGS.PasswordResetSuccessful });
+        return constructResponse({
+            res,
+            code: 200,
+            message: AppConfig.STRINGS.PasswordResetSuccessful,
+            apiObject: AppConfig.API_OBJECTS.Auth
+        })
     } catch (error) {
         console.error(error);
         // If an error occurs, send an error response
-        return res.status(500).json({ error: AppConfig.ERROR_MESSAGES.InternalServerError });
+
+        return constructResponse({
+            res,
+            data: error,
+            code: 500,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Auth
+        })
     }
 }
 
@@ -322,21 +539,43 @@ export const changePasswordController: RequestHandler = async (req: any, res) =>
         const user = await AccountModel.findById(accountId);
 
         if (!user) {
-            return res.status(404).json({ message: AppConfig.ERROR_MESSAGES.BadRequestError });
+            return constructResponse({
+                res,
+                code: 401,
+                message: AppConfig.ERROR_MESSAGES.AuthenticationError,
+                apiObject: AppConfig.API_OBJECTS.Auth
+            })
         }
 
         // Check if the current password is correct
         const isPasswordCorrect = await bcrypt.compare(password, user.password)
         if (!isPasswordCorrect) {
-            return res.status(401).json({ message: AppConfig.ERROR_MESSAGES.InvalidCredentialsProvided });
+
+            return constructResponse({
+                res,
+                code: 401,
+                message: AppConfig.ERROR_MESSAGES.InvalidCredentialsProvided,
+                apiObject: AppConfig.API_OBJECTS.Auth
+            })
         }
         user.password = await bcrypt.hash(newPassword, 10)
         await user.save();
 
-        return res.json({ message: AppConfig.STRINGS.PasswordChangeSuccessful });
+        return constructResponse({
+            res,
+            code: 200,
+            message: AppConfig.STRINGS.PasswordChangeSuccessful,
+            apiObject: AppConfig.API_OBJECTS.Auth
+        })
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ message: AppConfig.ERROR_MESSAGES.InternalServerError });
+        return constructResponse({
+            res,
+            data: error,
+            code: 500,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Auth
+        })
     }
 };
 
@@ -345,20 +584,44 @@ export const logoutController: RequestHandler = async (req: any, res, next) => {
     try {
         const user = await AccountModel.findById(req.user.id);
         if (!user) {
-            return res.status(401).json({ message: AppConfig.ERROR_MESSAGES.InvalidCredentialsProvided });
+            return constructResponse({
+                res,
+                code: 401,
+                message: AppConfig.ERROR_MESSAGES.InvalidCredentialsProvided,
+                apiObject: AppConfig.API_OBJECTS.Auth
+            })
         }
         res.clearCookie('nodesToken')
-        return res.status(200).json({ message: 'Logged out successfully!' });
+
+        return constructResponse({
+            res,
+            code: 200,
+            message: 'Logged out successfully!',
+            apiObject: AppConfig.API_OBJECTS.Auth
+        })
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ message: AppConfig.ERROR_MESSAGES.InternalServerError });
+        return constructResponse({
+            res,
+            data: error,
+            code: 500,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Auth
+        })
     }
 };
 
 
 export const checkEmailExistsController: RequestHandler = async (req: any, res) => {
     const { error } = emailSchema.validate(req.body);
-    if (error) return res.status(400).json({ message: error.details[0].message });
+    if (error) {
+        return constructResponse({
+            res,
+            code: 400,
+            message: error.details[0].message,
+            apiObject: AppConfig.API_OBJECTS.Auth
+        })
+    };
 
     const { email } = req.body;
     try {
@@ -368,13 +631,26 @@ export const checkEmailExistsController: RequestHandler = async (req: any, res) 
         }
         return res.status(200).json({ message: AppConfig.STRINGS.EmailVerified });
     } catch (error) {
-        return res.status(500).json({ message: AppConfig.ERROR_MESSAGES.InternalServerError });
+        return constructResponse({
+            res,
+            data: error,
+            code: 500,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Auth
+        })
     }
 };
 
 export const checkUsernameExistsController: RequestHandler = async (req: any, res) => {
     const { error } = usernameSchema.validate(req.body);
-    if (error) return res.status(400).json({ message: error.details[0].message });
+    if (error) {
+        return constructResponse({
+            res,
+            code: 400,
+            message: error.details[0].message,
+            apiObject: AppConfig.API_OBJECTS.Auth
+        })
+    };
 
     const { username } = req.body;
     try {
@@ -384,6 +660,12 @@ export const checkUsernameExistsController: RequestHandler = async (req: any, re
         }
         return res.status(200).json({ message: AppConfig.STRINGS.UsernameVerified });
     } catch (error) {
-        return res.status(500).json({ message: AppConfig.ERROR_MESSAGES.InternalServerError });
+        return constructResponse({
+            res,
+            data: error,
+            code: 500,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Auth
+        })
     }
 };

@@ -1,4 +1,6 @@
-export const uploadMediaSwagger = {
+import { constructResponseSchema, trueFileSwaggerSchema } from "./common.doc";
+
+export const mediaSwagger = {
     paths: {
         '/api/v1/uploads/media': {
             post: {
@@ -24,32 +26,12 @@ export const uploadMediaSwagger = {
                     '200': {
                         description: 'Successful response',
                         content: {
-                            'application/json': {
-                                schema: {
-                                    type: 'object',
-                                    properties: {
-                                        id: {
-                                            type: 'string',
-                                            description: 'Unique identifier for the uploaded media',
-                                        },
-                                        url: {
-                                            type: 'string',
-                                            description: 'URL to access the uploaded media',
-                                        },
-                                    },
-                                },
-                            },
+                            'application/json': { schema: constructResponseSchema(trueFileSwaggerSchema) },
                         },
                     },
                 },
             },
         },
-    },
-};
-
-// Schema for the "Delete Media" API endpoint
-export const deleteMediaSwagger = {
-    paths: {
         '/api/v1/uploads/media/delete/{id}': {
             delete: {
                 summary: 'Delete Media that has been uploaded using the id of the uploaded media.',
@@ -69,21 +51,11 @@ export const deleteMediaSwagger = {
                     '200': {
                         description: 'Successful response',
                         content: {
-                            'application/json': {
-                                schema: {
-                                    type: 'object',
-                                    properties: {
-                                        status: {
-                                            type: 'number',
-                                            description: 'HTTP status code (200 for success)',
-                                        },
-                                    },
-                                },
-                            },
+                            'application/json': { schema: constructResponseSchema(trueFileSwaggerSchema) },
                         },
                     },
                 },
             },
         },
-    },
-};
+    }
+}

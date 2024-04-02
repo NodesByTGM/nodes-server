@@ -1,8 +1,8 @@
 import { RequestHandler } from "express";
 import { BusinessModel, JobModel } from "../mongodb/models";
-import { AppConfig } from "../utilities/config";
+import { constructResponse } from "../services";
 import { paginateData } from "../utilities/common";
-import { Types } from "mongoose";
+import { AppConfig } from "../utilities/config";
 
 export const jobCreateController: RequestHandler = async (req: any, res) => {
     try {
@@ -35,9 +35,21 @@ export const jobCreateController: RequestHandler = async (req: any, res) => {
             jobType,
             business: req.user.business
         })
-        return res.status(200).json({ message: AppConfig.STRINGS.Success, job })
+        return constructResponse({
+            res,
+            data: job,
+            code: 201,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Job
+        })
     } catch (error) {
-        return res.status(400).json({ error })
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Job
+        })
     }
 }
 
@@ -54,10 +66,20 @@ export const jobUpdateController: RequestHandler = async (req: any, res) => {
         } = req.body
         const job = await JobModel.findById(req.params.id)
         if (!job) {
-            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.ResourceNotFound })
+            return constructResponse({
+                res,
+                code: 404,
+                message: AppConfig.ERROR_MESSAGES.NotFoundError,
+                apiObject: AppConfig.API_OBJECTS.Job
+            })
         }
         if (job.business._id.toString() !== req.user.business?._id.toString()) {
-            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.UnauthorizedAccess })
+            return constructResponse({
+                res,
+                code: 401,
+                message: AppConfig.ERROR_MESSAGES.UnauthorizedAccess,
+                apiObject: AppConfig.API_OBJECTS.Job
+            })
         }
         job.name = name || job.name
         job.description = description || job.description
@@ -69,9 +91,21 @@ export const jobUpdateController: RequestHandler = async (req: any, res) => {
 
         await job.save()
 
-        return res.status(200).json({ message: AppConfig.STRINGS.Success, job })
+        return constructResponse({
+            res,
+            data: job,
+            code: 200,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Job
+        })
     } catch (error) {
-        return res.status(400).json({ error })
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Job
+        })
     }
 }
 
@@ -80,15 +114,37 @@ export const deleteJobController: RequestHandler = async (req: any, res) => {
     try {
         const job = await JobModel.findById(req.params.id)
         if (!job) {
-            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.ResourceNotFound })
+            return constructResponse({
+                res,
+                code: 404,
+                message: AppConfig.ERROR_MESSAGES.NotFoundError,
+                apiObject: AppConfig.API_OBJECTS.Job
+            })
         }
         if (job.business._id.toString() !== req.user.business?._id.toString()) {
-            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.ResourceNotFound })
+            return constructResponse({
+                res,
+                code: 404,
+                message: AppConfig.ERROR_MESSAGES.NotFoundError,
+                apiObject: AppConfig.API_OBJECTS.Job
+            })
         }
         await job.deleteOne()
-        return res.status(200).json({ message: AppConfig.STRINGS.Success })
+
+        return constructResponse({
+            res,
+            code: 200,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Job
+        })
     } catch (error) {
-        return res.status(400).json({ error })
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Job
+        })
     }
 }
 
@@ -96,10 +152,21 @@ export const applyToJobController: RequestHandler = async (req: any, res) => {
     try {
         let job = await JobModel.findOne({ _id: req.params.id })
         if (!job) {
-            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.ResourceNotFound })
+            return constructResponse({
+                res,
+                code: 404,
+                message: AppConfig.ERROR_MESSAGES.NotFoundError,
+                apiObject: AppConfig.API_OBJECTS.Job
+            })
         }
         if (job.applicants.filter(x => x.toString() === req.user._id.toString()).length > 0) {
-            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.AlreadyApplied })
+
+            return constructResponse({
+                res,
+                code: 400,
+                message: AppConfig.ERROR_MESSAGES.AlreadyApplied,
+                apiObject: AppConfig.API_OBJECTS.Job
+            })
         }
         job.applicants.push(req.user.id)
         await job.save()
@@ -107,9 +174,21 @@ export const applyToJobController: RequestHandler = async (req: any, res) => {
         delete data.saves
         delete data.applicants
         data.applied = true
-        return res.status(200).json({ message: AppConfig.STRINGS.Success, job: data })
+        return constructResponse({
+            res,
+            data: job,
+            code: 200,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Job
+        })
     } catch (error) {
-        return res.status(400).json({ error })
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Job
+        })
     }
 }
 
@@ -117,10 +196,20 @@ export const saveJobController: RequestHandler = async (req: any, res) => {
     try {
         const job = await JobModel.findById(req.params.id)
         if (!job) {
-            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.ResourceNotFound })
+            return constructResponse({
+                res,
+                code: 404,
+                message: AppConfig.ERROR_MESSAGES.NotFoundError,
+                apiObject: AppConfig.API_OBJECTS.Job
+            })
         }
         if (job.saves.filter(x => x.toString() === req.user.id.toString()).length > 0) {
-            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.AlreadySavedJob })
+            return constructResponse({
+                res,
+                code: 400,
+                message: AppConfig.ERROR_MESSAGES.AlreadySavedJob,
+                apiObject: AppConfig.API_OBJECTS.Job
+            })
         }
         job.saves.push(req.user.id)
         await job.save()
@@ -129,9 +218,21 @@ export const saveJobController: RequestHandler = async (req: any, res) => {
         delete data.applicants
         data.saved = true
 
-        return res.status(200).json({ message: AppConfig.STRINGS.Success, job: data })
+        return constructResponse({
+            res,
+            data: job,
+            code: 200,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Job
+        })
     } catch (error) {
-        return res.status(400).json({ error })
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Job
+        })
     }
 }
 
@@ -139,7 +240,12 @@ export const unsaveJobController: RequestHandler = async (req: any, res) => {
     try {
         const job = await JobModel.findById(req.params.id)
         if (!job) {
-            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.ResourceNotFound })
+            return constructResponse({
+                res,
+                code: 404,
+                message: AppConfig.ERROR_MESSAGES.NotFoundError,
+                apiObject: AppConfig.API_OBJECTS.Job
+            })
         }
         if (job.saves.filter(x => x.toString() === req.user.id.toString()).length > 0) {
             job.saves = job.saves.filter(x => x.toString() !== req.user.id.toString())
@@ -150,9 +256,21 @@ export const unsaveJobController: RequestHandler = async (req: any, res) => {
         delete data.applicants
         data.saved = false
 
-        return res.status(200).json({ message: AppConfig.STRINGS.Success, job: data })
+        return constructResponse({
+            res,
+            data: job,
+            code: 200,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Job
+        })
     } catch (error) {
-        return res.status(400).json({ error })
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Job
+        })
     }
 }
 
@@ -160,7 +278,12 @@ export const getJobController: RequestHandler = async (req: any, res) => {
     try {
         const job = await JobModel.findById(req.params.id).populate('business')
         if (!job) {
-            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.ResourceNotFound })
+            return constructResponse({
+                res,
+                code: 404,
+                message: AppConfig.ERROR_MESSAGES.NotFoundError,
+                apiObject: AppConfig.API_OBJECTS.Job
+            })
         }
         const data = {
             ...job?.toJSON(),
@@ -169,9 +292,21 @@ export const getJobController: RequestHandler = async (req: any, res) => {
             saves: undefined,
             applicants: undefined
         }
-        return res.status(200).json({ message: AppConfig.STRINGS.Success, job: data })
+        return constructResponse({
+            res,
+            data: data,
+            code: 200,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Job
+        })
     } catch (error) {
-        return res.status(400).json({ error })
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Job
+        })
     }
 }
 
@@ -192,9 +327,21 @@ export const getJobsController: RequestHandler = async (req: any, res) => {
             applicants: x.business === req.user.business ? x.applicants : undefined
         }))
         const data = paginateData(req.query, jobs, 'jobs')
-        return res.status(200).json(data)
+        return constructResponse({
+            res,
+            data,
+            code: 200,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Job
+        })
     } catch (error) {
-        return res.status(400).json({ error })
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Job
+        })
     }
 }
 
@@ -209,9 +356,21 @@ export const getAppliedJobsController: RequestHandler = async (req: any, res) =>
             applicants: undefined
         }))
         const data = paginateData(req.query, jobs, 'jobs')
-        return res.status(200).json(data)
+        return constructResponse({
+            res,
+            data,
+            code: 200,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Job
+        })
     } catch (error) {
-        return res.status(400).json({ error })
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Job
+        })
     }
 }
 
@@ -226,9 +385,21 @@ export const getSavedJobsController: RequestHandler = async (req: any, res) => {
             applicants: undefined
         }))
         const data = paginateData(req.query, jobs, 'jobs')
-        return res.status(200).json(data)
+        return constructResponse({
+            res,
+            data,
+            code: 200,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Job
+        })
     } catch (error) {
-        return res.status(400).json({ error })
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Job
+        })
     }
 }
 
@@ -242,9 +413,21 @@ export const getMyJobsController: RequestHandler = async (req: any, res) => {
             saved: x.saves.map((y: any) => y._id.toString()).includes(req.user.id),
         }))
         const data = paginateData(req.query, jobs, 'jobs')
-        return res.status(200).json(data)
+        return constructResponse({
+            res,
+            data,
+            code: 200,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Job
+        })
     } catch (error) {
-        return res.status(400).json({ error })
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Job
+        })
     }
 }
 // .aggregate([

@@ -44,13 +44,65 @@
 //     },
 //     { $unwind: "$business" } // Unwind the business field
 //   ]);
-  
+
+import { Response } from "express"
+import { AppConfig } from "../utilities/config"
+
 //   // If you want to convert the ObjectId to string in JavaScript, you can map through the jobs array
 //   const jobsWithAppliedAndSaved = jobs.map(job => ({
 //     ...job,
 //     applied: job.applied.toString(),
 //     saved: job.saved.toString()
 //   }));
-  
+
 //   // jobsWithAppliedAndSaved now contains the jobs array with applied and saved fields converted to string
-  
+
+const codeKVP = {
+    200: AppConfig.STRINGS.Success,
+    201: AppConfig.STRINGS.Success,
+    400: AppConfig.ERROR_MESSAGES.BadRequestError,
+    404: AppConfig.ERROR_MESSAGES.NotFoundError,
+    500: AppConfig.ERROR_MESSAGES.InternalServerError
+}
+
+const successCodes = [200, 201]
+
+// const result = {
+//     status: "success - failure",
+//     code: 201,
+//     message: "",
+//     result: {},
+//     isError: true,
+// }
+
+
+export const constructResponse = ({
+    res,
+    message,
+    data = {},
+    code,
+    apiObject
+}: {
+    res: Response,
+    message: string,
+    data?: any,
+    code: number,
+    apiObject: string
+}) => {
+    const isSuccess = successCodes.includes(code)
+    const _res = {
+        apiObject,
+        code,
+        status: isSuccess ? 'success' : 'failure',
+        isError: !isSuccess,
+        message,
+        result: data,
+    }
+    return res.status(code).json(_res)
+}
+
+
+// "api": "Nodes",
+// "description": "Nodes.",
+// "enviroment": 
+// "version": 

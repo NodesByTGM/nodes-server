@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
-import { BusinessModel, TalentDetailsModel } from "../mongodb/models";
-import { uploadMedia } from "../services";
+import { AccountModel, BusinessModel, TalentDetailsModel } from "../mongodb/models";
+import { constructResponse, uploadMedia } from "../services";
 import { AppConfig } from "../utilities/config";
 import { talentUpgradeSchema } from "../validations/upgrades.validations";
 
@@ -17,14 +17,21 @@ export const onboardingController: RequestHandler = async (req: any, res) => {
         instagram,
         twitter,
         onboardingPurpose,
+        onboardingPurposes,
         otherPurpose,
         step
     } = req.body;
     try {
-        const { user } = req
+        const user = await AccountModel.findById(req.user.id)
 
-        if (!user.verified) {
-            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.UnverifiedEmail });
+        if (!user) {
+
+            return constructResponse({
+                res,
+                code: 400,
+                message: AppConfig.ERROR_MESSAGES.UnverifiedEmail,
+                apiObject: AppConfig.API_OBJECTS.Account
+            })
         }
 
         const imgUrl = await uploadMedia(avatar)
@@ -35,15 +42,27 @@ export const onboardingController: RequestHandler = async (req: any, res) => {
         user.instagram = instagram || user.instagram;
         user.twitter = twitter || user.twitter;
         user.onboardingPurpose = onboardingPurpose || user.onboardingPurpose;
+        user.onboardingPurposes = onboardingPurposes || user.onboardingPurposes;
         user.otherPurpose = otherPurpose || user.otherPurpose;
         user.step = step || user
         user.avatar = imgUrl || user.avatar
         await user.save()
 
-        return res.status(200).json({ message: AppConfig.STRINGS.AccountUpgradedTalent, user: user });
+        return constructResponse({
+            res,
+            code: 200,
+            data: user,
+            message: AppConfig.STRINGS.OnboardingSuccessful,
+            apiObject: AppConfig.API_OBJECTS.Account
+        })
     } catch (error) {
-        console.log(error)
-        return res.status(500).json({ message: AppConfig.ERROR_MESSAGES.InternalServerError });
+        return constructResponse({
+            res,
+            data: error,
+            code: 500,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Account
+        })
     }
 };
 
@@ -105,7 +124,6 @@ export const talentOnboardingController: RequestHandler = async (req: any, res) 
 
         return res.status(200).json({ message: AppConfig.STRINGS.AccountUpgradedTalent, user: data });
     } catch (error) {
-        console.log(error)
         return res.status(500).json({ message: AppConfig.ERROR_MESSAGES.InternalServerError });
     }
 };
@@ -136,7 +154,6 @@ export const businessOnboardingController: RequestHandler = async (req: any, res
         await user.save()
         return res.status(200).json({ message: AppConfig.STRINGS.AccountUpgradedBusiness, data: talent });
     } catch (error) {
-        console.log(error)
         return res.status(500).json({ message: AppConfig.ERROR_MESSAGES.InternalServerError });
     }
 };

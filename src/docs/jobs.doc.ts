@@ -1,7 +1,7 @@
 import { AppConfig } from "../utilities/config";
-import { paginationQueryParams } from "./common.doc";
+import { businessSchema, constructResponseSchema, paginationQueryParams } from "./common.doc";
 
-const jobSchema = {
+const jobRequestSchema = {
     type: 'object',
     properties: {
         name: { type: 'string' },
@@ -14,6 +14,41 @@ const jobSchema = {
     },
     required: ['name', 'description', 'experience', 'payRate', 'workRate', 'skills', 'jobType']
 };
+
+const jobSchema = {
+    type: 'object',
+    properties: {
+        // _id: { type: 'string' },
+        name: { type: 'string' },
+        description: { type: 'string' },
+        experience: { type: 'string' },
+        payRate: { type: 'string' },
+        workRate: { type: 'string' },
+        skills: {
+            type: 'array',
+            items: { type: 'string' }
+        },
+        jobType: { type: 'integer' },
+        business: businessSchema,
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
+        // TODO
+        applicants: {
+            anyOf: [
+                { type: 'null' },
+                {
+                    type: 'array',
+                    items: {} // You might want to specify the schema for applicants if it's not always an empty array
+                }
+            ]
+        },
+        id: { type: 'string' },
+        applied: { type: 'boolean' },
+        saved: { type: 'boolean' }
+    }
+};
+
+
 const paginatedJobSchema = {
     type: 'object',
     properties: {
@@ -24,7 +59,7 @@ const paginatedJobSchema = {
         },
         items: {
             type: 'array',
-            items: { type: 'object', properties: jobSchema.properties }
+            items: { type: 'object', properties: jobRequestSchema.properties }
         },
         currentPage: { type: 'number', example: 1 },
         pageSize: { type: 'number', example: AppConfig.DEFAULT_PAGE_SIZE },
@@ -43,15 +78,15 @@ export const jobSwagger = {
                 requestBody: {
                     content: {
                         'application/json': {
-                            schema: jobSchema
+                            schema: jobRequestSchema
                         }
                     }
                 },
                 responses: {
-                    200: { description: 'OK' },
-                    // content: {
-                    //     'application/json': { schema: paginatedJobSchema }
-                    // }
+                    201: { description: 'OK' },
+                    content: {
+                        'application/json': { schema: constructResponseSchema(jobSchema) }
+                    }
                 }
             },
             get: {
@@ -86,9 +121,7 @@ export const jobSwagger = {
                     200: {
                         description: 'OK',
                         content: {
-                            'application/json': {
-                                schema: jobSchema
-                            }
+                            'application/json': { schema: constructResponseSchema(jobSchema, true) }
                         }
                     },
                     // Add more response codes if necessary
@@ -111,12 +144,17 @@ export const jobSwagger = {
                 requestBody: {
                     content: {
                         'application/json': {
-                            schema: jobSchema
+                            schema: jobRequestSchema
                         }
                     }
                 },
                 responses: {
-                    200: { description: 'OK' },
+                    200: {
+                        description: 'OK',
+                        content: {
+                            'application/json': { schema: constructResponseSchema(jobSchema) }
+                        }
+                    },
                     // Add more response codes if necessary
                 }
             },
@@ -157,6 +195,9 @@ export const jobSwagger = {
                 ],
                 responses: {
                     200: { description: 'OK' },
+                    content: {
+                        'application/json': { schema: constructResponseSchema(jobSchema) }
+                    }
                     // Add more response codes if necessary
                 }
             }
@@ -178,6 +219,9 @@ export const jobSwagger = {
                 ],
                 responses: {
                     200: { description: 'OK' },
+                    content: {
+                        'application/json': { schema: constructResponseSchema(jobSchema) }
+                    }
                     // Add more response codes if necessary
                 }
             }
@@ -199,54 +243,57 @@ export const jobSwagger = {
                 ],
                 responses: {
                     200: { description: 'OK' },
-                    // Add more response codes if necessary
+                    content: {
+                        'application/json': { schema: constructResponseSchema(jobSchema) }
+                    }
                 }
+                // Add more response codes if necessary
             }
-        },
-        "/api/v1/jobs/saved": {
-            get: {
-                summary: "Get saved jobs",
-                tags: ['Jobs'],
-                parameters: paginationQueryParams,
-                responses: {
-                    200: {
-                        description: "A list of saved jobs",
-                        content: {
-                            'application/json': { schema: paginatedJobSchema }
-                        }
-                    },
+        }
+    },
+    "/api/v1/jobs/saved": {
+        get: {
+            summary: "Get saved jobs",
+            tags: ['Jobs'],
+            parameters: paginationQueryParams,
+            responses: {
+                200: {
+                    description: "A list of saved jobs",
+                    content: {
+                        'application/json': { schema: constructResponseSchema(jobSchema, true) }
+                    }
                 },
             },
         },
-        "/api/v1/jobs/applied": {
-            get: {
-                summary: "Get applied jobs",
-                tags: ['Jobs'],
-                parameters: paginationQueryParams,
-                responses: {
-                    200: {
-                        description: "A list of applied jobs",
-                        content: {
-                            'application/json': { schema: paginatedJobSchema }
-                        }
-                    },
+    },
+    "/api/v1/jobs/applied": {
+        get: {
+            summary: "Get applied jobs",
+            tags: ['Jobs'],
+            parameters: paginationQueryParams,
+            responses: {
+                200: {
+                    description: "A list of applied jobs",
+                    content: {
+                        'application/json': { schema: constructResponseSchema(jobSchema, true) }
+                    }
                 },
             },
         },
-        "/api/v1/jobs/mine": {
-            get: {
-                summary: "Get jobs created by you",
-                tags: ['Jobs'],
-                parameters: paginationQueryParams,
-                responses: {
-                    200: {
-                        description: "A list of applied jobs",
-                        content: {
-                            'application/json': { schema: paginatedJobSchema }
-                        }
-                    },
+    },
+    "/api/v1/jobs/mine": {
+        get: {
+            summary: "Get jobs created by you",
+            tags: ['Jobs'],
+            parameters: paginationQueryParams,
+            responses: {
+                200: {
+                    description: "A list of applied jobs",
+                    content: {
+                        'application/json': { schema: constructResponseSchema(jobSchema, true) }
+                    }
                 },
             },
         },
-    }
-};
+    },
+}

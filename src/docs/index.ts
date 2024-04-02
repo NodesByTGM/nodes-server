@@ -1,8 +1,8 @@
 import { authSwagger } from './auth.doc';
 import { onboardingSwagger } from './onboarding.doc';
 import { usersSwagger } from './users.doc';
-import { upgradesSwagger } from './upgrades.doc';
-import { deleteMediaSwagger, uploadMediaSwagger } from './uploads.doc';
+// import { upgradesSwagger } from './upgrades.doc';
+import { mediaSwagger } from './uploads.doc';
 import { projectsSwagger } from './projects.doc'
 import { jobSwagger } from './jobs.doc';
 import { eventSwagger } from './events.doc';
@@ -44,8 +44,7 @@ const options = {
             ...eventSwagger.paths,
             ...jobSwagger.paths,
             ...transactionSwagger.paths,
-            ...uploadMediaSwagger.paths,
-            ...deleteMediaSwagger.paths,
+            ...mediaSwagger.paths,
             ...communitySwagger.paths
             // ...upgradesSwagger.paths,
         }

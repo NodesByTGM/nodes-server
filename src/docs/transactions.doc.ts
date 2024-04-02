@@ -1,4 +1,4 @@
-import { userSchemaExample } from "./common.doc";
+import { constructResponseSchema, userSchema } from "./common.doc";
 
 
 export const transactionQueryParams = [
@@ -43,12 +43,8 @@ export const transactionSwagger = {
                     '200': {
                         description: 'OK',
                         content: {
-                            'application/json': {
-                                example: {
-                                    data: userSchemaExample,
-                                },
-                            },
-                        },
+                            'application/json': { schema: constructResponseSchema(userSchema) }
+                        }
                     },
                     '401': {
                         description: 'Unauthorized',

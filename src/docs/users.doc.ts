@@ -1,4 +1,4 @@
-import { userSchema, userSchemaExample } from "./common.doc";
+import { constructResponseSchema, profileRequestSchema, userSchema } from "./common.doc";
 
 export const usersSwagger = {
     paths: {
@@ -16,11 +16,7 @@ export const usersSwagger = {
                     '200': {
                         description: 'User successfully registered.',
                         content: {
-                            'application/json': {
-                                example: {
-                                    user: userSchemaExample,
-                                },
-                            },
+                            'application/json': { schema: profileRequestSchema },
                         },
                     },
                     '401': {
@@ -37,30 +33,18 @@ export const usersSwagger = {
                 requestBody: {
                     required: true,
                     content: {
-                        'application/json': {
-                            schema: userSchema,
-                        },
+                        'application/json': { schema: userSchema, },
                     },
                 },
                 responses: {
                     '200': {
                         description: 'Successful response',
                         content: {
-                            'application/json': {
-                                schema: {
-                                    type: 'object',
-                                    properties: {
-                                        message: {
-                                            type: 'string',
-                                            description: 'Update successful message',
-                                        },
-                                    },
-                                },
-                            },
+                            'application/json': { schema: constructResponseSchema(userSchema) },
                         },
                     },
                 },
             },
-        },
+        }
     }
 }

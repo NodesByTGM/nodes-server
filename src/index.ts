@@ -16,7 +16,7 @@ import {
   transactionsRouter,
   communityRouter
 } from "./routes";
-import swaggerSpec from "./docs/swagger";
+import swaggerSpec from "./docs";
 
 
 dotenv.config();

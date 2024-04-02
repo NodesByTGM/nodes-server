@@ -38,10 +38,25 @@ export enum JobType {
     PartTime = 1,
     Contract = 2
 }
-
+const API_OBJECTS = {
+    Project: 'Project',
+    Post: 'Post',
+    Account: 'Account',
+    Media: 'Media',
+    Job: 'Job',
+    Event: 'Event',
+    Transaction: 'Transaction',
+    Subscription: 'Subscription',
+    Token: 'Token',
+    Business: 'Business',
+    Auth: 'Auth',
+    OTP: 'OTP',
+    Base: 'Base'
+}
 
 export const AppConfig = {
     API_ENDPOINTS,
+    API_OBJECTS,
     ERROR_MESSAGES: {
         InvalidCredentialsProvided: 'Invalid Credentials Provided.',
         AuthenticationError: 'Authentication Error.',
@@ -71,6 +86,7 @@ export const AppConfig = {
         QuotesSuccessfullyRetrievedFromDB: 'Quotes successfully retrieved from DB.',
         QuoteSuccessfullyRetrievedFromDB: 'Quote successfully retrieved from DB.',
         RegistrationSuccessful: 'Registration successful.',
+        LoginSuccessful: 'Login successful',
         PasswordLinkSent: 'A password reset link has been sent to your email account.',
         PasswordResetSuccessful: 'Password has been reset successfully.',
         PasswordChangeSuccessful: 'Password changed successfully.',
@@ -81,6 +97,7 @@ export const AppConfig = {
         OTPVerified: 'Your OTP has been verified successfully.',
         AccountUpgradedTalent: 'Your account has been upgraded to a Talent account successfully.',
         OnboardingSuccessful: 'Your account has been onboarded successfully.',
+        ProfileUpdateSuccessful: 'Your account has been updated successfully.',
         AccountUpgradedBusiness: 'Your account has been upgraded to a Business account successfully.',
         Success: 'Success.',
     },

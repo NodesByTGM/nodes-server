@@ -1,18 +1,18 @@
 import { Router } from 'express';
 import {
-    registerController,
-    loginController,
-    getTokenController,
-    forgotPasswordController,
-    resetPasswordController,
     changePasswordController,
+    checkEmailExistsController,
+    checkResetLinkController,
+    checkUsernameExistsController,
+    forgotPasswordController,
+    getTokenController,
+    loginController,
     logoutController,
+    registerController,
+    resetPasswordController,
     sendOTPController,
     verifyEmailController,
-    checkResetLinkController,
-    verifyOTPController,
-    checkEmailExistsController,
-    checkUsernameExistsController
+    verifyOTPController
 } from '../controllers/auth.controllers';
 import { authenticate } from '../middlewares';
 

@@ -22,7 +22,6 @@ export const verifyTxnByReference = async (reference: string) => {
     }
     try {
         const req = await mainClient.get(url, { headers })
-        console.log(req.data)
         if (req.status === 200) {
             const reqData: PaystackVerifiedTransaction = req.data;
             if (reqData.status) {
@@ -42,7 +41,6 @@ export const createTransaction = async (reqData: PaystackVerifiedTransaction) =>
     if (!data) {
         return
     }
-    console.log(data.plan)
     const old = await TransactionModel.findOne({ apiId: data.id })
     if (old) {
         return

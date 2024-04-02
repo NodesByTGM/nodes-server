@@ -11,12 +11,13 @@ export const AccountSchema = new mongoose.Schema({
     verified: { type: Boolean, required: false, default: false },
     avatar: { type: fileSchema, required: false, default: null },
 
-    skills: { type: [String], required: false, default: '' },
+    skills: { type: [String], required: false, default: [] },
     location: { type: String, required: false, default: '' },
     linkedIn: { type: String, required: false, default: '' },
     instagram: { type: String, required: false, default: '' },
     twitter: { type: String, required: false, default: '' },
     step: { type: Number, required: false, default: 0 },
+    onboardingPurposes: { type: [String], required: false, default: [] },
     onboardingPurpose: { type: Number, required: false, default: 0 },
     otherPurpose: { type: String, required: false, default: '' },
 
@@ -50,7 +51,6 @@ export const AccountSchema = new mongoose.Schema({
     toJSON: {
         transform: (_: any, rec: Record<string, any>) => {
             const { __v, _id, password, role, ...object } = rec;
-            console.log(object.business)
             object.id = _id
             return object;
         }

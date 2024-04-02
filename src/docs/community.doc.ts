@@ -1,118 +1,57 @@
-import { AppConfig } from "../utilities/config";
-import { paginationQueryParams } from "./common.doc";
+import { constructResponseSchema, fileSwaggerSchema, paginationQueryParams } from "./common.doc";
 
-const postSchema = {
+const authorSchema = {
     type: 'object',
     properties: {
-        body: {
-            type: 'string',
-            description: 'Body of the post.',
-            example: 'Heyyy guys',
-        },
+        name: { type: 'string' },
+        avatar: fileSwaggerSchema,
+        id: { type: 'string' }
+    }
+}
+
+const postRequestSchema = {
+    type: 'object',
+    properties: {
+        body: { type: 'string' },
         attachments: {
             type: 'array',
-            items: {
-                type: 'object',
-                properties: {
-                    id: {
-                        type: 'string',
-                        description: 'ID for the attachment.',
-                        example: '',
-                    },
-                    url: {
-                        type: 'string',
-                        description: 'ID for the attachment.',
-                        example: '',
-                    },
-                }
-            }
+            items: fileSwaggerSchema
         },
         hashtags: {
             type: 'array',
-            items: {
-                type: 'string',
-                description: 'An attachment for the post.',
-                example: "#2024",
-            }
-
+            items: { type: 'string' }
         },
-        likes: {
+    }
+};
+// text, author, hashtags, startDate, endDate
+const postSchema = {
+    type: 'object',
+    properties: {
+        body: { type: 'string' },
+        attachments: {
             type: 'array',
-            items: {
-                type: 'string',
-                description: 'Likes.',
-                example: "654dsdt6567898",
-            }
-        },
-        parent: {
-            type: 'string',
-            description: 'Parent post of the post (for comments)',
-            example: '6d8909876545678',
-        },
-        author: {
-            type: 'object',
-            properties: {
-                name: {
-                    type: 'object',
-                    description: 'Name of the author',
-                    example: "Author",
-                },
-                id: {
-                    type: 'object',
-                    description: 'ID of the author',
-                    example: "Author",
-                },
-                avatar: {
-                    type: 'object',
-                    description: 'The avatar for the author.',
-                    properties: {
-                        id: {
-                            type: 'string',
-                            description: 'ID for the avatar.',
-                            example: '',
-                        },
-                        url: {
-                            type: 'string',
-                            description: 'URL for the avatar.',
-                            example: '',
-                        },
-                    },
-                    example: { id: '', url: '' },
-                },
-            }
-        },
-        createdAt: {
-            type: 'string',
-            description: 'Date and time of the post.',
-            example: '05/10/2024',
+            items: fileSwaggerSchema
         },
         comments: {
             type: 'array',
-            description: 'Comments under this post',
-            example: [{}],
+            items: { type: 'object' } // Assuming comment IDs are strings
         },
-    },
-    required: ['body']
-};
-// text, author, hashtags, startDate, endDate
-const paginatedPostSchema = {
-    type: 'object',
-    properties: {
-        message: {
-            type: 'string',
-            description: 'Success',
-            example: 'Success',
-        },
-        items: {
+        hashtags: {
             type: 'array',
-            items: { type: 'object', properties: postSchema.properties }
+            items: { type: 'string' } // Assuming hashtags are strings
         },
-        currentPage: { type: 'number', example: 1 },
-        pageSize: { type: 'number', example: AppConfig.DEFAULT_PAGE_SIZE },
-        totalPages: { type: 'number', example: 1 },
-        totalItems: { type: 'number', example: 1 },
+        author: authorSchema,
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
+        likes: {
+            type: 'array',
+            items: authorSchema
+        },
+        liked: { type: 'boolean' },
+        id: { type: 'string' }
     }
-}
+};
+
 
 export const qsParams = [
     ...paginationQueryParams,
@@ -179,16 +118,16 @@ export const communitySwagger = {
                     required: true,
                     content: {
                         'application/json': {
-                            schema: postSchema
+                            schema: postRequestSchema
                         }
                     }
                 },
                 responses: {
-                    '200': {
+                    '201': {
                         description: 'Post created successfully.',
-                        // content: {
-                        //     'application/json': { schema: paginatedPostSchema }
-                        // }
+                        content: {
+                            'application/json': { schema: constructResponseSchema(postSchema) }
+                        }
                     },
                     '400': {
                         description: 'Bad request. Check the request payload for missing or invalid information.',
@@ -214,7 +153,7 @@ export const communitySwagger = {
                     '200': {
                         description: 'OK',
                         content: {
-                            'application/json': { schema: paginatedPostSchema }
+                            'application/json': { schema: constructResponseSchema(postSchema, true) }
                         }
                     },
                     '401': {
@@ -249,6 +188,9 @@ export const communitySwagger = {
                 responses: {
                     '200': {
                         description: 'OK',
+                        content: {
+                            'application/json': { schema: constructResponseSchema(postSchema) }
+                        }
                     },
                     '401': {
                         description: 'Unauthorized. User authentication failed.',
@@ -363,7 +305,10 @@ export const communitySwagger = {
                 ],
                 responses: {
                     '200': {
-                        description: 'Post saved successfully.',
+                        description: 'Post liked successfully.',
+                        content: {
+                            'application/json': { schema: constructResponseSchema(postSchema) }
+                        }
                     },
                     '401': {
                         description: 'Unauthorized. User authentication failed.',
@@ -399,7 +344,10 @@ export const communitySwagger = {
                 ],
                 responses: {
                     '200': {
-                        description: 'Post saved successfully.',
+                        description: 'Post unliked successfully.',
+                        content: {
+                            'application/json': { schema: constructResponseSchema(postSchema) }
+                        }
                     },
                     '401': {
                         description: 'Unauthorized. User authentication failed.',

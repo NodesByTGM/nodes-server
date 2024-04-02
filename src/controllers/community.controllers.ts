@@ -1,8 +1,8 @@
 import { RequestHandler } from "express";
 import { PostModel } from "../mongodb/models";
+import { constructResponse } from "../services";
 import { paginateData } from "../utilities/common";
 import { AppConfig } from "../utilities/config";
-import { config } from "dotenv";
 
 export const getPostsController: RequestHandler = async (req: any, res) => {
     try {
@@ -39,25 +39,36 @@ export const getPostsController: RequestHandler = async (req: any, res) => {
                     }
                 }
             },
-            { $project: { __v: 0 } },
+            { $project: { __v: 0, 'author.subscription': 0, 'author.business': 0 } },
             { $addFields: { id: "$_id" } },
             { $unset: "_id" }
         ]);
 
         // Manually populate the field
         await PostModel.populate(posts, [
-            { path: 'author', select: 'name id avatar' },
-            { path: 'likes', select: 'name id avatar' }
+            { path: 'author', select: 'name id avatar', options: { autopopulate: false } },
+            { path: 'likes', select: 'name id avatar', options: { autopopulate: false } }
         ]);
         // const _posts = posts.map(x => ({
         //     ...x,
         //     liked: x.likes.map((y: any) => y.toString()).includes(req.user.id),
         // }))
         const data = paginateData(req.query, posts, 'posts')
-        return res.status(200).json(data)
+        return constructResponse({
+            res,
+            data,
+            code: 200,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Post
+        })
     } catch (error) {
-        console.log(error)
-        return res.status(500).json({ message: AppConfig.ERROR_MESSAGES.InternalServerError })
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Post
+        })
     }
 }
 
@@ -66,16 +77,34 @@ export const getPostController: RequestHandler = async (req: any, res) => {
         const post = await PostModel.findById(req.params.id)
 
         if (!post) {
-            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.ResourceNotFound })
+            return constructResponse({
+                res,
+                data: post,
+                code: 400,
+                message: AppConfig.ERROR_MESSAGES.ResourceNotFound,
+                apiObject: AppConfig.API_OBJECTS.Post
+            })
         }
         const data = {
             ...post?.toJSON(),
             liked: post.likes.map((y: any) => y.toString()).includes(req.user.id)
         }
-        return res.status(200).json({ message: AppConfig.STRINGS.Success, post: data })
-
+        return constructResponse({
+            res,
+            code: 200,
+            data,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Post
+        })
     } catch (error) {
-        return res.status(400).json({ error })
+
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Post
+        })
     }
 }
 
@@ -89,7 +118,12 @@ export const createPostController: RequestHandler = async (req: any, res) => {
         } = req.body
 
         if (!body) {
-            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.BadRequestError })
+            return constructResponse({
+                res,
+                code: 400,
+                message: AppConfig.ERROR_MESSAGES.BadRequestError,
+                apiObject: AppConfig.API_OBJECTS.Post
+            })
         }
         const data = await PostModel.create({
             body,
@@ -109,10 +143,23 @@ export const createPostController: RequestHandler = async (req: any, res) => {
         }
         // const posts = await PostModel.find();
         // const data = paginateData(req.query, posts, 'posts')
-        // return res.status(200).json(data)
-        return res.status(200).json({ message: AppConfig.STRINGS.Success, data })
+
+        return constructResponse({
+            res,
+            data,
+            code: 201,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Post
+        })
     } catch (error) {
-        return res.status(500).json({ message: AppConfig.ERROR_MESSAGES.InternalServerError })
+
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Post
+        })
     }
 }
 
@@ -120,19 +167,42 @@ export const likePostController: RequestHandler = async (req: any, res) => {
     try {
         const post = await PostModel.findById(req.params.id)
         if (!post) {
-            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.ResourceNotFound })
+            return constructResponse({
+                res,
+                code: 404,
+                message: AppConfig.ERROR_MESSAGES.ResourceNotFound,
+                apiObject: AppConfig.API_OBJECTS.Post
+            })
         }
         if (post.likes.filter(x => x.toString() === req.user.id.toString()).length > 0) {
-            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.AlreadyLiked })
+            return constructResponse({
+                res,
+                code: 400,
+                message: AppConfig.ERROR_MESSAGES.AlreadyLiked,
+                apiObject: AppConfig.API_OBJECTS.Post
+            })
         }
         post.likes.push(req.user)
         await post.save()
         const data: any = post.toJSON()
         data.saved = true
 
-        return res.status(200).json({ message: AppConfig.STRINGS.Success, post: data })
+        return constructResponse({
+            res,
+            data,
+            code: 200,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Post
+        })
     } catch (error) {
-        return res.status(400).json({ error })
+
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Post
+        })
     }
 }
 
@@ -140,7 +210,12 @@ export const unlikePostController: RequestHandler = async (req: any, res) => {
     try {
         const post = await PostModel.findById(req.params.id)
         if (!post) {
-            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.ResourceNotFound })
+            return constructResponse({
+                res,
+                code: 404,
+                message: AppConfig.ERROR_MESSAGES.ResourceNotFound,
+                apiObject: AppConfig.API_OBJECTS.Post
+            })
         }
         if (post.likes.filter(x => x.toString() === req.user.id.toString()).length > 0) {
             post.likes = post.likes.filter(x => x.toString() !== req.user.id.toString())
@@ -149,8 +224,20 @@ export const unlikePostController: RequestHandler = async (req: any, res) => {
         const data: any = post.toJSON()
         data.liked = false
 
-        return res.status(200).json({ message: AppConfig.STRINGS.Success, event: data })
+        return constructResponse({
+            res,
+            data,
+            code: 200,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Post
+        })
     } catch (error) {
-        return res.status(400).json({ error })
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Post
+        })
     }
 }

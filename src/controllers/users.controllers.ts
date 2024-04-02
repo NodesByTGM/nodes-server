@@ -1,30 +1,36 @@
 import { RequestHandler } from 'express';
-import { AccountModel, BusinessModel, TalentDetailsModel } from '../mongodb/models';
-import { uploadMedia } from '../services';
+import { AccountModel, BusinessModel } from '../mongodb/models';
+import { constructResponse, uploadMedia } from '../services';
 import { AppConfig } from '../utilities/config';
-import { Schema } from 'mongoose';
 
 export const profileController: RequestHandler = async (req: any, res: any) => {
-    // res.json({ message: `Welcome ${req.user.username}` });
     try {
         const user = req.user
-        const talentProfile = await TalentDetailsModel.findOne({ accountId: req.user.id })
-        const businessProfile = await BusinessModel.findOne({ accountId: req.user.id })
+        const business = await BusinessModel.findOne({ accountId: req.user.id })
         const data = {
             ...user.toJSON(),
-            talentProfile,
-            businessProfile
+            business
 
         }
-        return res.json({ user: data });
+        return constructResponse({
+            res,
+            code: 200,
+            data,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Media
+        })
     } catch (error) {
-        return res.json({ error: JSON.stringify(error) })
+        return constructResponse({
+            res,
+            data: error,
+            code: 500,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Account
+        })
     }
 };
 
 export const profileUpdateController: RequestHandler = async (req: any, res: any) => {
-    // res.json({ message: `Welcome ${req.user.username}` });
-    console.log(req.body)
     try {
         const {
             name,
@@ -83,41 +89,53 @@ export const profileUpdateController: RequestHandler = async (req: any, res: any
                     business = business.toJSON()
                 }
             }
-            const r = await user.save()
-            const data = {
-                ...r.toJSON(),
-                business
+            await user.save()
+            const data = { ...user.toJSON(), business }
 
-            }
-            return res.json({ user: data });
+            return constructResponse({
+                res,
+                code: 200,
+                data,
+                message: AppConfig.STRINGS.ProfileUpdateSuccessful,
+                apiObject: AppConfig.API_OBJECTS.Account
+            })
         }
-        return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.BadRequestError });
+        return constructResponse({
+            res,
+            code: 400,
+            message: AppConfig.ERROR_MESSAGES.BadRequestError,
+            apiObject: AppConfig.API_OBJECTS.Account
+        })
 
     } catch (error) {
-        return res.status(500).json({ error: JSON.stringify(error) })
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Account
+        })
     }
 };
 
 export const allUsersContoller: RequestHandler = async (req, res) => {
     try {
         const users = await AccountModel.find()
-        for (let user of users) {
-            if (user.business) {
-                const business = await BusinessModel.findOne({ account: user.id })
-                if (business) {
-                    // user.business = null
-                    // await user.save()
-
-                    // user.business = business.id
-                    user.type = AppConfig.ACCOUNT_TYPES.BUSINESS
-                    console.log("user.business", user.business)
-                    await user.save()
-                }
-            }
-        }
-        return res.json({ message: users });
+        return constructResponse({
+            res,
+            code: 200,
+            data: users,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Account
+        })
     } catch (error) {
-        return res.json({ error: JSON.stringify(error) })
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Account
+        })
     }
 };
 

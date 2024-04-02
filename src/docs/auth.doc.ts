@@ -1,4 +1,4 @@
-import { authUserSchema, userSchemaExample } from "./common.doc";
+import { authUserSchema, constructResponseSchema, responseSchema, tokensSchema } from "./common.doc";
 
 export const authSwagger = {
     paths: {
@@ -54,13 +54,11 @@ export const authSwagger = {
                     },
                 },
                 responses: {
-                    '200': {
+                    '201': {
                         description: 'User successfully registered.',
                         content: {
                             'application/json': {
-                                example: {
-                                    user: userSchemaExample,
-                                },
+                                schema: constructResponseSchema(authUserSchema),
                             },
                         },
                     },
@@ -108,10 +106,7 @@ export const authSwagger = {
                         description: 'User successfully logged in.',
                         content: {
                             'application/json': {
-                                // schema: authUserSchema,
-                                example: {
-                                    user: { ...userSchemaExample, accessToken: 'yourAccessToken' },
-                                },
+                                schema: constructResponseSchema(authUserSchema),
                             },
                         },
                     },
@@ -153,9 +148,7 @@ export const authSwagger = {
                         description: 'New access token obtained successfully.',
                         content: {
                             'application/json': {
-                                example: {
-                                    accessToken: 'your_new_access_token_here',
-                                },
+                                schema: constructResponseSchema(tokensSchema)
                             },
                         },
                     },
@@ -199,6 +192,7 @@ export const authSwagger = {
                 responses: {
                     '200': {
                         description: 'OTP sent successfully.',
+                        schema: responseSchema
                     },
                     '400': {
                         description: 'Bad request. Check the request payload for missing or invalid information.',
@@ -241,6 +235,7 @@ export const authSwagger = {
                 responses: {
                     '200': {
                         description: 'Email successfully verified.',
+                        schema: responseSchema
                     },
                     '400': {
                         description: 'Bad request. Check the request payload for missing or invalid information.',
@@ -281,6 +276,7 @@ export const authSwagger = {
                 responses: {
                     '200': {
                         description: 'Email successfully verified.',
+                        schema: responseSchema
                     },
                     '400': {
                         description: 'Bad request. Check the request payload for missing or invalid information.',
@@ -326,6 +322,7 @@ export const authSwagger = {
                 responses: {
                     '200': {
                         description: 'OTP successfully verified.',
+                        schema: responseSchema
                     },
                     '400': {
                         description: 'Bad request. Check the request payload for missing or invalid information.',
@@ -367,6 +364,7 @@ export const authSwagger = {
                 responses: {
                     '200': {
                         description: 'Password reset link sent successfully.',
+                        schema: responseSchema
                     },
                     '400': {
                         description: 'Bad request. Check the request payload for missing or invalid information.',
@@ -411,6 +409,7 @@ export const authSwagger = {
                 responses: {
                     '200': {
                         description: 'Reset link is valid. Proceed to reset password.',
+                        schema: responseSchema
                     },
                     '400': {
                         description: 'Bad request. Check the path parameters for missing or invalid information.',
@@ -474,6 +473,7 @@ export const authSwagger = {
                 responses: {
                     '200': {
                         description: 'Password successfully reset.',
+                        schema: responseSchema
                     },
                     '400': {
                         description: 'Bad request. Check the request payload for missing or invalid information.',
@@ -526,6 +526,7 @@ export const authSwagger = {
                 responses: {
                     '200': {
                         description: 'Password successfully changed.',
+                        schema: responseSchema
                     },
                     '400': {
                         description: 'Bad request. Check the request payload for missing or invalid information.',
@@ -553,6 +554,7 @@ export const authSwagger = {
                 responses: {
                     '200': {
                         description: 'Successfully logged out.',
+                        schema: responseSchema
                     },
                     '401': {
                         description: 'Unauthorized. User authentication failed.',

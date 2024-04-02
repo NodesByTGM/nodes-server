@@ -19,7 +19,7 @@ const ProjectSchema = new mongoose.Schema({
     thumbnail: fileSchema,
     images:[fileSchema],
     collaborators: [collaborator],
-    account: {
+    owner: {
         type: Schema.Types.ObjectId,
         required: true,
         ref: 'Account',

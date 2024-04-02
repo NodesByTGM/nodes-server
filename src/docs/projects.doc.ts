@@ -1,11 +1,7 @@
-import { paginationQueryParams } from "./common.doc";
-const projectSchema = {
+import { constructResponseSchema, fileSwaggerSchema, paginationQueryParams } from "./common.doc";
+const projectRequestSchema = {
     type: 'object',
     properties: {
-        projectId: {
-            type: 'string',
-            description: 'Unique identifier for the project',
-        },
         name: {
             type: 'string',
             description: 'Name of the project',
@@ -18,34 +14,10 @@ const projectSchema = {
             type: 'string',
             description: 'URL of the project',
         },
-        thumbnail: {
-            type: 'object',
-            properties: {
-                id: {
-                    type: 'string',
-                    description: 'Unique identifier for the thumbnail',
-                },
-                url: {
-                    type: 'string',
-                    description: 'URL to access the thumbnail',
-                },
-            },
-        },
+        thumbnail: fileSwaggerSchema,
         images: {
             type: 'array',
-            items: {
-                type: 'object',
-                properties: {
-                    id: {
-                        type: 'string',
-                        description: 'Unique identifier for the image',
-                    },
-                    url: {
-                        type: 'string',
-                        description: 'URL to access the image',
-                    },
-                },
-            },
+            items: fileSwaggerSchema,
         },
         collaborators: {
             type: 'array',
@@ -66,6 +38,28 @@ const projectSchema = {
     },
     required: ['name', 'description', 'projectURL'],
 }
+
+const projectSchema = {
+    type: 'object',
+    properties: {
+        name: { type: 'string' },
+        description: { type: 'string' },
+        projectURL: { type: 'string', format: 'uri' },
+        images: {
+            type: 'array',
+            items: fileSwaggerSchema // Assuming image URLs are strings
+        },
+        collaborators: {
+            type: 'array',
+            items: fileSwaggerSchema // Assuming collaborator IDs are strings
+        },
+        owner: { type: 'string' },
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
+        id: { type: 'string' }
+    }
+};
+
 export const projectsSwagger = {
     // openapi: '3.0.0',
     // info: {
@@ -82,16 +76,8 @@ export const projectsSwagger = {
                     '200': {
                         description: 'Successful response',
                         content: {
-                            'application/json': {
-                                schema: {
-                                    type: 'array',
-                                    items: {
-                                        type: 'object',
-                                        properties: projectSchema.properties
-                                    },
-                                },
-                            },
-                        },
+                            'application/json': { schema: constructResponseSchema(projectSchema, true) }
+                        }
                     },
                 },
             },
@@ -102,7 +88,7 @@ export const projectsSwagger = {
                     required: true,
                     content: {
                         'application/json': {
-                            schema: projectSchema,
+                            schema: projectRequestSchema,
                         },
                     },
                 },
@@ -110,18 +96,8 @@ export const projectsSwagger = {
                     '200': {
                         description: 'Successful response',
                         content: {
-                            'application/json': {
-                                schema: {
-                                    type: 'object',
-                                    properties: {
-                                        projectId: {
-                                            type: 'string',
-                                            description: 'Unique identifier for the created project',
-                                        },
-                                    },
-                                },
-                            },
-                        },
+                            'application/json': { schema: constructResponseSchema(projectSchema) }
+                        }
                     },
                 },
             },

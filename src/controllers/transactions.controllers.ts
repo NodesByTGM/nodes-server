@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { ChargeSuccessEventData, PaystackWebhookEvent, SubscriptionDisabledEventData } from '../interfaces/paystack';
 import { AccountModel, SubscriptionModel, TransactionModel } from '../mongodb/models';
-import { initiateSubscription, sendEmail, verifyTxnByReference } from '../services';
+import { constructResponse, initiateSubscription, sendEmail, verifyTxnByReference } from '../services';
 import { sendHTMLEmail } from '../services/email.service';
 import { addYearsToDate, formatDate, verifyTransaction } from '../utilities/common';
 import { AppConfig } from '../utilities/config';
@@ -24,22 +24,45 @@ export const verifyTransactionController: RequestHandler = async (req, res) => {
     }
 }
 
+// INTERNAL
 export const verifyInternalTransactionController: RequestHandler = async (req: any, res) => {
     try {
         const { reference } = req.query;
         if (!reference) {
-            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.BadRequestError })
+            return constructResponse({
+                res,
+                code: 400,
+                message: AppConfig.ERROR_MESSAGES.BadRequestError,
+                apiObject: AppConfig.API_OBJECTS.Account
+            })
         }
         const verifiedTxn = await verifyTxnByReference(`${reference}`)
         // sendEmail(`${process.env.EMAIL_USER}`, 'Callback Event from paystack', JSON.stringify(req.query))
         if (!verifiedTxn?.status) {
-            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.BadRequestError })
+            return constructResponse({
+                res,
+                code: 400,
+                message: AppConfig.ERROR_MESSAGES.BadRequestError,
+                apiObject: AppConfig.API_OBJECTS.Account
+            })
         }
         const user = await AccountModel.findById(req.user.id)
         // const data = await getUserFullProfile(user)
-        return res.json({ message: AppConfig.STRINGS.Success, data: user })
+        return constructResponse({
+            res,
+            code: 200,
+            data: user,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Account
+        })
     } catch (error) {
-        return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.BadRequestError })
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Account
+        })
     }
 }
 
