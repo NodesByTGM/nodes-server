@@ -30,6 +30,11 @@ export const usersSwagger = {
             put: {
                 summary: 'Update Profile',
                 tags: ['Profile'],
+                security: [
+                    {
+                        bearerAuth: [],
+                    },
+                ],
                 requestBody: {
                     required: true,
                     content: {
