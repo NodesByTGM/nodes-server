@@ -1,7 +1,5 @@
 import { constructResponseSchema, fileSwaggerSchema, paginationQueryParams, postSchema } from "./common.doc";
 
-
-
 const postRequestSchema = {
     type: 'object',
     properties: {
@@ -76,11 +74,7 @@ export const communitySwagger = {
             post: {
                 summary: 'Create an post',
                 tags: ['Community'],
-                security: [
-                    {
-                        bearerAuth: [],
-                    },
-                ],
+                security: [{ bearerAuth: [] }],
                 requestBody: {
                     required: true,
                     content: {
@@ -111,11 +105,7 @@ export const communitySwagger = {
                 summary: 'Get all posts',
                 tags: ['Community'],
                 parameters: qsParams,
-                security: [
-                    {
-                        bearerAuth: [],
-                    },
-                ],
+                security: [{ bearerAuth: [] }],
                 responses: {
                     '200': {
                         description: 'OK',
@@ -136,11 +126,7 @@ export const communitySwagger = {
             get: {
                 summary: 'Get a post by ID',
                 tags: ['Community'],
-                security: [
-                    {
-                        bearerAuth: [],
-                    },
-                ],
+                security: [{ bearerAuth: [] }],
                 parameters: [
                     {
                         name: 'id',
@@ -254,11 +240,7 @@ export const communitySwagger = {
             post: {
                 summary: 'Like a post',
                 tags: ['Community'],
-                security: [
-                    {
-                        bearerAuth: [],
-                    },
-                ],
+                security: [{ bearerAuth: [] }],
                 parameters: [
                     {
                         name: 'id',
@@ -293,11 +275,7 @@ export const communitySwagger = {
             post: {
                 summary: 'Unlike a post',
                 tags: ['Community'],
-                security: [
-                    {
-                        bearerAuth: [],
-                    },
-                ],
+                security: [{ bearerAuth: [] }],
                 parameters: [
                     {
                         name: 'id',

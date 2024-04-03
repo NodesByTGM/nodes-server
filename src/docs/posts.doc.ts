@@ -75,11 +75,7 @@ export const postsSwagger = {
             post: {
                 summary: 'Create an post',
                 tags: ['Posts'],
-                security: [
-                    {
-                        bearerAuth: [],
-                    },
-                ],
+                security: [{ bearerAuth: [] }],
                 requestBody: {
                     required: true,
                     content: {
@@ -110,11 +106,7 @@ export const postsSwagger = {
                 summary: 'Get all posts',
                 tags: ['Posts'],
                 parameters: qsParams,
-                security: [
-                    {
-                        bearerAuth: [],
-                    },
-                ],
+                security: [{ bearerAuth: [] }],
                 responses: {
                     '200': {
                         description: 'OK',
@@ -135,11 +127,7 @@ export const postsSwagger = {
             get: {
                 summary: 'Get a post by ID',
                 tags: ['Posts'],
-                security: [
-                    {
-                        bearerAuth: [],
-                    },
-                ],
+                security: [{ bearerAuth: [] }],
                 parameters: [
                     {
                         name: 'id',
@@ -253,11 +241,7 @@ export const postsSwagger = {
             post: {
                 summary: 'Like a post',
                 tags: ['Posts'],
-                security: [
-                    {
-                        bearerAuth: [],
-                    },
-                ],
+                security: [{ bearerAuth: [] }],
                 parameters: [
                     {
                         name: 'id',
@@ -292,11 +276,7 @@ export const postsSwagger = {
             post: {
                 summary: 'Unlike a post',
                 tags: ['Posts'],
-                security: [
-                    {
-                        bearerAuth: [],
-                    },
-                ],
+                security: [{ bearerAuth: [] }],
                 parameters: [
                     {
                         name: 'id',

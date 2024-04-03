@@ -493,11 +493,7 @@ export const authSwagger = {
                 summary: 'Change Password',
                 description: 'Change the password for the authenticated user.',
                 tags: ['Authentication'],
-                security: [
-                    {
-                        bearerAuth: [],
-                    },
-                ],
+                security: [{ bearerAuth: [] }],
                 requestBody: {
                     required: true,
                     content: {
@@ -546,11 +542,7 @@ export const authSwagger = {
                 summary: 'Logout',
                 description: 'Logout the authenticated user.',
                 tags: ['Authentication'],
-                security: [
-                    {
-                        bearerAuth: [],
-                    },
-                ],
+                security: [{ bearerAuth: [] }],
                 responses: {
                     '200': {
                         description: 'Successfully logged out.',

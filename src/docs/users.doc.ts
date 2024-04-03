@@ -7,11 +7,7 @@ export const usersSwagger = {
                 summary: 'Get User Profile',
                 description: 'Retrieve the authenticated user\'s profile information.',
                 tags: ['Profile'],
-                security: [
-                    {
-                        bearerAuth: [],
-                    },
-                ],
+                security: [{ bearerAuth: [] }],
                 responses: {
                     '200': {
                         description: 'User successfully registered.',
@@ -30,11 +26,7 @@ export const usersSwagger = {
             put: {
                 summary: 'Update Profile',
                 tags: ['Profile'],
-                security: [
-                    {
-                        bearerAuth: [],
-                    },
-                ],
+                security: [{ bearerAuth: [] }],
                 requestBody: {
                     required: true,
                     content: {

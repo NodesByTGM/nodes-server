@@ -5,11 +5,7 @@ export const upgradesSwagger = {
                 summary: 'Onboard Account as Talent Account',
                 description: 'Onboard the authenticated user\'s account to a talent account by providing additional information.',
                 tags: ['Upgrades'],
-                security: [
-                    {
-                        bearerAuth: [],
-                    },
-                ],
+                security: [{ bearerAuth: [] }],
                 requestBody: {
                     required: true,
                     content: {
@@ -83,11 +79,7 @@ export const upgradesSwagger = {
                 summary: 'Onboard Account as Business Account',
                 description: 'Onboard the authenticated user\'s account to a business account by providing additional business information.',
                 tags: ['Upgrades'],
-                security: [
-                    {
-                        bearerAuth: [],
-                    },
-                ],
+                security: [{ bearerAuth: [] }],
                 requestBody: {
                     required: true,
                     content: {

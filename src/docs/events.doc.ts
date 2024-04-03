@@ -63,11 +63,7 @@ export const eventSwagger = {
             post: {
                 summary: 'Create an event',
                 tags: ['Events'],
-                security: [
-                    {
-                        bearerAuth: [],
-                    },
-                ],
+                security: [{ bearerAuth: [] }],
                 requestBody: {
                     required: true,
                     content: {
@@ -97,12 +93,8 @@ export const eventSwagger = {
             get: {
                 summary: 'Get all events',
                 tags: ['Events'],
+                security: [{ bearerAuth: [] }],
                 parameters: paginationQueryParams,
-                security: [
-                    {
-                        bearerAuth: [],
-                    },
-                ],
                 responses: {
                     '200': {
                         description: 'OK',
@@ -123,11 +115,7 @@ export const eventSwagger = {
             get: {
                 summary: 'Get an event by ID',
                 tags: ['Events'],
-                security: [
-                    {
-                        bearerAuth: [],
-                    },
-                ],
+                security: [{ bearerAuth: [] }],
                 parameters: [
                     {
                         name: 'id',
@@ -160,11 +148,7 @@ export const eventSwagger = {
             put: {
                 summary: 'Update an event by ID',
                 tags: ['Events'],
-                security: [
-                    {
-                        bearerAuth: [],
-                    },
-                ],
+                security: [{ bearerAuth: [] }],
                 parameters: [
                     {
                         name: 'id',
@@ -208,11 +192,7 @@ export const eventSwagger = {
             delete: {
                 summary: 'Delete an event by ID',
                 tags: ['Events'],
-                security: [
-                    {
-                        bearerAuth: [],
-                    },
-                ],
+                security: [{ bearerAuth: [] }],
                 parameters: [
                     {
                         name: 'id',
@@ -244,11 +224,7 @@ export const eventSwagger = {
             post: {
                 summary: 'Save an event',
                 tags: ['Events'],
-                security: [
-                    {
-                        bearerAuth: [],
-                    },
-                ],
+                security: [{ bearerAuth: [] }],
                 parameters: [
                     {
                         name: 'id',
@@ -283,11 +259,7 @@ export const eventSwagger = {
             post: {
                 summary: 'Unsave an event',
                 tags: ['Events'],
-                security: [
-                    {
-                        bearerAuth: [],
-                    },
-                ],
+                security: [{ bearerAuth: [] }],
                 parameters: [
                     {
                         name: 'id',
@@ -322,6 +294,7 @@ export const eventSwagger = {
             get: {
                 summary: "Get saved events",
                 tags: ['Events'],
+                security: [{ bearerAuth: [] }],
                 parameters: paginationQueryParams,
                 responses: {
                     200: {
@@ -337,6 +310,7 @@ export const eventSwagger = {
             get: {
                 summary: "Get events created by you",
                 tags: ['Events'],
+                security: [{ bearerAuth: [] }],
                 parameters: paginationQueryParams,
                 responses: {
                     200: {

@@ -67,11 +67,7 @@ export const onboardingSwagger = {
                 summary: 'Onboard Account',
                 description: 'Onboard the authenticated user\'s account by providing additional information.',
                 tags: ['Onboarding'],
-                security: [
-                    {
-                        bearerAuth: [],
-                    },
-                ],
+                security: [{ bearerAuth: [] }],
                 requestBody: {
                     required: true,
                     content: {

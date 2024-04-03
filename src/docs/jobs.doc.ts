@@ -255,6 +255,7 @@ export const jobSwagger = {
         get: {
             summary: "Get saved jobs",
             tags: ['Jobs'],
+            security: [{ bearerAuth: [] }],
             parameters: paginationQueryParams,
             responses: {
                 200: {
@@ -270,6 +271,7 @@ export const jobSwagger = {
         get: {
             summary: "Get applied jobs",
             tags: ['Jobs'],
+            security: [{ bearerAuth: [] }],
             parameters: paginationQueryParams,
             responses: {
                 200: {
@@ -285,6 +287,7 @@ export const jobSwagger = {
         get: {
             summary: "Get jobs created by you",
             tags: ['Jobs'],
+            security: [{ bearerAuth: [] }],
             parameters: paginationQueryParams,
             responses: {
                 200: {

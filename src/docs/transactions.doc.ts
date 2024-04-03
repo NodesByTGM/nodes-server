@@ -34,11 +34,7 @@ export const transactionSwagger = {
                 tags: ['Transactions'],
                 parameters: transactionQueryParams,
                 description: 'Endpoint to verify internal transaction',
-                security: [
-                    {
-                        bearerAuth: [],
-                    },
-                ],
+                security: [{ bearerAuth: [] }],
                 responses: {
                     '200': {
                         description: 'OK',

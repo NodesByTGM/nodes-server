@@ -6,6 +6,7 @@ export const mediaSwagger = {
             post: {
                 summary: 'Upload Media for all kinds of things, this will return an id and link to the uploaded media.',
                 tags: ['Uploads'],
+                security: [{ bearerAuth: [] }],
                 requestBody: {
                     required: true,
                     content: {
@@ -36,6 +37,7 @@ export const mediaSwagger = {
             delete: {
                 summary: 'Delete Media that has been uploaded using the id of the uploaded media.',
                 tags: ['Uploads'],
+                security: [{ bearerAuth: [] }],
                 parameters: [
                     {
                         name: 'id',

@@ -41,6 +41,7 @@ export const spacesSwagger = {
             get: {
                 summary: 'Get All Spaces',
                 tags: ['Spaces'],
+                security: [{ bearerAuth: [] }],
                 parameters: paginationQueryParams,
                 responses: {
                     '200': {
@@ -54,6 +55,7 @@ export const spacesSwagger = {
             post: {
                 summary: 'Create Space',
                 tags: ['Spaces'],
+                security: [{ bearerAuth: [] }],
                 requestBody: {
                     required: true,
                     content: {
@@ -74,6 +76,7 @@ export const spacesSwagger = {
             put: {
                 summary: 'Update Space',
                 tags: ['Spaces'],
+                security: [{ bearerAuth: [] }],
                 requestBody: {
                     required: true,
                     content: {
@@ -96,6 +99,7 @@ export const spacesSwagger = {
             get: {
                 summary: 'Get My Spaces',
                 tags: ['Spaces'],
+                security: [{ bearerAuth: [] }],
                 parameters: paginationQueryParams,
                 responses: {
                     '200': {
@@ -134,8 +138,8 @@ export const spacesSwagger = {
             },
             put: {
                 summary: 'Update a specific spaces by ID',
-                tags: ['Spaces'], // Moved tags field here
-                security: [{ bearerAuth: [] }],
+                tags: ['Spaces'],
+                security: [{ bearerAuth: [] }], // Moved tags field here
                 parameters: [
                     {
                         name: 'id',
@@ -166,6 +170,7 @@ export const spacesSwagger = {
             // delete: {
             //     summary: 'Delete a specific spaces by ID',
             //     tags: ['Spaces'],
+                // security: [{ bearerAuth: [] }],
             //     security: [{ bearerAuth: [] }],
             //     parameters: [
             //         {

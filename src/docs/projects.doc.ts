@@ -51,6 +51,7 @@ export const projectsSwagger = {
             get: {
                 summary: 'Get All Projects',
                 tags: ['Projects'],
+                security: [{ bearerAuth: [] }],
                 parameters: paginationQueryParams,
                 responses: {
                     '200': {
@@ -64,6 +65,7 @@ export const projectsSwagger = {
             post: {
                 summary: 'Create Project',
                 tags: ['Projects'],
+                security: [{ bearerAuth: [] }],
                 requestBody: {
                     required: true,
                     content: {
@@ -86,6 +88,7 @@ export const projectsSwagger = {
             get: {
                 summary: 'Get My Projects',
                 tags: ['Projects'],
+                security: [{ bearerAuth: [] }],
                 parameters: paginationQueryParams,
                 responses: {
                     '200': {
