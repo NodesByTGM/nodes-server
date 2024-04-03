@@ -8,6 +8,8 @@ import { jobSwagger } from './jobs.doc';
 import { eventSwagger } from './events.doc';
 import { transactionSwagger } from './transactions.doc';
 import { communitySwagger } from './community.doc';
+import { postsSwagger } from './posts.doc';
+
 // import pjson from '../../package.json';
 const options = {
     definition: {
@@ -45,6 +47,7 @@ const options = {
             ...jobSwagger.paths,
             ...transactionSwagger.paths,
             ...mediaSwagger.paths,
+            ...postsSwagger.paths,
             ...communitySwagger.paths
             // ...upgradesSwagger.paths,
         }

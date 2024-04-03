@@ -1,11 +1,11 @@
 import { constructResponseSchema, fileSwaggerSchema, paginationQueryParams, postSchema } from "./common.doc";
 
-
-
 const postRequestSchema = {
     type: 'object',
     properties: {
         body: { type: 'string' },
+        type: { type: 'string' },
+        forignKey: { type: 'string' },
         attachments: {
             type: 'array',
             items: fileSwaggerSchema
@@ -14,11 +14,10 @@ const postRequestSchema = {
             type: 'array',
             items: { type: 'string' }
         },
-    }
+    },
+    required: ['body', 'type']
+    
 };
-// text, author, hashtags, startDate, endDate
-
-
 
 export const qsParams = [
     ...paginationQueryParams,
@@ -70,12 +69,12 @@ export const qsParams = [
     },
 ]
 
-export const communitySwagger = {
+export const postsSwagger = {
     paths: {
-        '/api/v1/community/posts/': {
+        '/api/v1/posts/': {
             post: {
                 summary: 'Create an post',
-                tags: ['Community'],
+                tags: ['Posts'],
                 security: [
                     {
                         bearerAuth: [],
@@ -109,7 +108,7 @@ export const communitySwagger = {
             },
             get: {
                 summary: 'Get all posts',
-                tags: ['Community'],
+                tags: ['Posts'],
                 parameters: qsParams,
                 security: [
                     {
@@ -132,10 +131,10 @@ export const communitySwagger = {
                 },
             },
         },
-        '/api/v1/community/posts/{id}': {
+        '/api/v1/posts/{id}': {
             get: {
                 summary: 'Get a post by ID',
-                tags: ['Community'],
+                tags: ['Posts'],
                 security: [
                     {
                         bearerAuth: [],
@@ -172,7 +171,7 @@ export const communitySwagger = {
             },
             // put: {
             //     summary: 'Update an post by ID',
-            //     tags: ['Community'],
+            //     tags: ['Posts'],
             //     security: [
             //         {
             //             bearerAuth: [],
@@ -217,7 +216,7 @@ export const communitySwagger = {
             // },
             // delete: {
             //     summary: 'Delete an post by ID',
-            //     tags: ['Community'],
+            //     tags: ['Posts'],
             //     security: [
             //         {
             //             bearerAuth: [],
@@ -250,10 +249,10 @@ export const communitySwagger = {
             //     },
             // },
         },
-        '/api/v1/community/posts/like/{id}': {
+        '/api/v1/posts/like/{id}': {
             post: {
                 summary: 'Like a post',
-                tags: ['Community'],
+                tags: ['Posts'],
                 security: [
                     {
                         bearerAuth: [],
@@ -289,10 +288,10 @@ export const communitySwagger = {
                 },
             },
         },
-        '/api/v1/community/posts/unlike/{id}': {
+        '/api/v1/posts/unlike/{id}': {
             post: {
                 summary: 'Unlike a post',
-                tags: ['Community'],
+                tags: ['Posts'],
                 security: [
                     {
                         bearerAuth: [],

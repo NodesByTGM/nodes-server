@@ -4,7 +4,7 @@ import { constructResponse } from "../services";
 import { paginateData } from "../utilities/common";
 import { AppConfig } from "../utilities/config";
 
-export const getCommunityPostsController: RequestHandler = async (req: any, res) => {
+export const getPostsController: RequestHandler = async (req: any, res) => {
     try {
         const { body, author, hashtags, startDate, endDate } = req.query;
 
@@ -72,7 +72,7 @@ export const getCommunityPostsController: RequestHandler = async (req: any, res)
     }
 }
 
-export const getCommunityPostController: RequestHandler = async (req: any, res) => {
+export const getPostController: RequestHandler = async (req: any, res) => {
     try {
         const post = await PostModel.findById(req.params.id)
 
@@ -108,13 +108,15 @@ export const getCommunityPostController: RequestHandler = async (req: any, res) 
     }
 }
 
-export const createCommunityPostController: RequestHandler = async (req: any, res) => {
+export const createPostController: RequestHandler = async (req: any, res) => {
     try {
         const {
             body,
             parent,
             hashtags,
             attachments,
+            type,
+            foreignKey,
         } = req.body
 
         if (!body) {
@@ -130,6 +132,8 @@ export const createCommunityPostController: RequestHandler = async (req: any, re
             parent,
             hashtags,
             attachments,
+            foreignKey,
+            type,
             author: req.user.id
         });
         if (parent) {
@@ -163,7 +167,7 @@ export const createCommunityPostController: RequestHandler = async (req: any, re
     }
 }
 
-export const likeCommunityPostController: RequestHandler = async (req: any, res) => {
+export const likePostController: RequestHandler = async (req: any, res) => {
     try {
         const post = await PostModel.findById(req.params.id)
         if (!post) {
@@ -206,7 +210,7 @@ export const likeCommunityPostController: RequestHandler = async (req: any, res)
     }
 }
 
-export const unlikeCommunityPostController: RequestHandler = async (req: any, res) => {
+export const unlikePostController: RequestHandler = async (req: any, res) => {
     try {
         const post = await PostModel.findById(req.params.id)
         if (!post) {

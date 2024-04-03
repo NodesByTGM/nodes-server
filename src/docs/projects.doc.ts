@@ -102,5 +102,20 @@ export const projectsSwagger = {
                 },
             },
         },
+        '/api/v1/projects/mine': {
+            get: {
+                summary: 'Get My Projects',
+                tags: ['Projects'],
+                parameters: paginationQueryParams,
+                responses: {
+                    '200': {
+                        description: 'Successful response',
+                        content: {
+                            'application/json': { schema: constructResponseSchema(projectSchema, true) }
+                        }
+                    },
+                },
+            },
+        }
     },
 };

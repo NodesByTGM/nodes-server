@@ -10,4 +10,5 @@ export { default as JobModel } from './job.model'
 export { default as TransactionModel } from './transaction.model'
 export { default as SubscriptionModel } from './subscription.model'
 export { default as PostModel } from './post.model'
+export { default as SpaceModel } from './space.model'
 

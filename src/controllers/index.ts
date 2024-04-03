@@ -22,7 +22,8 @@ export {
 
 export {
     projectCreateController,
-    allprojectsController
+    myProjectsController,
+getProjectsController
 } from './project.controllers'
 
 export {
@@ -62,9 +63,18 @@ export {
 } from './events.controllers'
 
 export {
+    getCommunityPostController,
+    getCommunityPostsController,
+    createCommunityPostController,
+    likeCommunityPostController,
+    unlikeCommunityPostController
+} from './community.controllers'
+
+
+export {
     getPostController,
     getPostsController,
     createPostController,
     likePostController,
     unlikePostController
-} from './community.controllers'
+} from './posts.controllers'

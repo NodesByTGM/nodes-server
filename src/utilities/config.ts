@@ -40,6 +40,7 @@ export enum JobType {
 }
 const API_OBJECTS = {
     Project: 'Project',
+    Space: 'Space',
     Post: 'Post',
     Account: 'Account',
     Media: 'Media',
@@ -54,9 +55,15 @@ const API_OBJECTS = {
     Base: 'Base'
 }
 
+const POST_TYPES = {
+    Community: 0,
+    Space: 0,
+}
+
 export const AppConfig = {
     API_ENDPOINTS,
     API_OBJECTS,
+    POST_TYPES,
     ERROR_MESSAGES: {
         InvalidCredentialsProvided: 'Invalid Credentials Provided.',
         AuthenticationError: 'Authentication Error.',

@@ -225,6 +225,45 @@ export const constructResponseSchema = (schema: any, paginate = false) => {
     }
 }
 
+export const authorSchema = {
+    type: 'object',
+    properties: {
+        name: { type: 'string' },
+        avatar: fileSwaggerSchema,
+        id: { type: 'string' }
+    }
+}
+
+export const postSchema = {
+    type: 'object',
+    properties: {
+        body: { type: 'string' },
+        attachments: {
+            type: 'array',
+            items: fileSwaggerSchema
+        },
+        comments: {
+            type: 'array',
+            items: { type: 'object' } // Assuming comment IDs are strings
+        },
+        hashtags: {
+            type: 'array',
+            items: { type: 'string' } // Assuming hashtags are strings
+        },
+        author: authorSchema,
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
+        likes: {
+            type: 'array',
+            items: authorSchema
+        },
+        liked: { type: 'boolean' },
+        id: { type: 'string' },
+        foreignKey: { anyOf: [{ type: 'null' }, { type: 'string' }] },
+        type: { type: 'string' },
+    }
+};
+
 export const userSchemaExample = {
     name: "John Doe",
     username: "johnDoe",

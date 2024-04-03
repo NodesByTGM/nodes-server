@@ -14,7 +14,9 @@ import {
   eventsRouter,
   jobsRouter,
   transactionsRouter,
-  communityRouter
+  communityRouter,
+  spacesRouter,
+  postsRouter
 } from "./routes";
 import swaggerSpec from "./docs";
 
@@ -65,6 +67,14 @@ app.use('/api/v1/transactions', transactionsRouter);
 
 // Define community routes
 app.use('/api/v1/community', communityRouter);
+
+
+// Define spaces routes
+app.use('/api/v1/spaces', spacesRouter);
+
+
+// Define posts routes
+app.use('/api/v1/posts', postsRouter);
 
 // Swagger Docs
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
