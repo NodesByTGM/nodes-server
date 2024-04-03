@@ -9,6 +9,7 @@ import { eventSwagger } from './events.doc';
 import { transactionSwagger } from './transactions.doc';
 import { communitySwagger } from './community.doc';
 import { postsSwagger } from './posts.doc';
+import { spacesSwagger } from './spaces.doc';
 
 // import pjson from '../../package.json';
 const options = {
@@ -48,7 +49,8 @@ const options = {
             ...transactionSwagger.paths,
             ...mediaSwagger.paths,
             ...postsSwagger.paths,
-            ...communitySwagger.paths
+            ...communitySwagger.paths,
+            ...spacesSwagger.paths
             // ...upgradesSwagger.paths,
         }
     },

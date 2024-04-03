@@ -6,6 +6,14 @@ export const uploadMediaController: RequestHandler = async (req: any, res) => {
     try {
         const file = req.body.file
         const data = await uploadMedia(file)
+        if (!data) {
+            return constructResponse({
+                res,
+                code: 400,
+                message: AppConfig.ERROR_MESSAGES.BadRequestError,
+                apiObject: AppConfig.API_OBJECTS.Media
+            })
+        }
         return constructResponse({
             res,
             code: 200,

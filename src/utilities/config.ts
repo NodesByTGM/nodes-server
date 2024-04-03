@@ -55,15 +55,10 @@ const API_OBJECTS = {
     Base: 'Base'
 }
 
-const POST_TYPES = {
-    Community: 0,
-    Space: 0,
-}
 
 export const AppConfig = {
     API_ENDPOINTS,
     API_OBJECTS,
-    POST_TYPES,
     ERROR_MESSAGES: {
         InvalidCredentialsProvided: 'Invalid Credentials Provided.',
         AuthenticationError: 'Authentication Error.',
@@ -123,6 +118,14 @@ export const AppConfig = {
         FULL_TIME: 0,
         PART_TIME: 1,
         CONTRACT: 2,
+    },
+    POST_TYPES: {
+        Community: 0,
+        Space: 0,
+    },
+    MEMBER_TYPES: {
+        Member: 0,
+        Admin: 1
     },
     TRANSACTION_DESC_TYPES: {
         MEMBERSHIP_FEE: 'MEMBERSHIP_FEE',

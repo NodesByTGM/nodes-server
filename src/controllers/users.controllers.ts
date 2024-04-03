@@ -89,8 +89,8 @@ export const profileUpdateController: RequestHandler = async (req: any, res: any
                     business = business.toJSON()
                 }
             }
-            await user.save()
-            const data = { ...user.toJSON(), business }
+            const account = await user.save()
+            const data = { ...account.toJSON(), business }
 
             return constructResponse({
                 res,

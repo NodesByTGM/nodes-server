@@ -2,18 +2,9 @@ import { constructResponseSchema, fileSwaggerSchema, paginationQueryParams } fro
 const projectRequestSchema = {
     type: 'object',
     properties: {
-        name: {
-            type: 'string',
-            description: 'Name of the project',
-        },
-        description: {
-            type: 'string',
-            description: 'Description of the project',
-        },
-        projectURL: {
-            type: 'string',
-            description: 'URL of the project',
-        },
+        name: { type: 'string', },
+        description: { type: 'string', },
+        projectURL: { type: 'string', },
         thumbnail: fileSwaggerSchema,
         images: {
             type: 'array',
@@ -24,14 +15,8 @@ const projectRequestSchema = {
             items: {
                 type: 'object',
                 properties: {
-                    name: {
-                        type: 'string',
-                        description: 'Name of the collaborator',
-                    },
-                    role: {
-                        type: 'string',
-                        description: 'Role of the collaborator',
-                    },
+                    name: { type: 'string', },
+                    role: { type: 'string', },
                 },
             },
         },
@@ -61,11 +46,6 @@ const projectSchema = {
 };
 
 export const projectsSwagger = {
-    // openapi: '3.0.0',
-    // info: {
-    //   title: 'Project API',
-    //   version: '1.0.0',
-    // },
     paths: {
         '/api/v1/projects': {
             get: {
@@ -93,7 +73,7 @@ export const projectsSwagger = {
                     },
                 },
                 responses: {
-                    '200': {
+                    '201': {
                         description: 'Successful response',
                         content: {
                             'application/json': { schema: constructResponseSchema(projectSchema) }

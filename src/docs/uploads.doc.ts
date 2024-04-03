@@ -50,9 +50,9 @@ export const mediaSwagger = {
                 responses: {
                     '200': {
                         description: 'Successful response',
-                        content: {
-                            'application/json': { schema: constructResponseSchema(trueFileSwaggerSchema) },
-                        },
+                        // content: {
+                        //     'application/json': { schema: constructResponseSchema(trueFileSwaggerSchema) },
+                        // },
                     },
                 },
             },

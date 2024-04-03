@@ -4,6 +4,7 @@ import { RequestWithUser } from '../interfaces';
 import { AccountModel } from '../mongodb/models';
 import { verifyAccessToken } from '../services/auth.service';
 import { AppConfig } from '../utilities/config';
+import { constructResponse } from '../services';
 
 const authenticate = async (req: RequestWithUser | Request, res: Response, next: NextFunction) => {
     try {
@@ -13,19 +14,34 @@ const authenticate = async (req: RequestWithUser | Request, res: Response, next:
         }
 
         if (!token) {
-            return res.status(401).json({ message: AppConfig.ERROR_MESSAGES.AuthenticationError });
+            return constructResponse({
+                res,
+                code: 401,
+                message: AppConfig.ERROR_MESSAGES.AuthenticationError,
+                apiObject: AppConfig.API_OBJECTS.Auth
+            })
         }
 
         const decodedToken: any = verifyAccessToken(token);
         const user: any = await AccountModel.findById(decodedToken?.accountId);
         if (!user) {
-            return res.status(404).json({ message: AppConfig.ERROR_MESSAGES.AuthenticationError });
+            return constructResponse({
+                res,
+                code: 401,
+                message: AppConfig.ERROR_MESSAGES.AuthenticationError,
+                apiObject: AppConfig.API_OBJECTS.Auth
+            })
         }
 
         req.user = user;
         next();
     } catch (error) {
-        res.status(401).json({ message: AppConfig.ERROR_MESSAGES.AuthenticationError });
+        return constructResponse({
+            res,
+            code: 401,
+            message: AppConfig.ERROR_MESSAGES.AuthenticationError,
+            apiObject: AppConfig.API_OBJECTS.Auth
+        })
     }
 };
 

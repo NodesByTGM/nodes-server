@@ -37,16 +37,11 @@ export const fileSwaggerSchema = {
 }
 
 export const trueFileSwaggerSchema = {
-    anyOf: [
-        { type: 'null' },
-        {
-            type: 'object',
-            properties: {
-                id: { type: 'string' },
-                url: { type: 'string', format: 'uri' }
-            }
-        }
-    ]
+    type: 'object',
+    properties: {
+        id: { type: 'string' },
+        url: { type: 'string', format: 'uri' }
+    }
 }
 
 export const businessSchema = {
@@ -61,8 +56,6 @@ export const businessSchema = {
         id: { type: 'string' }
     }
 }
-
-
 
 export const subscriptionSchema = {
     type: 'object',
@@ -158,74 +151,7 @@ export const userSchema = {
     }
 };
 
-export const responseSchema = {
-    type: 'object',
-    properties: {
-        apiObject: { type: 'string' },
-        code: { type: 'integer' },
-        status: { type: 'string' },
-        isError: { type: 'boolean' },
-        message: { type: 'string' },
-        result: { type: 'object' }
-        // You might want to specify the schema for result if it's not always an empty object
-    }
-}
-export const tokensSchema = {
-    type: 'object',
-    properties: {
-        accessToken: { type: 'string' },
-        refreshToken: { type: 'string' }
-    }
-}
-
-
-export const authUserSchema = {
-    type: 'object',
-    properties: {
-        user: userSchema.properties,
-        accessToken: { type: 'string' },
-        refreshToken: { type: 'string' }
-    }
-}
-
-export const paginatedSchema = {
-    type: 'object',
-    properties: {
-        currentPage: { type: 'number' },
-        pageSize: { type: 'number' },
-        totalPages: { type: 'number' },
-        totalItems: { type: 'number' },
-        items: {
-            type: 'array',
-            items: { type: 'object' }
-        }
-    }
-}
-export const paginateSchema = (schema: any) => {
-    return {
-        type: 'object',
-        properties: {
-            ...paginatedSchema.properties,
-            items: {
-                type: 'array',
-                items: schema
-
-            }
-        }
-    }
-}
-
-export const constructResponseSchema = (schema: any, paginate = false) => {
-    return {
-        type: 'object',
-        properties: {
-            ...responseSchema.properties,
-            result: paginate ? paginateSchema(schema) : schema
-        }
-    }
-}
-
-export const authorSchema = {
+export const miniUserSchema = {
     type: 'object',
     properties: {
         name: { type: 'string' },
@@ -250,12 +176,12 @@ export const postSchema = {
             type: 'array',
             items: { type: 'string' } // Assuming hashtags are strings
         },
-        author: authorSchema,
+        author: miniUserSchema,
         createdAt: { type: 'string', format: 'date-time' },
         updatedAt: { type: 'string', format: 'date-time' },
         likes: {
             type: 'array',
-            items: authorSchema
+            items: miniUserSchema
         },
         liked: { type: 'boolean' },
         id: { type: 'string' },
@@ -263,6 +189,74 @@ export const postSchema = {
         type: { type: 'string' },
     }
 };
+
+export const responseSchema = {
+    type: 'object',
+    properties: {
+        apiObject: { type: 'string' },
+        code: { type: 'integer' },
+        status: { type: 'string' },
+        isError: { type: 'boolean' },
+        message: { type: 'string' },
+        result: { type: 'object' }
+        // You might want to specify the schema for result if it's not always an empty object
+    }
+}
+
+export const tokensSchema = {
+    type: 'object',
+    properties: {
+        accessToken: { type: 'string' },
+        refreshToken: { type: 'string' }
+    }
+}
+
+export const authUserSchema = {
+    type: 'object',
+    properties: {
+        user: userSchema.properties,
+        accessToken: { type: 'string' },
+        refreshToken: { type: 'string' }
+    }
+}
+
+export const paginatedSchema = {
+    type: 'object',
+    properties: {
+        currentPage: { type: 'number' },
+        pageSize: { type: 'number' },
+        totalPages: { type: 'number' },
+        totalItems: { type: 'number' },
+        items: {
+            type: 'array',
+            items: { type: 'object' }
+        }
+    }
+}
+
+export const paginateSchema = (schema: any) => {
+    return {
+        type: 'object',
+        properties: {
+            ...paginatedSchema.properties,
+            items: {
+                type: 'array',
+                items: schema
+
+            }
+        }
+    }
+}
+
+export const constructResponseSchema = (schema: any, paginate = false) => {
+    return {
+        type: 'object',
+        properties: {
+            ...responseSchema.properties,
+            result: paginate ? paginateSchema(schema) : schema
+        }
+    }
+}
 
 export const userSchemaExample = {
     name: "John Doe",

@@ -23,7 +23,7 @@ export {
 export {
     projectCreateController,
     myProjectsController,
-getProjectsController
+    getProjectsController
 } from './project.controllers'
 
 export {
@@ -78,3 +78,5 @@ export {
     likePostController,
     unlikePostController
 } from './posts.controllers'
+
+export { default as spaceControllers } from './spaces.controllers'
