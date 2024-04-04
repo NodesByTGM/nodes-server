@@ -78,6 +78,7 @@ export const createSpace: RequestHandler = async (req: any, res) => {
             rules,
             owner: req.user.id
         })
+        space.members.create({ account: req.user.id, status: AppConfig.MEMBER_TYPES.Admin })
         await SpaceModel.populate(space, [
             { path: 'owner', select: 'name id avatar', options: { autopopulate: false } },
             { path: 'members.account', select: 'name id avatar', options: { autopopulate: false } }
@@ -493,5 +494,14 @@ export default {
 // follow space
 // followed spaces
 // foolow conversation
-// report post
+// report post/conversation
 // message user
+
+// delete your account
+// transactions history
+// Business
+// Fri, Aug 25, 2023
+// 50000
+// Active
+
+// analytics

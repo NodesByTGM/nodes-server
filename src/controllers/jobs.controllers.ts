@@ -290,7 +290,7 @@ export const getJobController: RequestHandler = async (req: any, res) => {
             applied: job.applicants.includes(req.user.id),
             saved: job.saves.includes(req.user.id),
             saves: undefined,
-            applicants: undefined
+            _applicants:undefined
         }
         return constructResponse({
             res,

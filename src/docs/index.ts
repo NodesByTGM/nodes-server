@@ -25,6 +25,19 @@ const options = {
                 url: "https://elijahsoladoye.vercel.app"
             },
         },
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'apiKey',
+                    in: 'header',
+                    name: 'Authorization',
+                    // type: 'http',
+                    // schema: 'bearer',
+                    // bearerFormat: 'JWT',
+                    description: 'Enter your token like this: "Bearer <ACCESS_TOKEN>"',
+                }
+            }
+        },
         servers: [
             {
                 url: "http://localhost:3001/",

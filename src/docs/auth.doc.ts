@@ -488,7 +488,7 @@ export const authSwagger = {
             },
         },
 
-        '/api/v1/change-password': {
+        '/api/v1/auth/change-password': {
             post: {
                 summary: 'Change Password',
                 description: 'Change the password for the authenticated user.',
@@ -537,7 +537,7 @@ export const authSwagger = {
             },
         },
 
-        '/api/v1/logout': {
+        '/api/v1/auth/logout': {
             post: {
                 summary: 'Logout',
                 description: 'Logout the authenticated user.',

@@ -38,6 +38,11 @@ app.use(cookieParser())
 
 const port = process.env.PORT || 3001;
 
+app.use((req, res, next) => {
+  res.setHeader('X-Powered-By', 'TheGridManagement');
+  next();
+});
+
 // Define authentication routes
 app.use('/api/v1/auth', authRouter);
 

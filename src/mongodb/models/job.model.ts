@@ -20,13 +20,14 @@ const JobSchema = new mongoose.Schema({
         type: [Schema.Types.ObjectId],
         required: true,
         ref: 'Account',
-        default: []
+        default: [],
+        autopopulate: { select: 'name id' }
     },
-
     business: {
         type: Schema.Types.ObjectId,
         required: true,
         ref: 'Business',
+        autopopulate: true
     },
 }, {
     timestamps: true,
@@ -48,6 +49,7 @@ const JobSchema = new mongoose.Schema({
 });
 
 JobSchema.plugin(mongooseLeanId);
+JobSchema.plugin(require('mongoose-autopopulate'));
 
 const JobModel = mongoose.model('Job', JobSchema);
 
