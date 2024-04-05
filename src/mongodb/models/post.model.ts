@@ -1,18 +1,29 @@
 import mongoose, { Schema } from 'mongoose';
-import { fileSchema } from './file.model';
-import { mongooseLeanId } from './plugin';
 import { AppConfig } from '../../utilities/config';
+import { fileSchema } from './file.model';
 
 const PostSchema = new Schema({
     body: { type: String, required: true },
     attachments: { type: [fileSchema], default: [] },
     hashtags: { type: [String], required: false, default: [] },
-    parent: { type: Schema.Types.ObjectId, ref: 'Post', default: null },
-    likes: { type: [Schema.Types.ObjectId], ref: 'Account', default: [] },
-    comments: { type: [Schema.Types.ObjectId], ref: 'Post', autopopulate: true, default: [] },
-    author: { type: Schema.Types.ObjectId, required: true, ref: 'Account', autopopulate: true },
     foreignKey: { type: String },
     type: { type: String, enum: Object.values(AppConfig.POST_TYPES), default: AppConfig.POST_TYPES.Community },
+    parent: {
+        type: Schema.Types.ObjectId,
+        ref: 'Post', default: null
+    },
+    likes: {
+        type: [Schema.Types.ObjectId],
+        ref: 'Account', default: []
+    },
+    comments: {
+        type: [Schema.Types.ObjectId],
+        ref: 'Post', default: [], autopopulate: { maxDepth: 1 }
+    },
+    author: {
+        type: Schema.Types.ObjectId,
+        required: true, ref: 'Account', autopopulate: { select: ['name', 'id', 'avatar'] }
+    },
 }, {
     timestamps: true,
     toJSON: {

@@ -12,16 +12,17 @@ const JobSchema = new mongoose.Schema({
     jobType: { type: Number, required: true, enum: Object.values(AppConfig.JOB_TYPES) },
     applicants: {
         type: [Schema.Types.ObjectId],
-        required: true,
         ref: 'Account',
-        default: []
+        required: true,
+        default: [],
+        autopopulate: { select: ['name', 'id', 'avatar'] }
     },
     saves: {
         type: [Schema.Types.ObjectId],
-        required: true,
         ref: 'Account',
+        required: true,
         default: [],
-        autopopulate: { select: 'name id' }
+        autopopulate: { select: ['name', 'id', 'avatar'] }
     },
     business: {
         type: Schema.Types.ObjectId,
@@ -39,13 +40,6 @@ const JobSchema = new mongoose.Schema({
             return object;
         }
     },
-    // toObject: {
-    //     transform: (_: any, rec: Record<string, any>) => {
-    //         const { __v, _id, ...object } = rec;
-    //         object.id = _id
-    //         return object;
-    //     }
-    // }
 });
 
 JobSchema.plugin(mongooseLeanId);

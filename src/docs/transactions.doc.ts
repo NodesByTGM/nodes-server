@@ -28,7 +28,7 @@ export const transactionSwagger = {
         //         },
         //     },
         // },
-        '/verify/internal': {
+        'api/v1/transactions/verify/internal': {
             get: {
                 summary: 'Verify Internal Transaction',
                 tags: ['Transactions'],

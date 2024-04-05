@@ -228,7 +228,6 @@ export const unsaveEventController: RequestHandler = async (req: any, res) => {
     }
 }
 
-
 export const getEventController: RequestHandler = async (req: any, res) => {
     try {
         const event = await EventModel.findById(req.params.id).populate('business')
@@ -265,17 +264,24 @@ export const getEventController: RequestHandler = async (req: any, res) => {
 
 export const getEventsController: RequestHandler = async (req: any, res) => {
     try {
-        let events;
-        if (req.query.businessId) {
-            events = await EventModel.find({ business: req.query.businessId }).populate('business').lean()
-        } else {
-            events = await EventModel.find({}).populate('business').lean()
-        }
-        events = events.map(x => ({
-            ...x,
-            saved: x.saves.map((y: any) => y.toString()).includes(req.user.id),
-            saves: undefined
-        }))
+        const userId = req.user.id.toString()
+        // TODO HIDE BASED ON OWNER
+        const events = await EventModel.aggregate([
+            // { $match: { saves: req.user._id } },
+            { $sort: { createdAt: -1 } },
+            {
+                $addFields: {
+                    saved: {
+                        $in: [userId, { $map: { input: "$saves", as: "saved", in: { $toString: "$$saved" } } }]
+                    }
+                }
+            },
+            { $addFields: { id: "$_id" } },
+            { $unset: ["_id", "__v"] }
+        ]);
+        await EventModel.populate(events, [
+            { path: 'saves', select: 'name id avatar', options: { autopopulate: false } }
+        ]);
         const data = paginateData(req.query, events, 'events')
 
         return constructResponse({
@@ -299,11 +305,24 @@ export const getEventsController: RequestHandler = async (req: any, res) => {
 export const getMyEventsController: RequestHandler = async (req: any, res) => {
     try {
         const business = req.user.business
-        let events = await EventModel.find({ business }).populate('business saves').lean()
-        events = events.map((x: any) => ({
-            ...x,
-            saved: x.saves.map((y: any) => y._id.toString()).includes(req.user.id)
-        }))
+        const userId = req.user.id.toString()
+        // TODO HIDE BASED ON OWNER
+        const events = await EventModel.aggregate([
+            { $match: { business: business._id } },
+            { $sort: { createdAt: -1 } },
+            {
+                $addFields: {
+                    saved: {
+                        $in: [userId, { $map: { input: "$saves", as: "saved", in: { $toString: "$$saved" } } }]
+                    }
+                }
+            },
+            { $addFields: { id: "$_id" } },
+            { $unset: ["_id", "__v"] }
+        ]);
+        await EventModel.populate(events, [
+            { path: 'saves', select: 'name id avatar', options: { autopopulate: false } }
+        ]);
         const data = paginateData(req.query, events, 'events')
 
         return constructResponse({
@@ -326,12 +345,24 @@ export const getMyEventsController: RequestHandler = async (req: any, res) => {
 
 export const getSavedEventsController: RequestHandler = async (req: any, res) => {
     try {
-        let events: any = await EventModel.find({ 'saves': req.user.id }).lean()
-        events = events.map((x: any) => ({
-            ...x,
-            saved: x.saves.map((y: any) => y.toString()).includes(req.user.id),
-            saves: undefined
-        }))
+        const userId = req.user.id.toString()
+        // TODO HIDE BASED ON OWNER
+        const events = await EventModel.aggregate([
+            { $match: { saves: req.user._id } },
+            { $sort: { createdAt: -1 } },
+            {
+                $addFields: {
+                    saved: {
+                        $in: [userId, { $map: { input: "$saves", as: "saved", in: { $toString: "$$saved" } } }]
+                    }
+                }
+            },
+            { $addFields: { id: "$_id" } },
+            { $unset: ["_id", "__v"] }
+        ]);
+        await EventModel.populate(events, [
+            { path: 'saves', select: 'name id avatar', options: { autopopulate: false } }
+        ]);
         const data = paginateData(req.query, events, 'events')
 
         return constructResponse({

@@ -249,52 +249,52 @@ export const jobSwagger = {
                 }
                 // Add more response codes if necessary
             }
-        }
-    },
-    "/api/v1/jobs/saved": {
-        get: {
-            summary: "Get saved jobs",
-            tags: ['Jobs'],
-            security: [{ bearerAuth: [] }],
-            parameters: paginationQueryParams,
-            responses: {
-                200: {
-                    description: "A list of saved jobs",
-                    content: {
-                        'application/json': { schema: constructResponseSchema(jobSchema, true) }
-                    }
+        },
+        "/api/v1/jobs/saved": {
+            get: {
+                summary: "Get saved jobs",
+                tags: ['Jobs'],
+                security: [{ bearerAuth: [] }],
+                parameters: paginationQueryParams,
+                responses: {
+                    200: {
+                        description: "A list of saved jobs",
+                        content: {
+                            'application/json': { schema: constructResponseSchema(jobSchema, true) }
+                        }
+                    },
                 },
             },
         },
-    },
-    "/api/v1/jobs/applied": {
-        get: {
-            summary: "Get applied jobs",
-            tags: ['Jobs'],
-            security: [{ bearerAuth: [] }],
-            parameters: paginationQueryParams,
-            responses: {
-                200: {
-                    description: "A list of applied jobs",
-                    content: {
-                        'application/json': { schema: constructResponseSchema(jobSchema, true) }
-                    }
+        "/api/v1/jobs/applied": {
+            get: {
+                summary: "Get applied jobs",
+                tags: ['Jobs'],
+                security: [{ bearerAuth: [] }],
+                parameters: paginationQueryParams,
+                responses: {
+                    200: {
+                        description: "A list of applied jobs",
+                        content: {
+                            'application/json': { schema: constructResponseSchema(jobSchema, true) }
+                        }
+                    },
                 },
             },
         },
-    },
-    "/api/v1/jobs/mine": {
-        get: {
-            summary: "Get jobs created by you",
-            tags: ['Jobs'],
-            security: [{ bearerAuth: [] }],
-            parameters: paginationQueryParams,
-            responses: {
-                200: {
-                    description: "A list of applied jobs",
-                    content: {
-                        'application/json': { schema: constructResponseSchema(jobSchema, true) }
-                    }
+        "/api/v1/jobs/mine": {
+            get: {
+                summary: "Get jobs created by you",
+                tags: ['Jobs'],
+                security: [{ bearerAuth: [] }],
+                parameters: paginationQueryParams,
+                responses: {
+                    200: {
+                        description: "A list of applied jobs",
+                        content: {
+                            'application/json': { schema: constructResponseSchema(jobSchema, true) }
+                        }
+                    },
                 },
             },
         },

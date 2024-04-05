@@ -28,12 +28,13 @@ export const verifyTransactionController: RequestHandler = async (req, res) => {
 export const verifyInternalTransactionController: RequestHandler = async (req: any, res) => {
     try {
         const { reference } = req.query;
+        console.log(reference)
         if (!reference) {
             return constructResponse({
                 res,
                 code: 400,
                 message: AppConfig.ERROR_MESSAGES.BadRequestError,
-                apiObject: AppConfig.API_OBJECTS.Account
+                apiObject: AppConfig.API_OBJECTS.Transaction
             })
         }
         const verifiedTxn = await verifyTxnByReference(`${reference}`)
@@ -43,7 +44,7 @@ export const verifyInternalTransactionController: RequestHandler = async (req: a
                 res,
                 code: 400,
                 message: AppConfig.ERROR_MESSAGES.BadRequestError,
-                apiObject: AppConfig.API_OBJECTS.Account
+                apiObject: AppConfig.API_OBJECTS.Transaction
             })
         }
         const user = await AccountModel.findById(req.user.id)

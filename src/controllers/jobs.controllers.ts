@@ -276,7 +276,7 @@ export const unsaveJobController: RequestHandler = async (req: any, res) => {
 
 export const getJobController: RequestHandler = async (req: any, res) => {
     try {
-        const job = await JobModel.findById(req.params.id).populate('business')
+        const job = await JobModel.findById(req.params.id)
         if (!job) {
             return constructResponse({
                 res,
@@ -285,12 +285,14 @@ export const getJobController: RequestHandler = async (req: any, res) => {
                 apiObject: AppConfig.API_OBJECTS.Job
             })
         }
+
+        // TODO HIDE BASED ON OWNER
         const data = {
             ...job?.toJSON(),
             applied: job.applicants.includes(req.user.id),
             saved: job.saves.includes(req.user.id),
-            saves: undefined,
-            _applicants:undefined
+            saves: job.business === req.user.business ? job.saves : undefined,
+            applicants: job.business === req.user.business ? job.applicants : undefined,
         }
         return constructResponse({
             res,
@@ -312,20 +314,25 @@ export const getJobController: RequestHandler = async (req: any, res) => {
 
 export const getJobsController: RequestHandler = async (req: any, res) => {
     try {
-        let jobs;
-        if (req.query.businessId) {
-            jobs = await JobModel.find({ business: req.query.businessId })
-                .populate('business').lean()
-        } else {
-            jobs = await JobModel.find({}).populate('business').lean()
-        }
-        jobs = jobs.map(x => ({
-            ...x,
-            applied: x.applicants.map((y: any) => y.toString()).includes(req.user.id),
-            saved: x.saves.map((y: any) => y.toString()).includes(req.user.id),
-            saves: x.business === req.user.business ? x.saves : undefined,
-            applicants: x.business === req.user.business ? x.applicants : undefined
-        }))
+        const userId = req.user.id.toString()
+        // TODO HIDE BASED ON OWNER
+        const jobs = await JobModel.aggregate([
+            // { $match: { saves: req.user._id } },
+            { $sort: { createdAt: -1 } },
+            {
+                $addFields: {
+                    applied: {
+                        $in: [userId, { $map: { input: "$applicants", as: "applied", in: { $toString: "$$applied" } } }]
+                    },
+                    saved: {
+                        $in: [userId, { $map: { input: "$saves", as: "saved", in: { $toString: "$$saved" } } }]
+                    }
+                }
+            },
+            { $addFields: { id: "$_id" } },
+            { $unset: ["_id", "__v"] }
+        ]);
+        
         const data = paginateData(req.query, jobs, 'jobs')
         return constructResponse({
             res,
@@ -347,14 +354,27 @@ export const getJobsController: RequestHandler = async (req: any, res) => {
 
 export const getAppliedJobsController: RequestHandler = async (req: any, res) => {
     try {
-        let jobs: any = await JobModel.find({ 'applicants': req.user.id }).lean()
-        jobs = jobs.map((x: any) => ({
-            ...x,
-            applied: x.applicants.map((y: any) => y.toString()).includes(req.user.id),
-            saved: x.saves.map((y: any) => y.toString()).includes(req.user.id),
-            saves: undefined,
-            applicants: undefined
-        }))
+        const userId = req.user.id.toString()
+        const jobs = await JobModel.aggregate([
+            { $match: { applicants: req.user._id } },
+            { $sort: { createdAt: -1 } },
+            {
+                $addFields: {
+                    applied: {
+                        $in: [userId, { $map: { input: "$applicants", as: "applied", in: { $toString: "$$applied" } } }]
+                    },
+                    saved: {
+                        $in: [userId, { $map: { input: "$saves", as: "saved", in: { $toString: "$$saved" } } }]
+                    }
+                }
+            },
+            { $addFields: { id: "$_id" } },
+            { $unset: ["_id", "__v"] } //"applicants", "saves"
+        ]);
+        await JobModel.populate(jobs, [
+            { path: 'applicants', select: 'name id avatar', options: { autopopulate: false } },
+            { path: 'saves', select: 'name id avatar', options: { autopopulate: false } }
+        ]);
         const data = paginateData(req.query, jobs, 'jobs')
         return constructResponse({
             res,
@@ -376,14 +396,27 @@ export const getAppliedJobsController: RequestHandler = async (req: any, res) =>
 
 export const getSavedJobsController: RequestHandler = async (req: any, res) => {
     try {
-        let jobs: any = await JobModel.find({ 'saves': req.user.id }).lean()
-        jobs = jobs.map((x: any) => ({
-            ...x,
-            applied: x.applicants.map((y: any) => y.toString()).includes(req.user.id),
-            saved: x.saves.map((y: any) => y.toString()).includes(req.user.id),
-            saves: undefined,
-            applicants: undefined
-        }))
+        const userId = req.user.id.toString()
+        const jobs = await JobModel.aggregate([
+            { $match: { saves: req.user._id } },
+            { $sort: { createdAt: -1 } },
+            {
+                $addFields: {
+                    applied: {
+                        $in: [userId, { $map: { input: "$applicants", as: "applied", in: { $toString: "$$applied" } } }]
+                    },
+                    saved: {
+                        $in: [userId, { $map: { input: "$saves", as: "saved", in: { $toString: "$$saved" } } }]
+                    }
+                }
+            },
+            { $addFields: { id: "$_id" } },
+            { $unset: ["_id", "__v"] }
+        ]);
+        await JobModel.populate(jobs, [
+            { path: 'applicants', select: 'name id avatar', options: { autopopulate: false } },
+            { path: 'saves', select: 'name id avatar', options: { autopopulate: false } }
+        ]);
         const data = paginateData(req.query, jobs, 'jobs')
         return constructResponse({
             res,
@@ -406,12 +439,27 @@ export const getSavedJobsController: RequestHandler = async (req: any, res) => {
 export const getMyJobsController: RequestHandler = async (req: any, res) => {
     try {
         const business = req.user.business
-        let jobs = await JobModel.find({ business }).populate('business saves applicants').lean()
-        jobs = jobs.map(x => ({
-            ...x,
-            applied: x.applicants.map((y: any) => y._id.toString()).includes(req.user.id),
-            saved: x.saves.map((y: any) => y._id.toString()).includes(req.user.id),
-        }))
+        const userId = req.user.id.toString()
+        const jobs = await JobModel.aggregate([
+            { $match: { business: business._id } },
+            { $sort: { createdAt: -1 } },
+            {
+                $addFields: {
+                    applied: {
+                        $in: [userId, { $map: { input: "$applicants", as: "applied", in: { $toString: "$$applied" } } }]
+                    },
+                    saved: {
+                        $in: [userId, { $map: { input: "$saves", as: "saved", in: { $toString: "$$saved" } } }]
+                    }
+                }
+            },
+            { $addFields: { id: "$_id" } },
+            { $unset: ["_id", "__v"] }
+        ]);
+        await JobModel.populate(jobs, [
+            { path: 'applicants', select: 'name id avatar', options: { autopopulate: false } },
+            { path: 'saves', select: 'name id avatar', options: { autopopulate: false } }
+        ]);
         const data = paginateData(req.query, jobs, 'jobs')
         return constructResponse({
             res,
@@ -430,11 +478,3 @@ export const getMyJobsController: RequestHandler = async (req: any, res) => {
         })
     }
 }
-// .aggregate([
-//     {
-//         "$addFields": {
-//             "saved": { "$in": [req.user.id, "$saves"] }
-//         }
-//     }
-// ])
-// 

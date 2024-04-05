@@ -1,5 +1,4 @@
 import mongoose, { Schema } from 'mongoose';
-import { AccountSchema } from './account.model';
 import { fileSchema } from './file.model';
 import { mongooseLeanId } from './plugin';
 
@@ -12,14 +11,15 @@ const EventSchema = new mongoose.Schema({
     thumbnail: { type: fileSchema, required: false, default: null },
     saves: {
         type: [Schema.Types.ObjectId],
-        required: true,
         ref: 'Account',
-        default: []
+        default: [],
+        autopopulate: true
     },
     business: {
         type: Schema.Types.ObjectId,
-        required: true,
         ref: 'Business',
+        required: true,
+        autopopulate: true
     },
 }, {
     timestamps: true,
@@ -40,7 +40,7 @@ const EventSchema = new mongoose.Schema({
 });
 
 EventSchema.plugin(mongooseLeanId);
-
+EventSchema.plugin(require('mongoose-autopopulate'));
 const EventModel = mongoose.model('Event', EventSchema);
 
 export default EventModel;
