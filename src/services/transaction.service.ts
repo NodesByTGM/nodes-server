@@ -147,10 +147,10 @@ export const initiateSubscription = async ({
         if (result.status === 200) {
             const data = result.data;
             if (data.status) {
-                return data.data.authorization_url
+                return data.data
             }
         }
-        return ""
+        return null
     } catch (error) {
         throw error
         // return ""

@@ -27,6 +27,8 @@ const initiateSubscriptionResponse = {
     type: 'object',
     properties: {
         authorization_url: { type: 'string' },
+        access_code: { type: 'string' },
+        reference: { type: 'string' },
     }
 };
 

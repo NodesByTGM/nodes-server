@@ -72,18 +72,18 @@ export const subscribeToPackage: RequestHandler = async (req: any, res) => {
     try {
         const { planKey, reference, callback_url, metadata } = req.body
         if (planKey === 'pro' || planKey === 'business' || planKey === 'pro-annual' || planKey === 'business-annual') {
-            const authorization_url = await initiateSubscription({
+            const data = await initiateSubscription({
                 email: req.user.email,
                 planKey,
                 reference,
                 callback_url,
                 metadata
             })
-            if (authorization_url) {
+            if (data) {
                 return constructResponse({
                     res,
                     code: 200,
-                    data: { authorization_url },
+                    data,
                     message: AppConfig.STRINGS.Success,
                     apiObject: AppConfig.API_OBJECTS.Transaction
                 })
