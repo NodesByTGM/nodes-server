@@ -10,7 +10,7 @@ import { sendHTMLEmail } from "./email.service"
 
 dotenv.config();
 
-const PLANKS_KVP: any = {
+export const PLANKS_KVP = {
     'pro': process.env.PRO_PLAN,
     'business': process.env.BUSINESS_PLAN,
 }
@@ -79,10 +79,15 @@ export const createTransaction = async (reqData: PaystackVerifiedTransaction) =>
 
             txn.subscription = sub.id
             user.subscription = sub.id
-            const business = await getBusiness(user, data.plan_object.name)
-            if (business) {
-                user.business = business.id;
-                user.type = AppConfig.ACCOUNT_TYPES.BUSINESS
+            if (data.plan_object.plan_code === PLANKS_KVP.business) {
+                const business = await getBusiness(user, data.plan_object.name)
+                if (business) {
+                    user.business = business.id;
+                    user.type = AppConfig.ACCOUNT_TYPES.BUSINESS
+                }
+            }
+            if (data.plan_object.plan_code === PLANKS_KVP.business) {
+                user.type = AppConfig.ACCOUNT_TYPES.TALENT
             }
             await user.save()
             await txn.save()

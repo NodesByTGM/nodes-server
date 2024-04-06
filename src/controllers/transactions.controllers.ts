@@ -5,7 +5,7 @@ import { constructResponse, initiateSubscription, sendEmail, verifyTxnByReferenc
 import { sendHTMLEmail } from '../services/email.service';
 import { addYearsToDate, formatDate, verifyTransaction } from '../utilities/common';
 import { AppConfig } from '../utilities/config';
-import { getBusiness } from '../services/transaction.service';
+import { PLANKS_KVP, getBusiness } from '../services/transaction.service';
 
 export const verifyTransactionController: RequestHandler = async (req, res) => {
     try {
@@ -115,10 +115,16 @@ export const paystackWebhookController: RequestHandler = async (req, res) => {
 
             txn.subscription = sub.id
             user.subscription = sub.id
-            const business = await getBusiness(user, data.plan.name)
-            if (business) {
-                user.business = business.id;
-                user.type = AppConfig.ACCOUNT_TYPES.BUSINESS
+
+            if (data.plan.plan_code === PLANKS_KVP.business) {
+                const business = await getBusiness(user, data.plan.name)
+                if (business) {
+                    user.business = business.id;
+                    user.type = AppConfig.ACCOUNT_TYPES.BUSINESS
+                }
+            }
+            if (data.plan.plan_code === PLANKS_KVP.business) {
+                user.type = AppConfig.ACCOUNT_TYPES.TALENT
             }
             await txn.save()
             await user.save()
