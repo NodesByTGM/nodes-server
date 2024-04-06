@@ -72,7 +72,7 @@ export const paginateData = (query: any, items: any, nameSpace?: string) => {
         pageSize,
         totalPages,
         totalItems: items.length,
-        items,
+        items: _items,
     }
     // if (nameSpace) {
     //     data[nameSpace] = _items
