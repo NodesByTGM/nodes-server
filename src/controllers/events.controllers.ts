@@ -280,7 +280,8 @@ export const getEventsController: RequestHandler = async (req: any, res) => {
             { $unset: ["_id", "__v"] }
         ]);
         await EventModel.populate(events, [
-            { path: 'saves', select: 'name id avatar', options: { autopopulate: false } }
+            { path: 'saves', select: 'name id avatar', options: { autopopulate: false } },
+            { path: 'business' },
         ]);
         const data = paginateData(req.query, events, 'events')
 
@@ -321,7 +322,8 @@ export const getMyEventsController: RequestHandler = async (req: any, res) => {
             { $unset: ["_id", "__v"] }
         ]);
         await EventModel.populate(events, [
-            { path: 'saves', select: 'name id avatar', options: { autopopulate: false } }
+            { path: 'saves', select: 'name id avatar', options: { autopopulate: false } },
+            { path: 'business' },
         ]);
         const data = paginateData(req.query, events, 'events')
 
@@ -361,7 +363,8 @@ export const getSavedEventsController: RequestHandler = async (req: any, res) =>
             { $unset: ["_id", "__v"] }
         ]);
         await EventModel.populate(events, [
-            { path: 'saves', select: 'name id avatar', options: { autopopulate: false } }
+            { path: 'saves', select: 'name id avatar', options: { autopopulate: false } },
+            { path: 'business' },
         ]);
         const data = paginateData(req.query, events, 'events')
 

@@ -1,4 +1,4 @@
-import { businessSchema, constructResponseSchema, fileSwaggerSchema, paginationQueryParams } from "./common.doc";
+import { businessSchema, constructResponseSchema, fileSwaggerSchema, miniUserSchema, paginationQueryParams } from "./common.doc";
 
 const eventRequestSchema = {
     type: 'object',
@@ -52,7 +52,17 @@ export const eventSchema = {
         updatedAt: { type: 'string', format: 'date-time' },
         paymentType: { type: 'string' },
         id: { type: 'string' },
-        saved: { type: 'boolean' }
+        saved: { type: 'boolean' },
+        saves: {
+            anyOf: [
+                { type: 'null' },
+                { type: 'string' },
+                {
+                    type: 'array',
+                    items: miniUserSchema
+                }
+            ]
+        },
     }
 };
 
@@ -99,7 +109,7 @@ export const eventSwagger = {
                     '200': {
                         description: 'OK',
                         content: {
-                            'application/json': { schema: constructResponseSchema(eventSchema,true) }
+                            'application/json': { schema: constructResponseSchema(eventSchema, true) }
                         }
                     },
                     '401': {

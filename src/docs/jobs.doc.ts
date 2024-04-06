@@ -1,5 +1,5 @@
 import { AppConfig } from "../utilities/config";
-import { businessSchema, constructResponseSchema, paginationQueryParams } from "./common.doc";
+import { businessSchema, constructResponseSchema, miniUserSchema, paginationQueryParams } from "./common.doc";
 
 const jobRequestSchema = {
     type: 'object',
@@ -36,9 +36,20 @@ const jobSchema = {
         applicants: {
             anyOf: [
                 { type: 'null' },
+                { type: 'string' },
                 {
                     type: 'array',
-                    items: {} // You might want to specify the schema for applicants if it's not always an empty array
+                    items: miniUserSchema
+                }
+            ]
+        },
+        saves: {
+            anyOf: [
+                { type: 'null' },
+                { type: 'string' },
+                {
+                    type: 'array',
+                    items: miniUserSchema
                 }
             ]
         },

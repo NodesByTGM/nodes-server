@@ -332,6 +332,11 @@ export const getJobsController: RequestHandler = async (req: any, res) => {
             { $addFields: { id: "$_id" } },
             { $unset: ["_id", "__v"] }
         ]);
+        await JobModel.populate(jobs, [
+            // { path: 'applicants', select: 'name id avatar', options: { autopopulate: false } },
+            // { path: 'saves', select: 'name id avatar', options: { autopopulate: false } },
+            { path: 'business' },
+        ]);
         
         const data = paginateData(req.query, jobs, 'jobs')
         return constructResponse({
@@ -373,7 +378,8 @@ export const getAppliedJobsController: RequestHandler = async (req: any, res) =>
         ]);
         await JobModel.populate(jobs, [
             { path: 'applicants', select: 'name id avatar', options: { autopopulate: false } },
-            { path: 'saves', select: 'name id avatar', options: { autopopulate: false } }
+            { path: 'saves', select: 'name id avatar', options: { autopopulate: false } },
+            { path: 'business' },
         ]);
         const data = paginateData(req.query, jobs, 'jobs')
         return constructResponse({
@@ -415,7 +421,8 @@ export const getSavedJobsController: RequestHandler = async (req: any, res) => {
         ]);
         await JobModel.populate(jobs, [
             { path: 'applicants', select: 'name id avatar', options: { autopopulate: false } },
-            { path: 'saves', select: 'name id avatar', options: { autopopulate: false } }
+            { path: 'saves', select: 'name id avatar', options: { autopopulate: false } },
+            { path: 'business' },
         ]);
         const data = paginateData(req.query, jobs, 'jobs')
         return constructResponse({
@@ -458,7 +465,8 @@ export const getMyJobsController: RequestHandler = async (req: any, res) => {
         ]);
         await JobModel.populate(jobs, [
             { path: 'applicants', select: 'name id avatar', options: { autopopulate: false } },
-            { path: 'saves', select: 'name id avatar', options: { autopopulate: false } }
+            { path: 'saves', select: 'name id avatar', options: { autopopulate: false } },
+            { path: 'business' },
         ]);
         const data = paginateData(req.query, jobs, 'jobs')
         return constructResponse({
