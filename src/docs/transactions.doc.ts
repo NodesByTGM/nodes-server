@@ -13,6 +13,23 @@ export const transactionQueryParams = [
         }
     },
 ]
+
+const initiateSubscriptionRequestBody = {
+    type: 'object',
+    properties: {
+        planKey: { type: 'string' },
+        reference: { type: 'string' },
+        callback_url: { type: 'string' },
+        metadata: { type: 'object', example: { cancel_action: '' } },
+    }
+};
+const initiateSubscriptionResponse = {
+    type: 'object',
+    properties: {
+        authorization_url: { type: 'string' },
+    }
+};
+
 export const transactionSwagger = {
     paths: {
         // '/verify': {
@@ -44,6 +61,36 @@ export const transactionSwagger = {
                     },
                     '401': {
                         description: 'Unauthorized',
+                    },
+                },
+            },
+        },
+        'api/v1/transactions/subscription/initiate': {
+            post: {
+                summary: 'Initiate Subscription Payment',
+                tags: ['Transactions'],
+                requestBody: {
+                    required: true,
+                    content: {
+                        'application/json': {
+                            schema: initiateSubscriptionRequestBody,
+                        },
+                    },
+                },
+                description: 'Endpoint to verify internal transaction',
+                security: [{ bearerAuth: [] }],
+                responses: {
+                    '200': {
+                        description: 'OK',
+                        content: {
+                            'application/json': { schema: constructResponseSchema(initiateSubscriptionResponse) }
+                        }
+                    },
+                    '401': {
+                        description: 'Unauthorized',
+                    },
+                    '400': {
+                        description: 'BadRequestError',
                     },
                 },
             },

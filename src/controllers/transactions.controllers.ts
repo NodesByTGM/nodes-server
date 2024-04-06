@@ -3,9 +3,9 @@ import { ChargeSuccessEventData, PaystackWebhookEvent, SubscriptionDisabledEvent
 import { AccountModel, SubscriptionModel, TransactionModel } from '../mongodb/models';
 import { constructResponse, initiateSubscription, sendEmail, verifyTxnByReference } from '../services';
 import { sendHTMLEmail } from '../services/email.service';
+import { BUSINESS_PLAN_CODES, PRO_PLAN_CODES, getBusiness } from '../services/transaction.service';
 import { addYearsToDate, formatDate, verifyTransaction } from '../utilities/common';
 import { AppConfig } from '../utilities/config';
-import { PLANKS_KVP, getBusiness } from '../services/transaction.service';
 
 export const verifyTransactionController: RequestHandler = async (req, res) => {
     try {
@@ -67,6 +67,46 @@ export const verifyInternalTransactionController: RequestHandler = async (req: a
     }
 }
 
+
+export const subscribeToPackage: RequestHandler = async (req: any, res) => {
+    try {
+        const { planKey, reference, callback_url, metadata } = req.body
+        if (planKey === 'pro' || planKey === 'business' || planKey === 'pro-annual' || planKey === 'business-annual') {
+            const authorization_url = await initiateSubscription({
+                email: req.user.email,
+                planKey,
+                reference,
+                callback_url,
+                metadata
+            })
+            if (authorization_url) {
+                return constructResponse({
+                    res,
+                    code: 200,
+                    data: { authorization_url },
+                    message: AppConfig.STRINGS.Success,
+                    apiObject: AppConfig.API_OBJECTS.Transaction
+                })
+            }
+        }
+        return constructResponse({
+            res,
+            code: 400,
+            message: AppConfig.ERROR_MESSAGES.BadRequestError,
+            apiObject: AppConfig.API_OBJECTS.Transaction
+        })
+    } catch (error) {
+
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Transaction
+        })
+    }
+}
+
 export const paystackWebhookController: RequestHandler = async (req, res) => {
     const eventData: PaystackWebhookEvent = req.body;
     const signature = req.headers['x-paystack-signature'];
@@ -116,14 +156,14 @@ export const paystackWebhookController: RequestHandler = async (req, res) => {
             txn.subscription = sub.id
             user.subscription = sub.id
 
-            if (data.plan.plan_code === PLANKS_KVP.business) {
+            if (BUSINESS_PLAN_CODES.includes(data.plan.plan_code)) {
                 const business = await getBusiness(user, data.plan.name)
                 if (business) {
                     user.business = business.id;
                     user.type = AppConfig.ACCOUNT_TYPES.BUSINESS
                 }
             }
-            if (data.plan.plan_code === PLANKS_KVP.business) {
+            if (PRO_PLAN_CODES.includes(data.plan.plan_code)) {
                 user.type = AppConfig.ACCOUNT_TYPES.TALENT
             }
             await txn.save()
@@ -161,18 +201,4 @@ export const paystackWebhookController: RequestHandler = async (req, res) => {
     // Change the paystack pop up flow
 }
 
-export const subscribeToPackage: RequestHandler = async (req: any, res) => {
-    try {
-        const { planKey } = req.params
-        if (planKey === 'pro' || planKey === 'business') {
-            const authorizationURL = await initiateSubscription(req.user.email, planKey)
-            if (authorizationURL) {
-                return res.json({ message: AppConfig.STRINGS.Success, authorizationURL })
-            }
-        }
-        return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.BadRequestError })
-    } catch (error) {
-        return res.status(500).json({ message: AppConfig.ERROR_MESSAGES.InternalServerError })
-    }
-}
 

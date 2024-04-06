@@ -194,9 +194,9 @@ export const responseSchema = {
     type: 'object',
     properties: {
         apiObject: { type: 'string' },
-        code: { type: 'integer' },
-        status: { type: 'string' },
-        isError: { type: 'boolean' },
+        code: { type: 'integer', example: 200 },
+        status: { type: 'string', example: 'Success.' },
+        isError: { type: 'boolean', example: false },
         message: { type: 'string' },
         result: { type: 'object' }
         // You might want to specify the schema for result if it's not always an empty object

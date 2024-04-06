@@ -13,7 +13,20 @@ dotenv.config();
 export const PLANKS_KVP = {
     'pro': process.env.PRO_PLAN,
     'business': process.env.BUSINESS_PLAN,
+    'pro-annual': process.env.PRO_ANNUAL_PLAN,
+    'business-annual': process.env.BUSINESS_ANNUAL_PLAN,
 }
+
+export const PRO_PLAN_CODES = [
+    `${process.env.PRO_PLAN}`,
+    `${process.env.PRO_ANNUAL_PLAN}`
+]
+
+export const BUSINESS_PLAN_CODES = [
+    `${process.env.BUSINESS_PLAN}`,
+    `${process.env.BUSINESS_ANNUAL_PLAN}`
+]
+
 
 export const verifyTxnByReference = async (reference: string) => {
     const url = `https://api.paystack.co/transaction/verify/${reference}`
@@ -79,14 +92,14 @@ export const createTransaction = async (reqData: PaystackVerifiedTransaction) =>
 
             txn.subscription = sub.id
             user.subscription = sub.id
-            if (data.plan_object.plan_code === PLANKS_KVP.business) {
+            if (BUSINESS_PLAN_CODES.includes(data.plan_object.plan_code)) {
                 const business = await getBusiness(user, data.plan_object.name)
                 if (business) {
                     user.business = business.id;
                     user.type = AppConfig.ACCOUNT_TYPES.BUSINESS
                 }
             }
-            if (data.plan_object.plan_code === PLANKS_KVP.business) {
+            if (PRO_PLAN_CODES.includes(data.plan_object.plan_code)) {
                 user.type = AppConfig.ACCOUNT_TYPES.TALENT
             }
             await user.save()
@@ -109,12 +122,27 @@ export const createTransaction = async (reqData: PaystackVerifiedTransaction) =>
     return
 }
 
-export const initiateSubscription = async (email: string, planKey: 'pro' | 'business') => {
+export const initiateSubscription = async ({
+    email,
+    planKey,
+    reference,
+    callback_url,
+    metadata
+}: {
+    email: string,
+    planKey: 'pro' | 'pro-annual' | 'business' | 'business-annual',
+    reference: string,
+    callback_url: string,
+    metadata: string,
+}) => {
     try {
         const result: AxiosResponse<InitiateTransactionResult> = await mainClient.post('https://api.paystack.co/transaction/initialize', {
             email,
             plan: PLANKS_KVP[planKey],
-            amount: 100
+            amount: 100,
+            reference,
+            callback_url,
+            metadata
         }, { headers: { Authorization: `Bearer ${process.env.PAYSTACK_API_SECRET_KEY}` } })
         if (result.status === 200) {
             const data = result.data;
@@ -124,7 +152,6 @@ export const initiateSubscription = async (email: string, planKey: 'pro' | 'busi
         }
         return ""
     } catch (error) {
-        // console.log(error)
         throw error
         // return ""
     }
