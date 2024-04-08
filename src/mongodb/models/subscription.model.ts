@@ -14,8 +14,15 @@ export const SubscriptionSchema = new Schema({
     timestamps: true,
     toJSON: {
         transform: (_: any, rec: Record<string, any>) => {
-            const { __v, _id, account, ...object } = rec;
+            const { __v, _id, account, plan, ...object } = rec;
             object.id = _id
+            if(plan.includes('Business')){
+                object.plan = 'Business'
+            }
+            if(plan.includes('Pro')){
+                object.plan = 'Pro'
+            }
+
             return object;
         }
     }

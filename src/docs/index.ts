@@ -44,12 +44,8 @@ const options = {
                 description: "Local server"
             },
             {
-                url: "https://nodes-server-v1.onrender.com/",
+                url: "https://dev.api.nodesafrica.com/",
                 description: "Dev server"
-            },
-            {
-                url: "https://nodes-api.thegridmanagement.com/",
-                description: "Live server"
             },
         ],
         paths: {
