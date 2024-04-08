@@ -69,6 +69,49 @@ export const qsParams = [
     },
 ]
 
+
+export const yourQSParams = [
+    ...paginationQueryParams,
+
+    {
+        in: 'query',
+        name: 'body',
+        schema: {
+            type: 'string',
+        },
+        example: 'bob',
+    },
+    {
+        in: 'query',
+        name: 'hashtags',
+        schema: {
+            type: 'array',
+            items: {
+                type: 'string',
+            },
+        },
+        example: ['#2024'],
+    },
+    {
+        in: 'query',
+        name: 'startDate',
+        schema: {
+            type: 'string',
+        },
+        description: 'Date and time of the post.',
+        example: '05/10/2024',
+    },
+    {
+        in: 'query',
+        name: 'endDate',
+        schema: {
+            type: 'string',
+        },
+        description: 'Date and time of the post.',
+        example: '05/10/2024',
+    },
+]
+
 export const postsSwagger = {
     paths: {
         '/api/v1/posts/': {
@@ -106,6 +149,28 @@ export const postsSwagger = {
                 summary: 'Get all posts',
                 tags: ['Posts'],
                 parameters: qsParams,
+                security: [{ bearerAuth: [] }],
+                responses: {
+                    '200': {
+                        description: 'OK',
+                        content: {
+                            'application/json': { schema: constructResponseSchema(postSchema, true) }
+                        }
+                    },
+                    '401': {
+                        description: 'Unauthorized. User authentication failed.',
+                    },
+                    '500': {
+                        description: 'Internal Server Error.',
+                    },
+                },
+            },
+        },
+        '/api/v1/posts/mine': {
+            get: {
+                summary: 'Get all your posts',
+                tags: ['Posts'],
+                parameters: yourQSParams,
                 security: [{ bearerAuth: [] }],
                 responses: {
                     '200': {

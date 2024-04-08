@@ -71,12 +71,6 @@ export {
 } from './community.controllers'
 
 
-export {
-    getPostController,
-    getPostsController,
-    createPostController,
-    likePostController,
-    unlikePostController
-} from './posts.controllers'
+export { default as postControllers } from './posts.controllers'
 
 export { default as spaceControllers } from './spaces.controllers'

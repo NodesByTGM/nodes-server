@@ -120,7 +120,13 @@ export const profileUpdateController: RequestHandler = async (req: any, res: any
 
 export const allUsersContoller: RequestHandler = async (req, res) => {
     try {
-        const users = await AccountModel.find()
+        const users = await AccountModel.find().select('name username id avatar')
+
+        // await AccountModel.populate(users, [
+        //     { path: 'author', select: 'name id avatar', options: { autopopulate: false } },
+        //     { path: 'likes', select: 'name id avatar', options: { autopopulate: false } },
+        //     { path: 'comments' },
+        // ]);
         return constructResponse({
             res,
             code: 200,

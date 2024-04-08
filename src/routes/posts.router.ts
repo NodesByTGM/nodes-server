@@ -1,20 +1,15 @@
 import { Router } from 'express';
-import {
-    getPostsController,
-    createPostController,
-    likePostController,
-    unlikePostController,
-    getPostController
-} from '../controllers';
+import { postControllers } from '../controllers';
 import { authenticate } from '../middlewares';
 
 const router = Router();
 
-router.get('/', authenticate, getPostsController);
-router.post('/', authenticate, createPostController);
-router.get('/:id', authenticate, getPostController);
-router.post('/like/:id', authenticate, likePostController);
-router.post('/unlike/:id', authenticate, unlikePostController);
+router.get('/', authenticate, postControllers.getPosts);
+router.get('/mine', authenticate, postControllers.getMyPosts);
+router.post('/', authenticate, postControllers.createPost);
+router.get('/:id', authenticate, postControllers.getPost);
+router.post('/like/:id', authenticate, postControllers.likePost);
+router.post('/unlike/:id', authenticate, postControllers.unlikePost);
 
 
 export default router;

@@ -4,7 +4,7 @@ import { constructResponse } from "../services";
 import { paginateData } from "../utilities/common";
 import { AppConfig } from "../utilities/config";
 
-export const createPostController: RequestHandler = async (req: any, res) => {
+const createPost: RequestHandler = async (req: any, res) => {
     try {
         const {
             body,
@@ -32,6 +32,11 @@ export const createPostController: RequestHandler = async (req: any, res) => {
             type,
             author: req.user.id
         });
+        await PostModel.populate(data, [
+            { path: 'author', select: 'name id avatar', options: { autopopulate: false } },
+            { path: 'likes', select: 'name id avatar', options: { autopopulate: false } },
+            { path: 'comments', options: { autopopulate: false } },
+        ]);
         if (parent) {
             const post = await PostModel.findById(parent);
             if (post) {
@@ -63,7 +68,7 @@ export const createPostController: RequestHandler = async (req: any, res) => {
     }
 }
 
-export const getPostsController: RequestHandler = async (req: any, res) => {
+const getPosts: RequestHandler = async (req: any, res) => {
     try {
         const { body, author, hashtags, startDate, endDate } = req.query;
 
@@ -101,7 +106,8 @@ export const getPostsController: RequestHandler = async (req: any, res) => {
         // Manually populate the field
         await PostModel.populate(posts, [
             { path: 'author', select: 'name id avatar', options: { autopopulate: false } },
-            { path: 'likes', select: 'name id avatar', options: { autopopulate: false } }
+            { path: 'likes', select: 'name id avatar', options: { autopopulate: false } },
+            { path: 'comments', options: { autopopulate: false } },
         ]);
         const data = paginateData(req.query, posts, 'posts')
         return constructResponse({
@@ -122,7 +128,7 @@ export const getPostsController: RequestHandler = async (req: any, res) => {
     }
 }
 
-export const getPostController: RequestHandler = async (req: any, res) => {
+const getPost: RequestHandler = async (req: any, res) => {
     try {
         const post = await PostModel.findById(req.params.id)
 
@@ -137,7 +143,8 @@ export const getPostController: RequestHandler = async (req: any, res) => {
         }
         await PostModel.populate(post, [
             { path: 'author', select: 'name id avatar', options: { autopopulate: false } },
-            { path: 'likes', select: 'name id avatar', options: { autopopulate: false } }
+            { path: 'likes', select: 'name id avatar', options: { autopopulate: false } },
+            { path: 'comments', options: { autopopulate: false } },
         ]);
         const data = {
             ...post?.toJSON(),
@@ -162,7 +169,67 @@ export const getPostController: RequestHandler = async (req: any, res) => {
     }
 }
 
-export const likePostController: RequestHandler = async (req: any, res) => {
+const getMyPosts: RequestHandler = async (req: any, res) => {
+    try {
+        const { body, hashtags, startDate, endDate } = req.query;
+
+        // Construct base query
+        let query: any = {
+            author: req.user._id
+        };
+
+        // Add filters based on parameters
+        if (body) {
+            query.body = { $regex: body, $options: 'i' }; // Case-insensitive search for text
+        }
+
+        if (hashtags) {
+            // query.hashtags = hashtag; // Assuming hashtags are stored in an array field called 'hashtags'
+            query.hashtags = { $all: hashtags.split(',') }; // Split hashtags string into array and match all
+        }
+        if (startDate && endDate) {
+            query.createdAt = { $gte: new Date(startDate), $lte: new Date(endDate) };
+        }
+        const posts = await PostModel.aggregate([
+            { $match: query },
+            { $sort: { createdAt: -1 } },
+            {
+                $addFields: {
+                    liked: {
+                        $in: [req.user.id.toString(), { $map: { input: "$likes", as: "like", in: { $toString: "$$like" } } }]
+                    }
+                }
+            },
+            { $addFields: { id: "$_id" } },
+            { $unset: ["_id", "__v"] }
+        ]);
+
+        // Manually populate the field
+        await PostModel.populate(posts, [
+            { path: 'author', select: 'name id avatar', options: { autopopulate: false } },
+            { path: 'likes', select: 'name id avatar', options: { autopopulate: false } },
+            { path: 'comments', select: '', options: { autopopulate: false } },
+        ]);
+        const data = paginateData(req.query, posts, 'posts')
+        return constructResponse({
+            res,
+            data,
+            code: 200,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Post
+        })
+    } catch (error) {
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Post
+        })
+    }
+}
+
+const likePost: RequestHandler = async (req: any, res) => {
     try {
         const post = await PostModel.findById(req.params.id)
         if (!post) {
@@ -185,7 +252,8 @@ export const likePostController: RequestHandler = async (req: any, res) => {
         await post.save()
         await PostModel.populate(post, [
             { path: 'author', select: 'name id avatar', options: { autopopulate: false } },
-            { path: 'likes', select: 'name id avatar', options: { autopopulate: false } }
+            { path: 'likes', select: 'name id avatar', options: { autopopulate: false } },
+            { path: 'comments', options: { autopopulate: false } },
         ]);
         const data: any = post.toJSON()
         data.saved = true
@@ -209,7 +277,7 @@ export const likePostController: RequestHandler = async (req: any, res) => {
     }
 }
 
-export const unlikePostController: RequestHandler = async (req: any, res) => {
+const unlikePost: RequestHandler = async (req: any, res) => {
     try {
         const post = await PostModel.findById(req.params.id)
         if (!post) {
@@ -224,10 +292,11 @@ export const unlikePostController: RequestHandler = async (req: any, res) => {
             post.likes = post.likes.filter(x => x.toString() !== req.user.id.toString())
             await post.save()
         }
-        
+
         await PostModel.populate(post, [
             { path: 'author', select: 'name id avatar', options: { autopopulate: false } },
-            { path: 'likes', select: 'name id avatar', options: { autopopulate: false } }
+            { path: 'likes', select: 'name id avatar', options: { autopopulate: false } },
+            { path: 'comments', options: { autopopulate: false } },
         ]);
         const data: any = post.toJSON()
         data.liked = false
@@ -248,4 +317,13 @@ export const unlikePostController: RequestHandler = async (req: any, res) => {
             apiObject: AppConfig.API_OBJECTS.Post
         })
     }
+}
+
+export default {
+    createPost,
+    getPosts,
+    getPost,
+    getMyPosts,
+    likePost,
+    unlikePost
 }

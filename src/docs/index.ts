@@ -62,7 +62,7 @@ const options = {
             ...transactionSwagger.paths,
             ...mediaSwagger.paths,
             ...postsSwagger.paths,
-            ...communitySwagger.paths,
+            // ...communitySwagger.paths,
             ...spacesSwagger.paths
             // ...upgradesSwagger.paths,
         }

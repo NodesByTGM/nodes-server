@@ -133,7 +133,7 @@ export const initiateSubscription = async ({
     planKey: 'pro' | 'pro-annual' | 'business' | 'business-annual',
     reference: string,
     callback_url: string,
-    metadata: string,
+    metadata: any,
 }) => {
     try {
         const result: AxiosResponse<InitiateTransactionResult> = await mainClient.post('https://api.paystack.co/transaction/initialize', {
