@@ -1,7 +1,7 @@
 
 import { NextFunction, Request, Response } from 'express';
 import { RequestWithUser } from '../interfaces';
-import { AccountModel } from '../mongodb/models';
+import { AccountModel, AdminModel } from '../mongodb/models';
 import { verifyAccessToken } from '../services/auth.service';
 import { AppConfig } from '../utilities/config';
 import { constructResponse } from '../services';
@@ -42,6 +42,29 @@ const authenticate = async (req: RequestWithUser | Request, res: Response, next:
             message: AppConfig.ERROR_MESSAGES.AuthenticationError,
             apiObject: AppConfig.API_OBJECTS.Auth
         })
+    }
+};
+
+export const authenticateAdmin = async (req: RequestWithUser | Request, res: Response, next: NextFunction) => {
+    try {
+        let token = req?.cookies?.nodesAdminToken;
+        if (!token) {
+            token = req.headers.authorization?.split(' ')[1];
+        }
+
+        if (!token) {
+            return res.status(401).json({ message: AppConfig.ERROR_MESSAGES.AuthenticationError });
+        }
+        const decodedToken: any = verifyAccessToken(token);
+        const user: any = await AdminModel.findById(decodedToken?.accountId);
+        if (!user) {
+            return res.status(401).json({ message: AppConfig.ERROR_MESSAGES.AuthenticationError });
+        }
+
+        req.user = user;
+        next();
+    } catch (error) {
+        res.status(401).json({ message: AppConfig.ERROR_MESSAGES.AuthenticationError });
     }
 };
 

@@ -4,7 +4,7 @@ import { constructResponse, uploadMedia } from "../services";
 import { paginateData } from "../utilities/common";
 import { AppConfig } from "../utilities/config";
 
-export const eventCreateController: RequestHandler = async (req: any, res) => {
+export const createEvent: RequestHandler = async (req: any, res) => {
     try {
         // TODO: remove this
         if (!req.user.business) {
@@ -54,7 +54,7 @@ export const eventCreateController: RequestHandler = async (req: any, res) => {
     }
 }
 
-export const eventUpdateController: RequestHandler = async (req: any, res) => {
+export const updateEvent: RequestHandler = async (req: any, res) => {
     try {
         const {
             name,
@@ -111,7 +111,7 @@ export const eventUpdateController: RequestHandler = async (req: any, res) => {
     }
 }
 
-export const deleteEventController: RequestHandler = async (req: any, res) => {
+export const deleteEvent: RequestHandler = async (req: any, res) => {
     try {
         const event = await EventModel.findById(req.params.id)
         if (!event) {
@@ -148,7 +148,7 @@ export const deleteEventController: RequestHandler = async (req: any, res) => {
     }
 }
 
-export const saveEventController: RequestHandler = async (req: any, res) => {
+export const saveEvent: RequestHandler = async (req: any, res) => {
     try {
         const event = await EventModel.findById(req.params.id)
         if (!event) {
@@ -191,7 +191,7 @@ export const saveEventController: RequestHandler = async (req: any, res) => {
     }
 }
 
-export const unsaveEventController: RequestHandler = async (req: any, res) => {
+export const unsaveEvent: RequestHandler = async (req: any, res) => {
     try {
         const event = await EventModel.findById(req.params.id)
         if (!event) {
@@ -228,7 +228,7 @@ export const unsaveEventController: RequestHandler = async (req: any, res) => {
     }
 }
 
-export const getEventController: RequestHandler = async (req: any, res) => {
+export const getEvent: RequestHandler = async (req: any, res) => {
     try {
         const event = await EventModel.findById(req.params.id).populate('business')
         if (!event) {
@@ -262,7 +262,7 @@ export const getEventController: RequestHandler = async (req: any, res) => {
     }
 }
 
-export const getEventsController: RequestHandler = async (req: any, res) => {
+export const getEvents: RequestHandler = async (req: any, res) => {
     try {
         const userId = req.user.id.toString()
         // TODO HIDE BASED ON OWNER
@@ -303,7 +303,7 @@ export const getEventsController: RequestHandler = async (req: any, res) => {
     }
 }
 
-export const getMyEventsController: RequestHandler = async (req: any, res) => {
+export const getMyEvents: RequestHandler = async (req: any, res) => {
     try {
         const business = req.user.business
         const userId = req.user.id.toString()
@@ -345,7 +345,7 @@ export const getMyEventsController: RequestHandler = async (req: any, res) => {
     }
 }
 
-export const getSavedEventsController: RequestHandler = async (req: any, res) => {
+export const getSavedEvents: RequestHandler = async (req: any, res) => {
     try {
         const userId = req.user.id.toString()
         // TODO HIDE BASED ON OWNER
@@ -384,4 +384,16 @@ export const getSavedEventsController: RequestHandler = async (req: any, res) =>
             apiObject: AppConfig.API_OBJECTS.Event
         })
     }
+}
+
+export default {
+    createEvent,
+    updateEvent,
+    deleteEvent,
+    saveEvent,
+    unsaveEvent,
+    getEvents,
+    getEvent,
+    getMyEvents,
+    getSavedEvents
 }

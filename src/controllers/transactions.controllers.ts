@@ -7,7 +7,7 @@ import { BUSINESS_PLAN_CODES, PRO_PLAN_CODES, getBusiness } from '../services/tr
 import { addYearsToDate, formatDate, verifyTransaction } from '../utilities/common';
 import { AppConfig } from '../utilities/config';
 
-export const verifyTransactionController: RequestHandler = async (req, res) => {
+const verifyPaystackTransaction: RequestHandler = async (req, res) => {
     try {
         const { reference } = req.query;
         if (!reference) {
@@ -25,7 +25,7 @@ export const verifyTransactionController: RequestHandler = async (req, res) => {
 }
 
 // INTERNAL
-export const verifyInternalTransactionController: RequestHandler = async (req: any, res) => {
+const verifyInternalTransaction: RequestHandler = async (req: any, res) => {
     try {
         const { reference } = req.query;
         console.log(reference)
@@ -67,8 +67,7 @@ export const verifyInternalTransactionController: RequestHandler = async (req: a
     }
 }
 
-
-export const subscribeToPackage: RequestHandler = async (req: any, res) => {
+const subscribeToPackage: RequestHandler = async (req: any, res) => {
     try {
         const { planKey, reference, callback_url, metadata } = req.body
         if (planKey === 'pro' || planKey === 'business' || planKey === 'pro-annual' || planKey === 'business-annual') {
@@ -107,7 +106,7 @@ export const subscribeToPackage: RequestHandler = async (req: any, res) => {
     }
 }
 
-export const paystackWebhookController: RequestHandler = async (req, res) => {
+const paystackWebhook: RequestHandler = async (req, res) => {
     const eventData: PaystackWebhookEvent = req.body;
     const signature = req.headers['x-paystack-signature'];
     // console.log(eventData)
@@ -199,6 +198,13 @@ export const paystackWebhookController: RequestHandler = async (req, res) => {
     return res.sendStatus(200);
     // TODO: should it send back a fail to paystack when the system itself fails and not because it didnt recieve somethnig right?
     // Change the paystack pop up flow
+}
+
+export default {
+    verifyPaystackTransaction,
+    verifyInternalTransaction,
+    paystackWebhook,
+    subscribeToPackage,
 }
 
 

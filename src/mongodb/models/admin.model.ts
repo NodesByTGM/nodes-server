@@ -3,27 +3,25 @@ import { AppConfig } from '../../utilities/config';
 import { fileSchema } from './file.model';
 
 const AdminSchema = new mongoose.Schema({
-    cid: { type: Number, required: true, unique: true },
     name: { type: String, required: true },
+    username: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
     phone: { type: String, required: true, unique: true },
     password: { type: String, required: true, },
     verified: { type: Boolean, required: false, default: false },
+    avatar: { type: fileSchema, required: false, default: null },
     role: {
         type: Number,
         required: true,
         default: AppConfig.ACCOUNT_ROLES.ADMIN,
         enum: Object.values(AppConfig.ACCOUNT_ROLES)
     },
-
-    headshot: fileSchema,
 }, {
     timestamps: true,
     toJSON: {
         transform: (_: any, rec: Record<string, any>) => {
-            const { __v, _id, password, cid, role, ...object } = rec;
+            const { __v, _id, password, ...object } = rec;
             object.id = _id
-            object.cid = `GT-${String(cid).padStart(8, '0')}`
             return object;
         }
     }

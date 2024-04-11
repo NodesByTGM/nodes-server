@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import { allUsersContoller, profileController, profileUpdateController } from '../controllers';
+import { usersControllers } from '../controllers';
 import { authenticate } from '../middlewares';
 
 const router = Router();
 
-router.get('/profile', authenticate, profileController);
-router.put('/profile', authenticate, profileUpdateController);
-router.get('/', allUsersContoller);
+router.get('/profile', authenticate, usersControllers.profile);
+router.put('/profile', authenticate, usersControllers.updateProfile);
+router.get('/', usersControllers.getAllUsers);
 
 export default router;

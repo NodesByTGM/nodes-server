@@ -1,18 +1,13 @@
 import { Router } from 'express';
-import {
-    paystackWebhookController,
-    subscribeToPackage,
-    verifyInternalTransactionController,
-    verifyTransactionController
-} from '../controllers';
+import { transactionControllers } from '../controllers';
 import { authenticate } from '../middlewares';
 
 const router = Router();
 
-router.get('/verify', verifyTransactionController);
-router.get('/verify/internal', authenticate, verifyInternalTransactionController);
-router.post('/webhook/paystack', paystackWebhookController);
-router.post('/subscription/initiate/', authenticate, subscribeToPackage);
+router.get('/verify', transactionControllers.verifyPaystackTransaction);
+router.get('/verify/internal', authenticate, transactionControllers.verifyInternalTransaction);
+router.post('/webhook/paystack', transactionControllers.paystackWebhook);
+router.post('/subscription/initiate/', authenticate, transactionControllers.subscribeToPackage);
 // reference and plankey callback_url, metadata
 // add yearly plans
 

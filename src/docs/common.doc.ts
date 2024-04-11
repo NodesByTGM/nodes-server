@@ -151,6 +151,22 @@ export const userSchema = {
     }
 };
 
+export const adminSchema = {
+    type: 'object',
+    properties: {
+        name: { type: 'string' },
+        username: { type: 'string' },
+        email: { type: 'string', format: 'email' },
+        dob: { type: 'string', format: 'date-time' },
+        avatar: fileSwaggerSchema,
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
+        verified: { type: 'boolean' },
+        role: { type: 'integer' },
+        id: { type: 'string' }
+    }
+};
+
 export const miniUserSchema = {
     type: 'object',
     properties: {
@@ -212,6 +228,15 @@ export const tokensSchema = {
 }
 
 export const authUserSchema = {
+    type: 'object',
+    properties: {
+        user: userSchema.properties,
+        accessToken: { type: 'string' },
+        refreshToken: { type: 'string' }
+    }
+}
+
+export const adminAuthUserSchema = {
     type: 'object',
     properties: {
         user: userSchema.properties,

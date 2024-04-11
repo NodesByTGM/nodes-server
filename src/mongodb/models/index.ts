@@ -1,4 +1,5 @@
 export { default as AccountModel } from './account.model'
+export { default as AdminModel } from './admin.model'
 export { default as OTPModel } from './otp.model'
 export { default as QuoteModel } from './quote.model'
 export { default as TalentDetailsModel } from './talent.model'

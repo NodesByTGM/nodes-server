@@ -1,36 +1,22 @@
 import { Router } from 'express';
-import {
-    changePasswordController,
-    checkEmailExistsController,
-    checkResetLinkController,
-    checkUsernameExistsController,
-    forgotPasswordController,
-    getTokenController,
-    loginController,
-    logoutController,
-    registerController,
-    resetPasswordController,
-    sendOTPController,
-    verifyEmailController,
-    verifyOTPController
-} from '../controllers/auth.controllers';
+import { authControllers } from '../controllers';
 import { authenticate } from '../middlewares';
 
 const router = Router();
 
-router.post('/register', registerController);
-router.post('/login', loginController);
-router.get('/logout', authenticate, logoutController);
-router.post('/reset-password/:accountId/:token', resetPasswordController);
-router.get('/check-reset-link/:accountId/:token', checkResetLinkController);
-router.post('/forgot-password', forgotPasswordController);
-router.post('/change-password', authenticate, changePasswordController);
-router.post('/refresh-token', getTokenController)
-router.post('/send-otp', sendOTPController)
-router.post('/verify-otp', verifyOTPController)
-router.post('/verify-email', authenticate, verifyEmailController)
-router.post('/check-email', authenticate, checkEmailExistsController)
-router.post('/check-username', authenticate, checkUsernameExistsController)
+router.post('/register', authControllers.register);
+router.post('/login', authControllers.login);
+router.get('/logout', authenticate, authControllers.logout);
+router.post('/reset-password/:accountId/:token', authControllers.resetPassword);
+router.get('/check-reset-link/:accountId/:token', authControllers.checkResetLink);
+router.post('/forgot-password', authControllers.forgotPassword);
+router.post('/change-password', authenticate, authControllers.changePassword);
+router.post('/refresh-token', authControllers.refreshToken)
+router.post('/send-otp', authControllers.sendOTP)
+router.post('/verify-otp', authControllers.verifyOTP)
+router.post('/verify-email', authenticate, authControllers.verifyEmail)
+router.post('/check-email', authenticate, authControllers.checkEmailExists)
+router.post('/check-username', authenticate, authControllers.checkUsernameExists)
 
 
 export default router;

@@ -10,6 +10,7 @@ import { transactionSwagger } from './transactions.doc';
 import { communitySwagger } from './community.doc';
 import { postsSwagger } from './posts.doc';
 import { spacesSwagger } from './spaces.doc';
+import { adminAuthSwagger } from './admin.auth.doc';
 
 // import pjson from '../../package.json';
 const options = {
@@ -59,7 +60,8 @@ const options = {
             ...mediaSwagger.paths,
             ...postsSwagger.paths,
             // ...communitySwagger.paths,
-            ...spacesSwagger.paths
+            ...spacesSwagger.paths,
+            ...adminAuthSwagger.paths
             // ...upgradesSwagger.paths,
         }
     },

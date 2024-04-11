@@ -4,7 +4,7 @@ import { constructResponse } from "../services";
 import { paginateData } from "../utilities/common";
 import { AppConfig } from "../utilities/config";
 
-export const getCommunityPostsController: RequestHandler = async (req: any, res) => {
+export const getCommunityPosts: RequestHandler = async (req: any, res) => {
     try {
         const { body, author, hashtags, startDate, endDate } = req.query;
 
@@ -72,7 +72,7 @@ export const getCommunityPostsController: RequestHandler = async (req: any, res)
     }
 }
 
-export const getCommunityPostController: RequestHandler = async (req: any, res) => {
+export const getCommunityPost: RequestHandler = async (req: any, res) => {
     try {
         const post = await PostModel.findById(req.params.id)
 
@@ -108,7 +108,7 @@ export const getCommunityPostController: RequestHandler = async (req: any, res) 
     }
 }
 
-export const createCommunityPostController: RequestHandler = async (req: any, res) => {
+export const createCommunityPost: RequestHandler = async (req: any, res) => {
     try {
         const {
             body,
@@ -163,7 +163,7 @@ export const createCommunityPostController: RequestHandler = async (req: any, re
     }
 }
 
-export const likeCommunityPostController: RequestHandler = async (req: any, res) => {
+export const likeCommunityPost: RequestHandler = async (req: any, res) => {
     try {
         const post = await PostModel.findById(req.params.id)
         if (!post) {
@@ -206,7 +206,7 @@ export const likeCommunityPostController: RequestHandler = async (req: any, res)
     }
 }
 
-export const unlikeCommunityPostController: RequestHandler = async (req: any, res) => {
+export const unlikeCommunityPost: RequestHandler = async (req: any, res) => {
     try {
         const post = await PostModel.findById(req.params.id)
         if (!post) {
@@ -240,4 +240,12 @@ export const unlikeCommunityPostController: RequestHandler = async (req: any, re
             apiObject: AppConfig.API_OBJECTS.Post
         })
     }
+}
+
+export default {
+    getCommunityPost,
+    getCommunityPosts,
+    createCommunityPost,
+    likeCommunityPost,
+    unlikeCommunityPost
 }

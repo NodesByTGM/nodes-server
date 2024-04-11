@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { AppConfig, JobType } from '../../utilities/config';
+import { AppConfig } from '../../utilities/config';
 import { mongooseLeanId } from './plugin';
 
 const JobSchema = new mongoose.Schema({

@@ -1,16 +1,12 @@
 import { Router } from 'express';
-import {
-    projectCreateController,
-    myProjectsController,
-    getProjectsController
-} from '../controllers';
+import {projectControllers} from '../controllers';
 import { authenticate } from '../middlewares';
 
 const router = Router();
 
-router.get('/', authenticate, getProjectsController);
-router.post('/', authenticate, projectCreateController);
-router.get('/mine', authenticate, myProjectsController);
+router.get('/', authenticate, projectControllers.getProjects);
+router.post('/', authenticate, projectControllers.createProject);
+router.get('/mine', authenticate, projectControllers.getMyProjects);
 
 
 export default router;

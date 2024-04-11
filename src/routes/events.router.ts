@@ -1,28 +1,18 @@
 import { Router } from 'express';
-import {
-    eventCreateController,
-    eventUpdateController,
-    deleteEventController,
-    saveEventController,
-    getEventsController,
-    getEventController,
-    getSavedEventsController,
-    getMyEventsController
-} from '../controllers';
+import { eventControllers } from '../controllers';
 import { authenticate } from '../middlewares';
-import { unsaveEventController } from '../controllers/events.controllers';
 
 const router = Router();
 
-router.post('/', authenticate, eventCreateController);
-router.get('/', authenticate, getEventsController);
-router.get('/saved', authenticate, getSavedEventsController);
-router.get('/mine', authenticate, getMyEventsController);
-router.get('/:id', authenticate, getEventController);
-router.put('/:id', authenticate, eventUpdateController);
-router.delete('/:id', authenticate, deleteEventController);
-router.post('/save/:id', authenticate, saveEventController);
-router.post('/unsave/:id', authenticate, unsaveEventController);
+router.post('/', authenticate, eventControllers.createEvent);
+router.get('/', authenticate, eventControllers.getEvents);
+router.get('/saved', authenticate, eventControllers.getSavedEvents);
+router.get('/mine', authenticate, eventControllers.getMyEvents);
+router.get('/:id', authenticate, eventControllers.getEvent);
+router.put('/:id', authenticate, eventControllers.updateEvent);
+router.delete('/:id', authenticate, eventControllers.deleteEvent);
+router.post('/save/:id', authenticate, eventControllers.saveEvent);
+router.post('/unsave/:id', authenticate, eventControllers.unsaveEvent);
 
 
 export default router;

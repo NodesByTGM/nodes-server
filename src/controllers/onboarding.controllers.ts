@@ -5,7 +5,7 @@ import { AppConfig } from "../utilities/config";
 import { talentUpgradeSchema } from "../validations/upgrades.validations";
 
 
-export const onboardingController: RequestHandler = async (req: any, res) => {
+const onboarding: RequestHandler = async (req: any, res) => {
     // const { error } = talentUpgradeSchema.validate(req.body);
     // if (error) return res.status(400).json({ message: error.details[0].message });
 
@@ -66,7 +66,7 @@ export const onboardingController: RequestHandler = async (req: any, res) => {
     }
 };
 
-export const talentOnboardingController: RequestHandler = async (req: any, res) => {
+const talentOnboarding: RequestHandler = async (req: any, res) => {
     const { error } = talentUpgradeSchema.validate(req.body);
     if (error) return res.status(400).json({ message: error.details[0].message });
 
@@ -128,7 +128,7 @@ export const talentOnboardingController: RequestHandler = async (req: any, res) 
     }
 };
 
-export const businessOnboardingController: RequestHandler = async (req: any, res) => {
+const businessOnboarding: RequestHandler = async (req: any, res) => {
     // const { error } = businessUpgradeSchema.validate(req.body);
     // if (error) return res.status(400).json({ message: error.details[0].message });
 
@@ -157,3 +157,10 @@ export const businessOnboardingController: RequestHandler = async (req: any, res
         return res.status(500).json({ message: AppConfig.ERROR_MESSAGES.InternalServerError });
     }
 };
+
+
+export default {
+    onboarding,
+    talentOnboarding,
+    businessOnboarding
+}

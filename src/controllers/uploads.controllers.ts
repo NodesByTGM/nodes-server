@@ -2,7 +2,7 @@ import { RequestHandler } from "express";
 import { constructResponse, deleteMedia, uploadMedia } from "../services";
 import { AppConfig } from "../utilities/config";
 
-export const uploadMediaController: RequestHandler = async (req: any, res) => {
+const uploadMediaController: RequestHandler = async (req: any, res) => {
     try {
         const file = req.body.file
         const data = await uploadMedia(file)
@@ -32,7 +32,7 @@ export const uploadMediaController: RequestHandler = async (req: any, res) => {
     }
 }
 
-export const deleteMediaController: RequestHandler = async (req, res) => {
+const deleteMediaController: RequestHandler = async (req, res) => {
     try {
         const id = req.params.id
         const data = await deleteMedia(id)
@@ -60,4 +60,9 @@ export const deleteMediaController: RequestHandler = async (req, res) => {
             apiObject: AppConfig.API_OBJECTS.Media
         })
     }
+}
+
+export default {
+    uploadMediaController,
+    deleteMediaController
 }

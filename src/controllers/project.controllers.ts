@@ -4,7 +4,7 @@ import { constructResponse, uploadMedia } from "../services";
 import { AppConfig } from "../utilities/config";
 import { paginateData } from "../utilities/common";
 
-export const projectCreateController: RequestHandler = async (req: any, res) => {
+const createProject: RequestHandler = async (req: any, res) => {
 
     try {
         const {
@@ -45,7 +45,7 @@ export const projectCreateController: RequestHandler = async (req: any, res) => 
     }
 }
 
-export const myProjectsController: RequestHandler = async (req: any, res) => {
+const getMyProjects: RequestHandler = async (req: any, res) => {
     try {
         const projects = await ProjectModel.find({ owner: req.user.id })
         const data = paginateData(req.query, projects, 'projects')
@@ -69,7 +69,7 @@ export const myProjectsController: RequestHandler = async (req: any, res) => {
     }
 }
 
-export const getProjectsController: RequestHandler = async (req: any, res) => {
+const getProjects: RequestHandler = async (req: any, res) => {
     try {
         const projects = await ProjectModel.find()
         const data = paginateData(req.query, projects, 'projects')
@@ -91,4 +91,10 @@ export const getProjectsController: RequestHandler = async (req: any, res) => {
             apiObject: AppConfig.API_OBJECTS.Project
         })
     }
+}
+
+export default {
+    createProject,
+    getMyProjects,
+    getProjects
 }

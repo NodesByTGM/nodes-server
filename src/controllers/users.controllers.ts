@@ -3,7 +3,7 @@ import { AccountModel, BusinessModel } from '../mongodb/models';
 import { constructResponse, uploadMedia } from '../services';
 import { AppConfig } from '../utilities/config';
 
-export const profileController: RequestHandler = async (req: any, res: any) => {
+const profile: RequestHandler = async (req: any, res: any) => {
     try {
         const user = req.user
         const business = await BusinessModel.findOne({ accountId: req.user.id })
@@ -30,7 +30,7 @@ export const profileController: RequestHandler = async (req: any, res: any) => {
     }
 };
 
-export const profileUpdateController: RequestHandler = async (req: any, res: any) => {
+const updateProfile: RequestHandler = async (req: any, res: any) => {
     try {
         const {
             name,
@@ -118,7 +118,7 @@ export const profileUpdateController: RequestHandler = async (req: any, res: any
     }
 };
 
-export const allUsersContoller: RequestHandler = async (req, res) => {
+const getAllUsers: RequestHandler = async (req, res) => {
     try {
         const users = await AccountModel.find().select('name username id avatar')
 
@@ -145,3 +145,8 @@ export const allUsersContoller: RequestHandler = async (req, res) => {
     }
 };
 
+export default {
+        profile,
+        updateProfile,
+        getAllUsers,
+}

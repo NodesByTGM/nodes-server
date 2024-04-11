@@ -4,7 +4,7 @@ import { constructResponse } from "../services";
 import { paginateData } from "../utilities/common";
 import { AppConfig } from "../utilities/config";
 
-export const jobCreateController: RequestHandler = async (req: any, res) => {
+const createJob: RequestHandler = async (req: any, res) => {
     try {
         const {
             name,
@@ -53,7 +53,7 @@ export const jobCreateController: RequestHandler = async (req: any, res) => {
     }
 }
 
-export const jobUpdateController: RequestHandler = async (req: any, res) => {
+const updateJob: RequestHandler = async (req: any, res) => {
     try {
         const {
             name,
@@ -109,7 +109,7 @@ export const jobUpdateController: RequestHandler = async (req: any, res) => {
     }
 }
 
-export const deleteJobController: RequestHandler = async (req: any, res) => {
+const deleteJob: RequestHandler = async (req: any, res) => {
     // check if the user is the owner.
     try {
         const job = await JobModel.findById(req.params.id)
@@ -148,7 +148,7 @@ export const deleteJobController: RequestHandler = async (req: any, res) => {
     }
 }
 
-export const applyToJobController: RequestHandler = async (req: any, res) => {
+const applyToJob: RequestHandler = async (req: any, res) => {
     try {
         let job = await JobModel.findOne({ _id: req.params.id })
         if (!job) {
@@ -192,7 +192,7 @@ export const applyToJobController: RequestHandler = async (req: any, res) => {
     }
 }
 
-export const saveJobController: RequestHandler = async (req: any, res) => {
+const saveJob: RequestHandler = async (req: any, res) => {
     try {
         const job = await JobModel.findById(req.params.id)
         if (!job) {
@@ -236,7 +236,7 @@ export const saveJobController: RequestHandler = async (req: any, res) => {
     }
 }
 
-export const unsaveJobController: RequestHandler = async (req: any, res) => {
+const unsaveJob: RequestHandler = async (req: any, res) => {
     try {
         const job = await JobModel.findById(req.params.id)
         if (!job) {
@@ -274,7 +274,7 @@ export const unsaveJobController: RequestHandler = async (req: any, res) => {
     }
 }
 
-export const getJobController: RequestHandler = async (req: any, res) => {
+const getJob: RequestHandler = async (req: any, res) => {
     try {
         const job = await JobModel.findById(req.params.id)
         if (!job) {
@@ -312,7 +312,7 @@ export const getJobController: RequestHandler = async (req: any, res) => {
     }
 }
 
-export const getJobsController: RequestHandler = async (req: any, res) => {
+const getJobs: RequestHandler = async (req: any, res) => {
     try {
         const userId = req.user.id.toString()
         // TODO HIDE BASED ON OWNER
@@ -337,7 +337,7 @@ export const getJobsController: RequestHandler = async (req: any, res) => {
             // { path: 'saves', select: 'name id avatar', options: { autopopulate: false } },
             { path: 'business' },
         ]);
-        
+
         const data = paginateData(req.query, jobs, 'jobs')
         return constructResponse({
             res,
@@ -357,7 +357,7 @@ export const getJobsController: RequestHandler = async (req: any, res) => {
     }
 }
 
-export const getAppliedJobsController: RequestHandler = async (req: any, res) => {
+const getAppliedJobs: RequestHandler = async (req: any, res) => {
     try {
         const userId = req.user.id.toString()
         const jobs = await JobModel.aggregate([
@@ -400,7 +400,7 @@ export const getAppliedJobsController: RequestHandler = async (req: any, res) =>
     }
 }
 
-export const getSavedJobsController: RequestHandler = async (req: any, res) => {
+const getSavedJobs: RequestHandler = async (req: any, res) => {
     try {
         const userId = req.user.id.toString()
         const jobs = await JobModel.aggregate([
@@ -443,7 +443,7 @@ export const getSavedJobsController: RequestHandler = async (req: any, res) => {
     }
 }
 
-export const getMyJobsController: RequestHandler = async (req: any, res) => {
+const getMyJobs: RequestHandler = async (req: any, res) => {
     try {
         const business = req.user.business
         const userId = req.user.id.toString()
@@ -485,4 +485,18 @@ export const getMyJobsController: RequestHandler = async (req: any, res) => {
             apiObject: AppConfig.API_OBJECTS.Job
         })
     }
+}
+
+export default {
+    createJob,
+    updateJob,
+    deleteJob,
+    applyToJob,
+    saveJob,
+    unsaveJob,
+    getJobs,
+    getJob,
+    getSavedJobs,
+    getAppliedJobs,
+    getMyJobs
 }

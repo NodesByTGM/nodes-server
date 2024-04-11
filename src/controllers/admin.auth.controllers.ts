@@ -2,15 +2,15 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import { RequestHandler } from 'express';
 import Joi from 'joi';
-import { AccountModel, OTPModel, TokenModel } from '../mongodb/models';
+import { AdminModel, OTPModel, TokenModel } from '../mongodb/models';
 import { constructResponse, generateAccessToken, generateRefreshToken, sendEmail } from '../services';
 import { verifyRefreshToken } from '../services/auth.service';
 import { generateOTP } from '../utilities/common';
 import { AppConfig, MAIN_APP_URL } from '../utilities/config';
-import { loginSchema, registerSchema, emailSchema, sendOTPSchema, usernameSchema, verifyEmailSchema, verifyOTPSchema } from '../validations';
+import { loginSchema, registerSchema } from '../validations';
+import { emailSchema, sendOTPSchema, usernameSchema, verifyEmailSchema, verifyOTPSchema } from '../validations/auth.validations';
 
-
-const register: RequestHandler = async (req, res) => {
+const createAdmin: RequestHandler = async (req, res) => {
     const { error } = registerSchema.validate(req.body);
     if (error) {
         return constructResponse({
@@ -38,8 +38,8 @@ const register: RequestHandler = async (req, res) => {
             }
         }
 
-        const existing = await AccountModel.findOne({ email: email.toLowerCase() });
-        // const existing = await AccountModel.findOne({
+        const existing = await AdminModel.findOne({ email: email.toLowerCase() });
+        // const existing = await AdminModel.findOne({
         //     $or: [
         //       { email: email.toLowerCase() },
         //       { username: username.toLowerCase() },
@@ -54,7 +54,7 @@ const register: RequestHandler = async (req, res) => {
             })
         }
 
-        const existing1 = await AccountModel.findOne({ username: username.toLowerCase() });
+        const existing1 = await AdminModel.findOne({ username: username.toLowerCase() });
 
         if (existing1) {
             return constructResponse({
@@ -65,7 +65,7 @@ const register: RequestHandler = async (req, res) => {
             })
         }
         const hashedPassword = await bcrypt.hash(password, 10);
-        const user = new AccountModel({
+        const user = new AdminModel({
             name,
             username,
             email: email.toLowerCase(),
@@ -82,7 +82,7 @@ const register: RequestHandler = async (req, res) => {
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
         // TODO: Refresh Tokens
-        res.cookie('nodesToken', accessToken, {
+        res.cookie('nodesAdminToken', accessToken, {
             httpOnly: true,
             maxAge: 24 * 60 * 60 * 1000, // Outpost: 86400000
             sameSite: 'lax',
@@ -123,7 +123,7 @@ const login: RequestHandler = async (req, res, next) => {
 
     const { email, password } = req.body;
     try {
-        const user = await AccountModel.findOne({ email: email.toLowerCase() });
+        const user = await AdminModel.findOne({ email: email.toLowerCase() });
 
         if (!user) {
             return constructResponse({
@@ -146,7 +146,7 @@ const login: RequestHandler = async (req, res, next) => {
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
         // TODO: Refresh Tokens
-        res.cookie('nodesToken', accessToken, {
+        res.cookie('nodesAdminToken', accessToken, {
             httpOnly: true,
             maxAge: 24 * 60 * 60 * 1000, // Outpost: 86400000
             sameSite: 'lax',
@@ -187,7 +187,7 @@ const refreshToken: RequestHandler = async (req, res) => {
         }
 
         const decodedToken: any = verifyRefreshToken(refreshToken);
-        const user: any = await AccountModel.findById(decodedToken?.accountId);
+        const user: any = await AdminModel.findById(decodedToken?.accountId);
         if (!user) {
             return constructResponse({
                 res,
@@ -221,7 +221,7 @@ const refreshToken: RequestHandler = async (req, res) => {
 };
 
 // TODO: restrict otp sending too many times here too
-const sendOTP: RequestHandler = async (req: any, res) => {
+const sendOtp: RequestHandler = async (req: any, res) => {
 
     const { error } = sendOTPSchema.validate(req.body);
     if (error) {
@@ -235,7 +235,7 @@ const sendOTP: RequestHandler = async (req: any, res) => {
     // const { email, name, password } = req.body;
     const { email } = req.body;
     try {
-        // const user = await AccountModel.findById(accountId);
+        // const user = await AdminModel.findById(accountId);
 
         // if (!user) {
         //     return res.status(401).json({ message: AppConfig.ERROR_MESSAGES.NotFoundError });
@@ -327,7 +327,7 @@ const verifyEmail: RequestHandler = async (req: any, res) => {
     }
 };
 
-const verifyOTP: RequestHandler = async (req: any, res) => {
+const verifyOtp: RequestHandler = async (req: any, res) => {
 
     const { error } = verifyOTPSchema.validate(req.body);
     if (error) {
@@ -378,7 +378,7 @@ const forgotPassword: RequestHandler = async (req, res) => {
     try {
         const { email } = req.body;
 
-        const user = await AccountModel.findOne({ email });
+        const user = await AdminModel.findOne({ email });
         if (!user) {
             // TODO: Change this to be if an email exist, we'll send it to you.
             return constructResponse({
@@ -425,7 +425,7 @@ const forgotPassword: RequestHandler = async (req, res) => {
 
 const checkResetLink: RequestHandler = async (req, res) => {
     try {
-        const user = await AccountModel.findById(req.params.accountId);
+        const user = await AdminModel.findById(req.params.accountId);
         if (!user) {
             return constructResponse({
                 res,
@@ -481,7 +481,7 @@ const resetPassword: RequestHandler = async (req, res) => {
             })
         };
 
-        const user = await AccountModel.findById(req.params.accountId);
+        const user = await AdminModel.findById(req.params.accountId);
         if (!user) {
 
             return constructResponse({
@@ -536,7 +536,7 @@ const changePassword: RequestHandler = async (req: any, res) => {
         const accountId = req.user.id; // Assuming you have user data in the request
 
         // Retrieve the user from the database
-        const user = await AccountModel.findById(accountId);
+        const user = await AdminModel.findById(accountId);
 
         if (!user) {
             return constructResponse({
@@ -582,7 +582,7 @@ const changePassword: RequestHandler = async (req: any, res) => {
 const logout: RequestHandler = async (req: any, res, next) => {
 
     try {
-        const user = await AccountModel.findById(req.user.id);
+        const user = await AdminModel.findById(req.user.id);
         if (!user) {
             return constructResponse({
                 res,
@@ -591,7 +591,7 @@ const logout: RequestHandler = async (req: any, res, next) => {
                 apiObject: AppConfig.API_OBJECTS.Auth
             })
         }
-        res.clearCookie('nodesToken')
+        res.clearCookie('nodesAdminToken')
 
         return constructResponse({
             res,
@@ -611,6 +611,7 @@ const logout: RequestHandler = async (req: any, res, next) => {
     }
 };
 
+
 const checkEmailExists: RequestHandler = async (req: any, res) => {
     const { error } = emailSchema.validate(req.body);
     if (error) {
@@ -624,7 +625,7 @@ const checkEmailExists: RequestHandler = async (req: any, res) => {
 
     const { email } = req.body;
     try {
-        const existing = await AccountModel.findOne({ email: email.toLowerCase() });
+        const existing = await AdminModel.findOne({ email: email.toLowerCase() });
         if (existing) {
             return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.UserAlreadyExists });
         }
@@ -653,7 +654,7 @@ const checkUsernameExists: RequestHandler = async (req: any, res) => {
 
     const { username } = req.body;
     try {
-        const existing = await AccountModel.findOne({ username: username.toLowerCase() });
+        const existing = await AdminModel.findOne({ username: username.toLowerCase() });
         if (existing) {
             return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.UserAlreadyExistsUsername });
         }
@@ -670,12 +671,12 @@ const checkUsernameExists: RequestHandler = async (req: any, res) => {
 };
 
 export default {
-    register,
+    createAdmin,
     login,
     refreshToken,
-    sendOTP,
+    sendOtp,
     verifyEmail,
-    verifyOTP,
+    verifyOtp,
     forgotPassword,
     checkResetLink,
     resetPassword,

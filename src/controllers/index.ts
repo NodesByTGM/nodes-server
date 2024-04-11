@@ -1,76 +1,13 @@
-export {
-    registerController,
-    loginController,
-    getTokenController,
-    forgotPasswordController,
-    resetPasswordController,
-    changePasswordController,
-    logoutController,
-    checkEmailExistsController,
-    checkUsernameExistsController
-} from './auth.controllers'
-export {
-    profileController,
-    profileUpdateController,
-    allUsersContoller,
-} from './users.controllers'
-export {
-    onboardingController,
-    talentOnboardingController,
-    businessOnboardingController
-} from './onboarding.controllers'
+export { default as adminAuthControllers } from './admin.auth.controllers';
+export { default as authControllers } from './auth.controllers';
+export { default as communityControllers } from './community.controllers';
+export { default as eventControllers } from './events.controllers';
+export { default as jobControllers } from './jobs.controllers';
+export { default as onboardingControllers } from './onboarding.controllers';
+export { default as postControllers } from './posts.controllers';
+export { default as projectControllers } from './project.controllers';
+export { default as spaceControllers } from './spaces.controllers';
+export { default as transactionControllers } from './transactions.controllers';
+export { default as uploadControllers } from './uploads.controllers';
+export { default as usersControllers } from './users.controllers';
 
-export {
-    projectCreateController,
-    myProjectsController,
-    getProjectsController
-} from './project.controllers'
-
-export {
-    uploadMediaController,
-    deleteMediaController
-} from './uploads.controllers';
-
-export {
-    verifyTransactionController,
-    verifyInternalTransactionController,
-    paystackWebhookController,
-    subscribeToPackage,
-} from './transactions.controllers'
-
-export {
-    jobCreateController,
-    jobUpdateController,
-    deleteJobController,
-    applyToJobController,
-    saveJobController,
-    getJobsController,
-    getJobController,
-    getSavedJobsController,
-    getAppliedJobsController,
-    getMyJobsController
-} from './jobs.controllers'
-
-export {
-    eventCreateController,
-    eventUpdateController,
-    deleteEventController,
-    saveEventController,
-    getEventsController,
-    getEventController,
-    getMyEventsController,
-    getSavedEventsController
-} from './events.controllers'
-
-export {
-    getCommunityPostController,
-    getCommunityPostsController,
-    createCommunityPostController,
-    likeCommunityPostController,
-    unlikeCommunityPostController
-} from './community.controllers'
-
-
-export { default as postControllers } from './posts.controllers'
-
-export { default as spaceControllers } from './spaces.controllers'
