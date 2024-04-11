@@ -36,7 +36,6 @@ const JobSchema = new mongoose.Schema({
         transform: (_: any, rec: Record<string, any>) => {
             const { __v, _id, jobType, ...object } = rec;
             object.id = _id
-            object.jobType = JobType[jobType]
             return object;
         }
     },
