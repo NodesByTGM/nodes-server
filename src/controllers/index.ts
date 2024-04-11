@@ -10,4 +10,5 @@ export { default as spaceControllers } from './spaces.controllers';
 export { default as transactionControllers } from './transactions.controllers';
 export { default as uploadControllers } from './uploads.controllers';
 export { default as usersControllers } from './users.controllers';
+export { default as thirdPartyControllers } from './thirdparty.controllers';
 

@@ -93,6 +93,10 @@ export const updateEvent: RequestHandler = async (req: any, res) => {
         event.thumbnail = imgUrl || event.thumbnail
         await event.save()
 
+        await EventModel.populate(event, [
+            { path: 'saves', select: 'name id avatar', options: { autopopulate: false } },
+            { path: 'business' },
+        ]);
         return constructResponse({
             res,
             data: event,
@@ -170,7 +174,7 @@ export const saveEvent: RequestHandler = async (req: any, res) => {
         event.saves.push(req.user)
         await event.save()
         const data: any = event.toJSON()
-        delete data.saves
+        data.saves = event.saves.length
         data.saved = true
 
         return constructResponse({
@@ -207,7 +211,7 @@ export const unsaveEvent: RequestHandler = async (req: any, res) => {
             await event.save()
         }
         const data: any = event.toJSON()
-        delete data.saves
+        data.saves = event.saves.length
         data.saved = false
 
         return constructResponse({
@@ -242,7 +246,7 @@ export const getEvent: RequestHandler = async (req: any, res) => {
         const data = {
             ...event?.toJSON(),
             saved: event.saves.map((y: any) => y.toString()).includes(req.user.id),
-            saves: event.business === req.user.business ? event.saves : undefined
+            saves: event.business === req.user.business ? event.saves : event.saves.length
         }
         return constructResponse({
             res,
@@ -276,11 +280,12 @@ export const getEvents: RequestHandler = async (req: any, res) => {
                     }
                 }
             },
+            { $addFields: { saves: { $size: '$saves' } } },
             { $addFields: { id: "$_id" } },
             { $unset: ["_id", "__v"] }
         ]);
         await EventModel.populate(events, [
-            { path: 'saves', select: 'name id avatar', options: { autopopulate: false } },
+            // { path: 'saves', select: 'name id avatar', options: { autopopulate: false } },
             { path: 'business' },
         ]);
         const data = paginateData(req.query, events, 'events')
@@ -359,11 +364,12 @@ export const getSavedEvents: RequestHandler = async (req: any, res) => {
                     }
                 }
             },
+            { $addFields: { saves: { $size: '$saves' } } },
             { $addFields: { id: "$_id" } },
             { $unset: ["_id", "__v"] }
         ]);
         await EventModel.populate(events, [
-            { path: 'saves', select: 'name id avatar', options: { autopopulate: false } },
+            // { path: 'saves', select: 'name id avatar', options: { autopopulate: false } },
             { path: 'business' },
         ]);
         const data = paginateData(req.query, events, 'events')

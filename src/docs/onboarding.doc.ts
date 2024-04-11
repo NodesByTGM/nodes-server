@@ -1,4 +1,4 @@
-import { constructResponseSchema, userSchema } from "./common.doc"
+import { constructResponseSchema, userSchema, verifyBusinessRequestSchema } from "./common.doc"
 
 const onboardingRequestUserSchema = {
     type: 'object',
@@ -96,6 +96,27 @@ export const onboardingSwagger = {
                 },
             },
         },
+        '/api/v1/onboarding/verify-business': {
+            post: {
+                summary: 'Verify Business',
+                tags: ['Onboarding'],
+                security: [{ bearerAuth: [] }],
+                requestBody: {
+                    required: true,
+                    content: {
+                        'application/json': { schema: verifyBusinessRequestSchema },
+                    },
+                },
+                responses: {
+                    '200': {
+                        description: 'Successful response',
+                        content: {
+                            'application/json': { schema: constructResponseSchema(userSchema) },
+                        },
+                    },
+                },
+            },
+        }
         // '/api/v1/onboarding/talent': {
         //     post: {
         //         summary: 'Onboard Account as Talent Account',

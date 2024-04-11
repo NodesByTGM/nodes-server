@@ -106,3 +106,19 @@ export const constructResponse = ({
 // "description": "Nodes.",
 // "enviroment": 
 // "version": 
+
+
+
+// {
+//     $project: {
+//         title: 1,
+//         description: 1,
+//         applicants: {
+//             $cond: {
+//                 if: { $eq: ['$business', new Types.ObjectId(req.user.business.id)] },
+//                 then: '$applicants',
+//                 else: { $size: '$applicants' } // Return the size of the applicants array
+//             }
+//         }
+//     }
+// },

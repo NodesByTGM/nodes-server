@@ -1,4 +1,5 @@
 import { RequestHandler } from "express";
+import { Types } from "mongoose";
 import { BusinessModel, JobModel } from "../mongodb/models";
 import { constructResponse } from "../services";
 import { paginateData } from "../utilities/common";
@@ -91,6 +92,12 @@ const updateJob: RequestHandler = async (req: any, res) => {
 
         await job.save()
 
+        await JobModel.populate(job, [
+            { path: 'applicants', select: 'name id avatar', options: { autopopulate: false } },
+            { path: 'saves', select: 'name id avatar', options: { autopopulate: false } },
+            { path: 'business' },
+        ]);
+
         return constructResponse({
             res,
             data: job,
@@ -171,8 +178,8 @@ const applyToJob: RequestHandler = async (req: any, res) => {
         job.applicants.push(req.user.id)
         await job.save()
         const data: any = job.toJSON()
-        delete data.saves
-        delete data.applicants
+        data.saves = job.saves.length
+        data.applicants = job.applicants.length
         data.applied = true
         return constructResponse({
             res,
@@ -214,8 +221,8 @@ const saveJob: RequestHandler = async (req: any, res) => {
         job.saves.push(req.user.id)
         await job.save()
         const data: any = job.toJSON()
-        delete data.saves
-        delete data.applicants
+        data.saves = job.saves.length
+        data.applicants = job.applicants.length
         data.saved = true
 
         return constructResponse({
@@ -252,8 +259,8 @@ const unsaveJob: RequestHandler = async (req: any, res) => {
             await job.save()
         }
         const data: any = job.toJSON()
-        delete data.saves
-        delete data.applicants
+        data.saves = job.saves.length
+        data.applicants = job.applicants.length
         data.saved = false
 
         return constructResponse({
@@ -286,13 +293,20 @@ const getJob: RequestHandler = async (req: any, res) => {
             })
         }
 
+
+        await JobModel.populate(job, [
+            { path: 'applicants', select: 'name id avatar', options: { autopopulate: false } },
+            { path: 'saves', select: 'name id avatar', options: { autopopulate: false } },
+            { path: 'business' },
+        ]);
+
         // TODO HIDE BASED ON OWNER
         const data = {
             ...job?.toJSON(),
             applied: job.applicants.includes(req.user.id),
             saved: job.saves.includes(req.user.id),
-            saves: job.business === req.user.business ? job.saves : undefined,
-            applicants: job.business === req.user.business ? job.applicants : undefined,
+            saves: job.business === req.user.business ? job.saves : job.saves.length,
+            applicants: job.business === req.user.business ? job.applicants : job.applicants.length,
         }
         return constructResponse({
             res,
@@ -329,6 +343,7 @@ const getJobs: RequestHandler = async (req: any, res) => {
                     }
                 }
             },
+            { $addFields: { applicants: { $size: '$applicants' }, saves: { $size: '$saves' }  } },
             { $addFields: { id: "$_id" } },
             { $unset: ["_id", "__v"] }
         ]);
@@ -373,12 +388,13 @@ const getAppliedJobs: RequestHandler = async (req: any, res) => {
                     }
                 }
             },
+            { $addFields: { applicants: { $size: '$applicants' }, saves: { $size: '$saves' }  } },
             { $addFields: { id: "$_id" } },
             { $unset: ["_id", "__v"] } //"applicants", "saves"
         ]);
         await JobModel.populate(jobs, [
-            { path: 'applicants', select: 'name id avatar', options: { autopopulate: false } },
-            { path: 'saves', select: 'name id avatar', options: { autopopulate: false } },
+            // { path: 'applicants', select: 'name id avatar', options: { autopopulate: false } },
+            // { path: 'saves', select: 'name id avatar', options: { autopopulate: false } },
             { path: 'business' },
         ]);
         const data = paginateData(req.query, jobs, 'jobs')
@@ -416,12 +432,13 @@ const getSavedJobs: RequestHandler = async (req: any, res) => {
                     }
                 }
             },
+            { $addFields: { applicants: { $size: '$applicants' }, saves: { $size: '$saves' }  } },
             { $addFields: { id: "$_id" } },
             { $unset: ["_id", "__v"] }
         ]);
         await JobModel.populate(jobs, [
-            { path: 'applicants', select: 'name id avatar', options: { autopopulate: false } },
-            { path: 'saves', select: 'name id avatar', options: { autopopulate: false } },
+            // { path: 'applicants', select: 'name id avatar', options: { autopopulate: false } },
+            // { path: 'saves', select: 'name id avatar', options: { autopopulate: false } },
             { path: 'business' },
         ]);
         const data = paginateData(req.query, jobs, 'jobs')

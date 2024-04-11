@@ -6,6 +6,8 @@ export const BusinessSchema = new mongoose.Schema({
     name: { type: String, required: true },
     logo: fileSchema,
     yoe: { type: Date, required: true },
+    verified: { type: Boolean, required: false, default: false },
+    cac: { type: fileSchema, required: false, default: null },
     account: {
         type: Schema.Types.ObjectId,
         required: true,

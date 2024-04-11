@@ -158,9 +158,64 @@ const businessOnboarding: RequestHandler = async (req: any, res) => {
     }
 };
 
+const verifyBusiness: RequestHandler = async (req: any, res) => {
+    // const { error } = businessUpgradeSchema.validate(req.body);
+    // if (error) return res.status(400).json({ message: error.details[0].message });
+    try {
+        const { name, logo, yoe, cac } = req.body;
+        const { user } = req
+        if (!user.verified) {
+            return constructResponse({
+                res,
+                code: 400,
+                message: AppConfig.ERROR_MESSAGES.UnverifiedEmail,
+                apiObject: AppConfig.API_OBJECTS.Account
+            })
+        }
+        if ((user.type === AppConfig.ACCOUNT_TYPES.TALENT)) {
+            return constructResponse({
+                res,
+                code: 400,
+                message: AppConfig.ERROR_MESSAGES.BadRequestError,
+                apiObject: AppConfig.API_OBJECTS.Account
+            })
+        }
+        const logoURL = await uploadMedia(logo)
+        const cacURL = await uploadMedia(cac)
+        const business = await BusinessModel.findOne({ account: user.id })
+
+        if (!business) {
+            return res.status(400).json({ message: AppConfig.ERROR_MESSAGES.NotFoundError });
+        }
+
+        business.name = name || business.name
+        business.logo = logoURL || business.logo
+        business.cac = cacURL
+        business.yoe = yoe || business.yoe
+        await user.save()
+        const account = await AccountModel.findById(user.id)
+        return constructResponse({
+            res,
+            code: 200,
+            data: account,
+            message: AppConfig.STRINGS.DetailsSentForVerification,
+            apiObject: AppConfig.API_OBJECTS.Account
+        })
+    } catch (error) {
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Account
+        })
+    }
+};
+
 
 export default {
     onboarding,
     talentOnboarding,
-    businessOnboarding
+    businessOnboarding,
+    verifyBusiness
 }

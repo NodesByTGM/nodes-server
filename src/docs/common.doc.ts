@@ -56,6 +56,25 @@ export const businessSchema = {
         id: { type: 'string' }
     }
 }
+export const businessProfileRequestSchema = {
+    type: 'object',
+    properties: {
+        companyName: { type: 'string' },
+        logo: fileSwaggerSchema,
+        yoe: { type: 'string', format: 'date-time' },
+    }
+}
+
+export const verifyBusinessRequestSchema = {
+    type: 'object',
+    properties: {
+        name: { type: 'string' },
+        logo: fileSwaggerSchema,
+        cac: trueFileSwaggerSchema,
+        yoe: { type: 'string', format: 'date-time' },
+    }
+}
+// TODO: can the user always change yoe
 
 export const subscriptionSchema = {
     type: 'object',
@@ -88,11 +107,9 @@ export const profileRequestSchema = {
         spaces: { type: 'boolean' },
         comments: { type: 'boolean' },
         visible: { type: 'boolean' },
-        logo: { type: 'string' }, // Assuming logo is a URL string
-        companyName: { type: 'string' },
         height: { type: 'string' },
         age: { type: 'string' },
-        yoe: { type: 'string', format: 'date-time' } // Assuming yoe is a date-time string
+        ...businessProfileRequestSchema.properties
     }
 };
 

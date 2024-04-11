@@ -16,7 +16,8 @@ import {
   transactionsRouter,
   communityRouter,
   spacesRouter,
-  postsRouter
+  postsRouter,
+  thirdPartyRouter
 } from "./routes";
 import swaggerSpec from "./docs";
 
@@ -29,7 +30,7 @@ connectDB();
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",");
 // Parse JSON request body
-app.use(json({limit:'10mb'}));
+app.use(json({ limit: '10mb' }));
 app.use(cors({
   origin: allowedOrigins,
   credentials: true
@@ -80,6 +81,10 @@ app.use('/api/v1/spaces', spacesRouter);
 
 // Define posts routes
 app.use('/api/v1/posts', postsRouter);
+
+
+// Define thirdparty routes
+app.use('/api/v1', thirdPartyRouter);
 
 // Swagger Docs
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));

@@ -12,7 +12,7 @@ export const usersSwagger = {
                     '200': {
                         description: 'User successfully registered.',
                         content: {
-                            'application/json': { schema: profileRequestSchema },
+                            'application/json': { schema: userSchema },
                         },
                     },
                     '401': {
@@ -30,7 +30,7 @@ export const usersSwagger = {
                 requestBody: {
                     required: true,
                     content: {
-                        'application/json': { schema: userSchema, },
+                        'application/json': { schema: profileRequestSchema, },
                     },
                 },
                 responses: {

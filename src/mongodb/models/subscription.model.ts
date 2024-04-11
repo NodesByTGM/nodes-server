@@ -16,13 +16,8 @@ export const SubscriptionSchema = new Schema({
         transform: (_: any, rec: Record<string, any>) => {
             const { __v, _id, account, plan, ...object } = rec;
             object.id = _id
-            if(plan.includes('Business')){
-                object.plan = 'Business'
-            }
-            if(plan.includes('Pro')){
-                object.plan = 'Pro'
-            }
-
+            object.plan = plan.replace("(Annual)", "").trim()
+            object.tenor = plan.includes("Annual") ? 'annual' : 'monthly'
             return object;
         }
     }

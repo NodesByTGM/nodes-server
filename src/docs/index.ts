@@ -11,6 +11,7 @@ import { communitySwagger } from './community.doc';
 import { postsSwagger } from './posts.doc';
 import { spacesSwagger } from './spaces.doc';
 import { adminAuthSwagger } from './admin.auth.doc';
+import { thirdpartySwagger } from './thirdparty.doc';
 
 // import pjson from '../../package.json';
 const options = {
@@ -61,7 +62,8 @@ const options = {
             ...postsSwagger.paths,
             // ...communitySwagger.paths,
             ...spacesSwagger.paths,
-            ...adminAuthSwagger.paths
+            ...adminAuthSwagger.paths,
+            ...thirdpartySwagger.paths
             // ...upgradesSwagger.paths,
         }
     },
