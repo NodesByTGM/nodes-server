@@ -46,6 +46,8 @@ const API_OBJECTS = {
     Media: 'Media',
     Job: 'Job',
     Event: 'Event',
+    News: 'News',
+    MoviesTV: 'Movies & TV Shows',
     Transaction: 'Transaction',
     Subscription: 'Subscription',
     Token: 'Token',

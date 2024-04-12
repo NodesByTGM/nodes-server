@@ -167,7 +167,6 @@ const applyToJob: RequestHandler = async (req: any, res) => {
             })
         }
         if (job.applicants.filter(x => x.toString() === req.user._id.toString()).length > 0) {
-
             return constructResponse({
                 res,
                 code: 400,
@@ -183,7 +182,7 @@ const applyToJob: RequestHandler = async (req: any, res) => {
         data.applied = true
         return constructResponse({
             res,
-            data: job,
+            data,
             code: 200,
             message: AppConfig.STRINGS.Success,
             apiObject: AppConfig.API_OBJECTS.Job
@@ -227,7 +226,7 @@ const saveJob: RequestHandler = async (req: any, res) => {
 
         return constructResponse({
             res,
-            data: job,
+            data,
             code: 200,
             message: AppConfig.STRINGS.Success,
             apiObject: AppConfig.API_OBJECTS.Job
@@ -265,7 +264,7 @@ const unsaveJob: RequestHandler = async (req: any, res) => {
 
         return constructResponse({
             res,
-            data: job,
+            data,
             code: 200,
             message: AppConfig.STRINGS.Success,
             apiObject: AppConfig.API_OBJECTS.Job
@@ -310,7 +309,7 @@ const getJob: RequestHandler = async (req: any, res) => {
         }
         return constructResponse({
             res,
-            data: data,
+            data,
             code: 200,
             message: AppConfig.STRINGS.Success,
             apiObject: AppConfig.API_OBJECTS.Job

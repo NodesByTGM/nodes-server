@@ -4,7 +4,8 @@ import { authenticate } from '../middlewares';
 
 const router = Router();
 
-router.post('/trending', authenticate, thirdPartyControllers.getNews);
+router.get('/trending', authenticate, thirdPartyControllers.getNews);
+router.get('/movies-and-shows', authenticate, thirdPartyControllers.getTrendingMedia);
 
 
 export default router;
