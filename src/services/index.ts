@@ -13,3 +13,9 @@ export { uploadMedia, deleteMedia } from './cloudinary.service'
 export { initiateSubscription, verifyTxnByReference } from './transaction.service'
 export { constructResponse } from './common.service'
 export { getExternalNews } from './thirdparty.service'
+
+export {
+    googleAuthenticate,
+    googleCallback,
+    googleRedirect
+} from './socialauth.service'

@@ -6,7 +6,7 @@ import { AccountModel, OTPModel, TokenModel } from '../mongodb/models';
 import { constructResponse, generateAccessToken, generateRefreshToken, sendEmail } from '../services';
 import { verifyRefreshToken } from '../services/auth.service';
 import { generateOTP } from '../utilities/common';
-import { AppConfig, MAIN_APP_URL } from '../utilities/config';
+import { AppConfig, BASE_APP_URL } from '../utilities/config';
 import { loginSchema, registerSchema, emailSchema, sendOTPSchema, usernameSchema, verifyEmailSchema, verifyOTPSchema } from '../validations';
 
 
@@ -397,7 +397,7 @@ const forgotPassword: RequestHandler = async (req, res) => {
             });
         }
 
-        const link = `${MAIN_APP_URL}/auth/reset-password/${user._id}/${token.token}`;
+        const link = `${BASE_APP_URL}/auth/reset-password/${user._id}/${token.token}`;
         // console.log(link);
 
         // TODO: Customize email sent

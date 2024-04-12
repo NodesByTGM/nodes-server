@@ -17,10 +17,12 @@ import {
   communityRouter,
   spacesRouter,
   postsRouter,
-  thirdPartyRouter
+  thirdPartyRouter,
+  socialAuthRouter
 } from "./routes";
 import swaggerSpec from "./docs";
-
+import passport from "passport";
+import session from 'express-session'
 
 dotenv.config();
 
@@ -29,20 +31,40 @@ const app: Express = express();
 connectDB();
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",");
+const port = process.env.PORT || 3001;
 // Parse JSON request body
 app.use(json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: false }));
 app.use(cors({
   origin: allowedOrigins,
   credentials: true
 }));
 app.use(cookieParser())
 
-const port = process.env.PORT || 3001;
+app.use(session({
+  resave: false,
+  saveUninitialized: false,
+  secret: `${process.env.SESSION_SECRET}`,
+  // store: MongoStore.create({
+  //     mongoUrl: process.env.MONGODB_URI,
+  //     ttl: 12 * 60 * 60,
+  // })
+}))
+
+
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use((req, res, next) => {
   res.setHeader('X-Powered-By', 'TheGridManagement');
   next();
 });
+
+// app.use((err, req, res,) => {
+//   console.error(`Error in file ${__filename}: ${err.message}`);
+//   next()
+// });
 
 // Define authentication routes
 app.use('/api/v1/auth', authRouter);
@@ -82,9 +104,12 @@ app.use('/api/v1/spaces', spacesRouter);
 // Define posts routes
 app.use('/api/v1/posts', postsRouter);
 
+// Define socialauth routes
+app.use('/api/v1', thirdPartyRouter);
+
 
 // Define thirdparty routes
-app.use('/api/v1', thirdPartyRouter);
+app.use('/api/v1/socialauth', socialAuthRouter);
 
 // Swagger Docs
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));

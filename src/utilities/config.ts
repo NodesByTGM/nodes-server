@@ -1,7 +1,10 @@
+import dotenv from 'dotenv'
+
+dotenv.config();
 export const EXTERNAL_BASE_API_ENDPOINT = 'https://animechan.xyz/api'
-export const BASE_API_ENDPOINT = process.env.NODE_ENV === 'development' ? 'http://localhost:3001/api/v1' : 'https://nodes-server-v1.onrender.com/api/v1'
-export const MAIN_APP_URL = 'https://nodes-platform.vercel.app'
-export const SOCIAL_AUTH_GOOGLE_URL = `${BASE_API_ENDPOINT}/auth/google/redirect`
+export const BASE_API_ENDPOINT = process.env.NODE_ENV === 'development' ? 'http://localhost:3001/api/v1' : 'https://dev.api.nodesafrica.com/api/v1'
+export const BASE_APP_URL = `${process.env.BASE_APP_URL}`
+export const SOCIAL_AUTH_GOOGLE_CALLBACK_URL = `${BASE_API_ENDPOINT}/socialauth/google/auth/redirect`
 
 const API_ENDPOINTS = {
     Quotes: {
