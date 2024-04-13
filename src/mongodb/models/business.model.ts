@@ -3,11 +3,11 @@ import { fileSchema } from './file.model';
 import { mongooseLeanId } from './plugin';
 
 export const BusinessSchema = new mongoose.Schema({
-    name: { type: String, required: true },
+    name: { type: String },
     logo: fileSchema,
-    yoe: { type: Date, required: true },
-    verified: { type: Boolean, required: false, default: false },
-    cac: { type: fileSchema, required: false, default: null },
+    yoe: { type: Date, default: Date.now() },
+    verified: { type: Boolean, default: false },
+    cac: { type: fileSchema, default: null },
     account: {
         type: Schema.Types.ObjectId,
         required: true,
