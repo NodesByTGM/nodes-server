@@ -1,4 +1,4 @@
-import { constructResponseSchema, profileRequestSchema, userSchema } from "./common.doc";
+import { businessProfileRequestSchema, constructResponseSchema, profileRequestSchema, userSchema } from "./common.doc";
 
 export const usersSwagger = {
     paths: {
@@ -10,7 +10,7 @@ export const usersSwagger = {
                 security: [{ bearerAuth: [] }],
                 responses: {
                     '200': {
-                        description: 'User successfully registered.',
+                        description: 'Success.',
                         content: {
                             'application/json': { schema: userSchema },
                         },
@@ -31,6 +31,47 @@ export const usersSwagger = {
                     required: true,
                     content: {
                         'application/json': { schema: profileRequestSchema, },
+                    },
+                },
+                responses: {
+                    '200': {
+                        description: 'Successful response',
+                        content: {
+                            'application/json': { schema: constructResponseSchema(userSchema) },
+                        },
+                    },
+                },
+            },
+        },
+        '/api/v1/users/business-profile': {
+            // get: {
+            //     summary: 'Get User\'s Business Profile',
+            //     description: 'Retrieve the authenticated user\'s business profile information.',
+            //     tags: ['Profile'],
+            //     security: [{ bearerAuth: [] }],
+            //     responses: {
+            //         '200': {
+            //             description: 'Success.',
+            //             content: {
+            //                 'application/json': { schema: userSchema },
+            //             },
+            //         },
+            //         '401': {
+            //             description: 'Unauthorized. User authentication failed.',
+            //         },
+            //         '500': {
+            //             description: 'Internal Server Error.',
+            //         },
+            //     },
+            // },
+            put: {
+                summary: 'Update Profile',
+                tags: ['Profile'],
+                security: [{ bearerAuth: [] }],
+                requestBody: {
+                    required: true,
+                    content: {
+                        'application/json': { schema: businessProfileRequestSchema, },
                     },
                 },
                 responses: {

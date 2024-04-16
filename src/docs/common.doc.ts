@@ -50,6 +50,10 @@ export const businessSchema = {
         // _id: { type: 'string' },
         name: { type: 'string' },
         yoe: { type: 'string', format: 'date-time' },
+        location: { type: 'string' },
+        linkedIn: { type: 'string' },
+        instagram: { type: 'string' },
+        twitter: { type: 'string' },
         account: { type: 'string' },
         createdAt: { type: 'string', format: 'date-time' },
         updatedAt: { type: 'string', format: 'date-time' },
@@ -59,10 +63,14 @@ export const businessSchema = {
 export const businessProfileRequestSchema = {
     type: 'object',
     properties: {
-        companyName: { type: 'string' },
-        logo: fileSwaggerSchema,
+        name: { type: 'string' },
+        logo: trueFileSwaggerSchema,
         yoe: { type: 'string', format: 'date-time' },
-    }
+        location: { type: 'string' },
+        linkedIn: { type: 'string' },
+        instagram: { type: 'string' },
+        twitter: { type: 'string' },
+    },
 }
 
 export const verifyBusinessRequestSchema = {
@@ -109,7 +117,6 @@ export const profileRequestSchema = {
         visible: { type: 'boolean' },
         height: { type: 'string' },
         age: { type: 'string' },
-        ...businessProfileRequestSchema.properties
     }
 };
 

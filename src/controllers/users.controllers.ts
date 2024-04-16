@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import { AccountModel, BusinessModel } from '../mongodb/models';
 import { constructResponse, uploadMedia } from '../services';
 import { AppConfig } from '../utilities/config';
+import { create } from 'ts-node';
 
 const profile: RequestHandler = async (req: any, res: any) => {
     try {
@@ -46,12 +47,8 @@ const updateProfile: RequestHandler = async (req: any, res: any) => {
             spaces,
             comments,
             visible,
-            logo,
-            companyName,
-
             height,
             age,
-            yoe,
         } = req.body
 
         const uploadedAvatar = await uploadMedia(avatar)
@@ -75,27 +72,12 @@ const updateProfile: RequestHandler = async (req: any, res: any) => {
             user.spaces = spaces !== undefined ? spaces : user.spaces
             user.comments = comments !== undefined ? comments : user.comments
             user.visible = visible !== undefined ? visible : user.visible
-
-
-            let business
-            if (user.type === AppConfig.ACCOUNT_TYPES.BUSINESS) {
-                business = await BusinessModel.findOne({ account: req.user.id })
-                const uploadedLogo = await uploadMedia(logo)
-                if (business) {
-                    business.name = companyName || business.name
-                    business.logo = uploadedLogo || business.logo
-                    business.yoe = yoe || business.yoe
-                    await business.save()
-                    business = business.toJSON()
-                }
-            }
             const account = await user.save()
-            const data = { ...account.toJSON(), business }
 
             return constructResponse({
                 res,
                 code: 200,
-                data,
+                data: account,
                 message: AppConfig.STRINGS.ProfileUpdateSuccessful,
                 apiObject: AppConfig.API_OBJECTS.Account
             })
@@ -117,6 +99,66 @@ const updateProfile: RequestHandler = async (req: any, res: any) => {
         })
     }
 };
+
+const updateBusinessProfile: RequestHandler = async (req: any, res) => {
+    try {
+        const {
+            name,
+            logo,
+            yoe,
+            location,
+            linkedIn,
+            instagram,
+            twitter
+        } = req.body
+        let business
+        if (req.user.type === AppConfig.ACCOUNT_TYPES.BUSINESS) {
+            business = await BusinessModel.findOne({ account: req.user.id })
+            const uploadedLogo = await uploadMedia(logo)
+            if (business) {
+                business.name = name || business.name
+                business.logo = uploadedLogo || business.logo
+                business.yoe = yoe || business.yoe
+                business.location = location || business.location
+                business.linkedIn = linkedIn || business.linkedIn
+                business.instagram = instagram || business.instagram
+                business.twitter = twitter || business.twitter
+                await business.save()
+                business = business.toJSON()
+            } else {
+                business = await BusinessModel.create({
+                    name,
+                    yoe,
+                    location,
+                    linkedIn,
+                    instagram,
+                    twitter,
+                    logo: uploadedLogo,
+                    account: req.user.id
+                })
+                req.user.business = business.id
+                await req.user.save()
+            }
+        }
+        const user = await AccountModel.findById(req.user.id)
+        return constructResponse({
+            res,
+            code: 200,
+            data: user,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Account
+        })
+    } catch (error) {
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Account
+        })
+    }
+
+}
 
 const getAllUsers: RequestHandler = async (req, res) => {
     try {
@@ -146,7 +188,8 @@ const getAllUsers: RequestHandler = async (req, res) => {
 };
 
 export default {
-        profile,
-        updateProfile,
-        getAllUsers,
+    profile,
+    updateProfile,
+    updateBusinessProfile,
+    getAllUsers,
 }
