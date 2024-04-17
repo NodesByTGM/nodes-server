@@ -2,7 +2,8 @@ import { RequestHandler } from 'express';
 import { AccountModel, BusinessModel } from '../mongodb/models';
 import { constructResponse, uploadMedia } from '../services';
 import { AppConfig } from '../utilities/config';
-import { create } from 'ts-node';
+
+
 
 const profile: RequestHandler = async (req: any, res: any) => {
     try {
@@ -162,13 +163,20 @@ const updateBusinessProfile: RequestHandler = async (req: any, res) => {
 
 const getAllUsers: RequestHandler = async (req, res) => {
     try {
-        const users = await AccountModel.find().select('name username id avatar')
-
-        // await AccountModel.populate(users, [
-        //     { path: 'author', select: 'name id avatar', options: { autopopulate: false } },
-        //     { path: 'likes', select: 'name id avatar', options: { autopopulate: false } },
-        //     { path: 'comments' },
-        // ]);
+        const users = await AccountModel.aggregate([
+            { $sort: { createdAt: -1 } },
+            {
+                $project: {
+                    name: "$name",
+                    username: "$username",
+                    avatar: "$avatar",
+                    id: "$_id",
+                    type: "$type"
+                }
+            },
+            // { $addFields: { id: "$_id" } },
+            { $unset: ["_id", "__v"] },
+        ]);
         return constructResponse({
             res,
             code: 200,

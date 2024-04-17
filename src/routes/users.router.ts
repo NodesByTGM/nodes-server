@@ -7,6 +7,6 @@ const router = Router();
 router.get('/profile', authenticate, usersControllers.profile);
 router.put('/profile', authenticate, usersControllers.updateProfile);
 router.put('/business-profile', authenticate, usersControllers.updateBusinessProfile);
-router.get('/', usersControllers.getAllUsers);
+router.get('/', authenticate, usersControllers.getAllUsers);
 
 export default router;

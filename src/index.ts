@@ -18,7 +18,8 @@ import {
   spacesRouter,
   postsRouter,
   thirdPartyRouter,
-  socialAuthRouter
+  socialAuthRouter,
+  adminAuthRouter
 } from "./routes";
 import swaggerSpec from "./docs";
 import passport from "passport";
@@ -68,6 +69,9 @@ app.use((req, res, next) => {
 
 // Define authentication routes
 app.use('/api/v1/auth', authRouter);
+
+// Define admin authentication routes
+app.use('/api/v1/admin/auth', adminAuthRouter);
 
 // Define user routes
 app.use('/api/v1/users', userRouter);

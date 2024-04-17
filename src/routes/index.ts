@@ -1,4 +1,5 @@
 export { default as authRouter } from './auth.router'
+export { default as adminAuthRouter } from './admin.auth.router'
 export { default as userRouter } from './users.router'
 export { default as onboardingRouter } from './onboarding.router'
 export { default as projectRouter } from './project.router'
