@@ -1,7 +1,62 @@
-import { businessProfileRequestSchema, constructResponseSchema, profileRequestSchema, userSchema } from "./common.doc";
+import { businessProfileRequestSchema, constructResponseSchema, miniUserSchema, profileRequestSchema, userSchema } from "./common.doc";
 
 export const usersSwagger = {
     paths: {
+        '/api/v1/users/': {
+            get: {
+                summary: 'Get All Users',
+                description: 'Retrieve the authenticated user\'s profile information.',
+                tags: ['Profile'],
+                security: [{ bearerAuth: [] }],
+                responses: {
+                    '200': {
+                        description: 'Success.',
+                        content: {
+                            'application/json': { schema: constructResponseSchema(miniUserSchema, true) },
+                        },
+                    },
+                    '401': {
+                        description: 'Unauthorized. User authentication failed.',
+                    },
+                    '500': {
+                        description: 'Internal Server Error.',
+                    },
+                },
+            },
+        },
+        '/api/v1/users/{id}': {
+            get: {
+                summary: 'Get All Users',
+                description: 'Retrieve the authenticated user\'s profile information.',
+                tags: ['Profile'],
+                security: [{ bearerAuth: [] }],
+                parameters: [
+                    {
+                        name: 'id',
+                        in: 'path',
+                        required: true,
+                        schema: {
+                            type: 'string',
+                        },
+                        description: 'ID of the user to retrieve.',
+                    }
+                ],
+                responses: {
+                    '200': {
+                        description: 'Success.',
+                        content: {
+                            'application/json': { schema: constructResponseSchema(miniUserSchema) },
+                        },
+                    },
+                    '401': {
+                        description: 'Unauthorized. User authentication failed.',
+                    },
+                    '500': {
+                        description: 'Internal Server Error.',
+                    },
+                },
+            },
+        },
         '/api/v1/users/profile': {
             get: {
                 summary: 'Get User Profile',

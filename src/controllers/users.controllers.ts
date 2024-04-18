@@ -2,7 +2,91 @@ import { RequestHandler } from 'express';
 import { AccountModel, BusinessModel } from '../mongodb/models';
 import { constructResponse, uploadMedia } from '../services';
 import { AppConfig } from '../utilities/config';
+import { paginateData } from '../utilities/common';
 
+
+const getAllUsers: RequestHandler = async (req: any, res) => {
+    try {
+        const { skills, name, connections } = req.query;
+
+        // Construct base query
+        let query: any = {};
+
+        // Add filters based on parameters
+        if (skills) {
+            query.skills = { $regex: skills, $options: 'i' }; // Case-insensitive search for text
+        }
+        if (name) {
+            query.name = { $regex: name, $options: 'i' };
+        }
+
+        const accounts = await AccountModel.aggregate([
+            { $match: query },
+            { $sort: { createdAt: -1 } },
+            {
+                $project: {
+                    name: "$name",
+                    username: "$username",
+                    avatar: "$avatar",
+                    id: "$_id",
+                    type: "$type"
+                }
+            },
+            // { $addFields: { id: "$_id" } },
+            { $unset: ["_id", "__v"] },
+        ]);
+
+        const data = paginateData(req.query, accounts, 'accounts')
+        return constructResponse({
+            res,
+            data,
+            code: 200,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Post
+        })
+    } catch (error) {
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Post
+        })
+    }
+}
+
+const getUserProfile: RequestHandler = async (req: any, res) => {
+    try {
+        const data = await AccountModel.findById(req.params.id)
+
+
+        if (!data) {
+            return constructResponse({
+                res,
+                code: 400,
+                message: AppConfig.ERROR_MESSAGES.ResourceNotFound,
+                apiObject: AppConfig.API_OBJECTS.Post
+            })
+        }
+        const { name, id, avatar, type } = data
+        return constructResponse({
+            res,
+            code: 200,
+            data: { name, id, avatar, type },
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Post
+        })
+    } catch (error) {
+
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Post
+        })
+    }
+}
 
 
 const profile: RequestHandler = async (req: any, res: any) => {
@@ -110,7 +194,9 @@ const updateBusinessProfile: RequestHandler = async (req: any, res) => {
             location,
             linkedIn,
             instagram,
-            twitter
+            twitter,
+            headline,
+            bio
         } = req.body
         let business
         if (req.user.type === AppConfig.ACCOUNT_TYPES.BUSINESS) {
@@ -124,12 +210,16 @@ const updateBusinessProfile: RequestHandler = async (req: any, res) => {
                 business.linkedIn = linkedIn || business.linkedIn
                 business.instagram = instagram || business.instagram
                 business.twitter = twitter || business.twitter
+                business.headline = headline || business.headline
+                business.bio = bio || business.bio
                 await business.save()
                 business = business.toJSON()
             } else {
                 business = await BusinessModel.create({
                     name,
                     yoe,
+                    bio,
+                    headline,
                     location,
                     linkedIn,
                     instagram,
@@ -161,43 +251,11 @@ const updateBusinessProfile: RequestHandler = async (req: any, res) => {
 
 }
 
-const getAllUsers: RequestHandler = async (req, res) => {
-    try {
-        const users = await AccountModel.aggregate([
-            { $sort: { createdAt: -1 } },
-            {
-                $project: {
-                    name: "$name",
-                    username: "$username",
-                    avatar: "$avatar",
-                    id: "$_id",
-                    type: "$type"
-                }
-            },
-            // { $addFields: { id: "$_id" } },
-            { $unset: ["_id", "__v"] },
-        ]);
-        return constructResponse({
-            res,
-            code: 200,
-            data: users,
-            message: AppConfig.STRINGS.Success,
-            apiObject: AppConfig.API_OBJECTS.Account
-        })
-    } catch (error) {
-        return constructResponse({
-            res,
-            code: 500,
-            data: error,
-            message: AppConfig.ERROR_MESSAGES.InternalServerError,
-            apiObject: AppConfig.API_OBJECTS.Account
-        })
-    }
-};
 
 export default {
     profile,
     updateProfile,
     updateBusinessProfile,
     getAllUsers,
+    getUserProfile,
 }

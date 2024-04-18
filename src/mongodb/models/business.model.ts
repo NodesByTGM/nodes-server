@@ -8,6 +8,8 @@ export const BusinessSchema = new mongoose.Schema({
     linkedIn: { type: String, default: '' },
     instagram: { type: String, default: '' },
     twitter: { type: String, default: '' },
+    headline: { type: String, default: '' },
+    bio: { type: String, default: '' },
     yoe: { type: Date, default: Date.now() },
     verified: { type: Boolean, default: false },
     logo: { type: fileSchema, default: null },

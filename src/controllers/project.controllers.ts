@@ -93,8 +93,40 @@ const getProjects: RequestHandler = async (req: any, res) => {
     }
 }
 
+const getProject: RequestHandler = async (req: any, res) => {
+    try {
+        const data = await ProjectModel.findById(req.params.id)
+
+        if (!data) {
+            return constructResponse({
+                res,
+                code: 400,
+                message: AppConfig.ERROR_MESSAGES.ResourceNotFound,
+                apiObject: AppConfig.API_OBJECTS.Project
+            })
+        }
+        return constructResponse({
+            res,
+            code: 200,
+            data,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Project
+        })
+
+    } catch (error) {
+        return constructResponse({
+            res,
+            code: 500,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            data: error,
+            apiObject: AppConfig.API_OBJECTS.Project
+        })
+    }
+}
+
 export default {
     createProject,
     getMyProjects,
-    getProjects
+    getProjects,
+    getProject
 }

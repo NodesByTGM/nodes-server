@@ -196,7 +196,8 @@ export const miniUserSchema = {
     properties: {
         name: { type: 'string' },
         avatar: fileSwaggerSchema,
-        id: { type: 'string' }
+        id: { type: 'string' },
+        type: { type: 'number' }
     }
 }
 

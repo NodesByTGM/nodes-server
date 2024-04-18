@@ -15,14 +15,14 @@ const JobSchema = new mongoose.Schema({
         ref: 'Account',
         required: true,
         default: [],
-        autopopulate: { select: ['name', 'id', 'avatar'] }
+        autopopulate: { select: ['name', 'id', 'avatar', 'type'] }
     },
     saves: {
         type: [Schema.Types.ObjectId],
         ref: 'Account',
         required: true,
         default: [],
-        autopopulate: { select: ['name', 'id', 'avatar'] }
+        autopopulate: { select: ['name', 'id', 'avatar', 'type'] }
     },
     business: {
         type: Schema.Types.ObjectId,

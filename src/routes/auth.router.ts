@@ -15,8 +15,8 @@ router.post('/refresh-token', authControllers.refreshToken)
 router.post('/send-otp', authControllers.sendOTP)
 router.post('/verify-otp', authControllers.verifyOTP)
 router.post('/verify-email', authenticate, authControllers.verifyEmail)
-router.post('/check-email', authenticate, authControllers.checkEmailExists)
-router.post('/check-username', authenticate, authControllers.checkUsernameExists)
+router.post('/check-email', authControllers.checkEmailExists)
+router.post('/check-username', authControllers.checkUsernameExists)
 
 
 export default router;

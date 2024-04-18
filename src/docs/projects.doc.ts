@@ -84,6 +84,33 @@ export const projectsSwagger = {
                 },
             },
         },
+
+        '/api/v1/projects/{id}': {
+            get: {
+                summary: 'Get A Project',
+                tags: ['Projects'],
+                security: [{ bearerAuth: [] }],
+                parameters: [
+                    {
+                        name: 'id',
+                        in: 'path',
+                        required: true,
+                        schema: {
+                            type: 'string',
+                        },
+                        description: 'ID of the project to retrieve.',
+                    }
+                ],
+                responses: {
+                    '200': {
+                        description: 'Successful response',
+                        content: {
+                            'application/json': { schema: constructResponseSchema(projectSchema) }
+                        }
+                    },
+                },
+            },
+        },
         '/api/v1/projects/mine': {
             get: {
                 summary: 'Get My Projects',

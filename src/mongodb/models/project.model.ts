@@ -23,6 +23,7 @@ const ProjectSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         required: true,
         ref: 'Account',
+        // autopopulate: { select: ['name', 'id', 'avatar', 'type'] }
     },
 }, {
     timestamps: true,
@@ -34,7 +35,7 @@ const ProjectSchema = new mongoose.Schema({
         }
     }
 });
-
+// ProjectSchema.plugin(require('mongoose-autopopulate'));
 const ProjectModel = mongoose.model('Project', ProjectSchema);
 
 export default ProjectModel;
