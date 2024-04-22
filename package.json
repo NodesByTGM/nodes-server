@@ -3,15 +3,20 @@
     "version": "1.0.0",
     "description": "Backend server for Nodes App",
     "main": "src/index.ts",
+    "private": true,
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "build": "npx tsc",
         "start": "ts-node src/index.ts",
-        "dev": "nodemon --exec ts-node src/index.ts"
+        "dev": "nodemon --exec ts-node src/index.ts",
+        "prepare": "husky"
     },
     "author": "Elijah Soladoye",
-    "license": "ISC",
     "devDependencies": {
+        "@semantic-release/changelog": "^6.0.3",
+        "@semantic-release/exec": "^6.0.3",
+        "@semantic-release/git": "^10.0.1",
+        "@semantic-release/npm": "^12.0.0",
         "@types/bcrypt": "^5.0.2",
         "@types/cookie-parser": "^1.4.6",
         "@types/cookie-session": "^2.0.48",
@@ -24,6 +29,8 @@
         "@types/passport-google-oauth20": "^2.0.14",
         "@types/swagger-jsdoc": "^6.0.4",
         "@types/swagger-ui-express": "^4.1.6",
+        "conventional-changelog-conventionalcommits": "^7.0.2",
+        "husky": "^9.0.11",
         "typescript": "^5.3.3"
     },
     "dependencies": {
@@ -45,5 +52,21 @@
         "swagger-jsdoc": "^6.2.8",
         "swagger-ui-express": "^5.0.0",
         "ts-node": "^10.9.2"
+    },
+    "release": {
+        "branches": [
+            "dev"
+        ],
+        "preset": "conventionalcommits",
+        "plugins": [
+            "@semantic-release/commit-analyzer",
+            "@semantic-release/release-notes-generator",
+            "@semantic-release/changelog",
+            "@semantic-release/npm",
+            "@semantic-release/git"
+        ]
+    },
+    "publishConfig": {
+        "access": "restricted"
     }
 }
