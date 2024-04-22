@@ -84,9 +84,9 @@ export const adminAuthSwagger = {
                             schema: {
                                 type: 'object',
                                 properties: {
-                                    username: {
+                                    email: {
                                         type: 'string',
-                                        description: 'The username of the user.',
+                                        description: 'The email of the user.',
                                         example: 'john_doe',
                                     },
                                     password: {
@@ -96,7 +96,7 @@ export const adminAuthSwagger = {
                                         example: 'password123',
                                     },
                                 },
-                                required: ['username', 'password'],
+                                required: ['email', 'password'],
                             },
                         },
                     },
@@ -538,7 +538,7 @@ export const adminAuthSwagger = {
         },
 
         '/api/v1/admin/auth/logout': {
-            post: {
+            get: {
                 summary: 'Logout',
                 description: 'Logout the authenticated user.',
                 tags: ['Admin Authentication'],

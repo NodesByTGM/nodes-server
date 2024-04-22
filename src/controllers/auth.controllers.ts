@@ -34,7 +34,12 @@ const register: RequestHandler = async (req, res) => {
         if (otp) {
             dbOTP = await OTPModel.findOne({ email, password: otp, used: false })
             if (!dbOTP) {
-                return res.status(401).json({ message: AppConfig.ERROR_MESSAGES.InvalidOTPProvided });
+                return constructResponse({
+                    res,
+                    code: 401,
+                    message: AppConfig.ERROR_MESSAGES.InvalidOTPProvided,
+                    apiObject: AppConfig.API_OBJECTS.Auth
+                })
             }
         }
 
