@@ -162,7 +162,7 @@ const verifyBusiness: RequestHandler = async (req: any, res) => {
     // const { error } = businessUpgradeSchema.validate(req.body);
     // if (error) return res.status(400).json({ message: error.details[0].message });
     try {
-        const { name, logo, yoe, cac } = req.body;
+        const { name, logo, yoe, cac, linkedIn } = req.body;
         const { user } = req
         if (!user.verified) {
             return constructResponse({
@@ -192,7 +192,8 @@ const verifyBusiness: RequestHandler = async (req: any, res) => {
         business.logo = logoURL || business.logo
         business.cac = cacURL
         business.yoe = yoe || business.yoe
-        await user.save()
+        business.linkedIn = linkedIn || business.linkedIn
+        await business.save()
         const account = await AccountModel.findById(user.id)
         return constructResponse({
             res,

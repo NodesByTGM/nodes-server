@@ -79,3 +79,13 @@ export const paginateData = (query: any, items: any, nameSpace?: string) => {
     // }
     return data
 }
+
+export function generateRandomPassword(length = AppConfig.GENERATED_PASSWORD_LENGTH): string {
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?";
+    let password = "";
+    for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * charset.length);
+        password += charset[randomIndex];
+    }
+    return password;
+}

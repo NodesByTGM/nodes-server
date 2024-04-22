@@ -68,6 +68,32 @@ export const authenticateAdmin = async (req: RequestWithUser | Request, res: Res
     }
 };
 
+export const authenticateSuperAdmin = async (req: RequestWithUser | Request, res: Response, next: NextFunction) => {
+    try {
+        let token = req?.cookies?.nodesAdminToken;
+        if (!token) {
+            token = req.headers.authorization?.split(' ')[1];
+        }
+
+        if (!token) {
+            return res.status(401).json({ message: AppConfig.ERROR_MESSAGES.AuthenticationError });
+        }
+        const decodedToken: any = verifyAccessToken(token);
+        const user: any = await AdminModel.findById(decodedToken?.accountId);
+        if (!user) {
+            return res.status(401).json({ message: AppConfig.ERROR_MESSAGES.AuthenticationError });
+        }
+        if (user.role !== AppConfig.ADMIN_ROLES.SUPERADMIN) {
+            return res.status(401).json({ message: AppConfig.ERROR_MESSAGES.PermissionsDenied });
+        }
+
+        req.user = user;
+        next();
+    } catch (error) {
+        res.status(401).json({ message: AppConfig.ERROR_MESSAGES.AuthenticationError });
+    }
+};
+
 // create a middleware for active subscriptions
 
 export default authenticate;

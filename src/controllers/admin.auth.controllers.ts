@@ -5,12 +5,12 @@ import Joi from 'joi';
 import { AdminModel, OTPModel, TokenModel } from '../mongodb/models';
 import { constructResponse, generateAccessToken, generateRefreshToken, sendEmail } from '../services';
 import { verifyRefreshToken } from '../services/auth.service';
-import { generateOTP } from '../utilities/common';
-import { AppConfig, BASE_APP_URL } from '../utilities/config';
+import { generateOTP, generateRandomPassword } from '../utilities/common';
+import { AppConfig, BASE_ADMIN_APP_URL, BASE_APP_URL } from '../utilities/config';
 import { loginSchema, registerSchema } from '../validations';
 import { emailSchema, sendOTPSchema, usernameSchema, verifyEmailSchema, verifyOTPSchema } from '../validations/auth.validations';
 
-const createAdmin: RequestHandler = async (req, res) => {
+const inviteAdmin: RequestHandler = async (req, res) => {
     const { error } = registerSchema.validate(req.body);
     if (error) {
         return constructResponse({
@@ -26,25 +26,9 @@ const createAdmin: RequestHandler = async (req, res) => {
         username,
         email,
         dob,
-        otp,
-        password,
     } = req.body;
     try {
-        let dbOTP;
-        if (otp) {
-            dbOTP = await OTPModel.findOne({ email, password: otp, used: false })
-            if (!dbOTP) {
-                return res.status(401).json({ message: AppConfig.ERROR_MESSAGES.InvalidOTPProvided });
-            }
-        }
-
         const existing = await AdminModel.findOne({ email: email.toLowerCase() });
-        // const existing = await AdminModel.findOne({
-        //     $or: [
-        //       { email: email.toLowerCase() },
-        //       { username: username.toLowerCase() },
-        //     ],
-        //   });
         if (existing) {
             return constructResponse({
                 res,
@@ -64,40 +48,32 @@ const createAdmin: RequestHandler = async (req, res) => {
                 apiObject: AppConfig.API_OBJECTS.Auth
             })
         }
+        const password = generateRandomPassword()
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = new AdminModel({
             name,
             username,
+            role: AppConfig.ADMIN_ROLES.MEMBER,
             email: email.toLowerCase(),
-            dob,
-            verified: otp ? true : false,
             password: hashedPassword,
         });
         await user.save();
-        if (dbOTP) {
-            await dbOTP.deleteOne()
-        }
-        // TODO: Remove this.
 
-        const accessToken = generateAccessToken(user);
-        const refreshToken = generateRefreshToken(user);
-        // TODO: Refresh Tokens
-        res.cookie('nodesAdminToken', accessToken, {
-            httpOnly: true,
-            maxAge: 24 * 60 * 60 * 1000, // Outpost: 86400000
-            sameSite: 'lax',
-            secure: process.env.NODE_ENV === 'development' ? false : true,
-            domain: process.env.NODE_ENV === 'development' ? 'localhost' : process.env.DOMAIN,
-            path: '/',
-        });
+        await sendEmail(
+            user.email,
+            'Admin Invitation',
+            `Hello, you've been invited as a member to the Nodes Team, please log into ${BASE_ADMIN_APP_URL} using the following details:\n\n
+            Username: ${user.username} \n
+            Email: ${user.email} \n
+            Password: ${user.password} \n`)
 
-        const data = { user, accessToken, refreshToken }
+        const data = { invited: user }
         return constructResponse({
             res,
             data,
             code: 201,
-            message: AppConfig.STRINGS.RegistrationSuccessful,
-            apiObject: AppConfig.API_OBJECTS.Auth
+            message: AppConfig.STRINGS.InvitedUser,
+            apiObject: AppConfig.API_OBJECTS.Admin
         })
     } catch (error) {
         return constructResponse({
@@ -611,7 +587,6 @@ const logout: RequestHandler = async (req: any, res, next) => {
     }
 };
 
-
 const checkEmailExists: RequestHandler = async (req: any, res) => {
     const { error } = emailSchema.validate(req.body);
     if (error) {
@@ -671,7 +646,7 @@ const checkUsernameExists: RequestHandler = async (req: any, res) => {
 };
 
 export default {
-    createAdmin,
+    inviteAdmin,
     login,
     refreshToken,
     sendOtp,

@@ -4,6 +4,7 @@ dotenv.config();
 export const EXTERNAL_BASE_API_ENDPOINT = 'https://animechan.xyz/api'
 export const BASE_API_ENDPOINT = process.env.NODE_ENV === 'development' ? 'http://localhost:3001/api/v1' : 'https://dev.api.nodesafrica.com/api/v1'
 export const BASE_APP_URL = `${process.env.BASE_APP_URL}`
+export const BASE_ADMIN_APP_URL = `${process.env.BASE_ADMIN_APP_URL}`
 export const SOCIAL_AUTH_GOOGLE_CALLBACK_URL = `${BASE_API_ENDPOINT}/socialauth/google/auth/redirect`
 
 const API_ENDPOINTS = {
@@ -56,8 +57,10 @@ const API_OBJECTS = {
     Token: 'Token',
     Business: 'Business',
     Auth: 'Auth',
+    Admin: 'Admin',
     OTP: 'OTP',
-    Base: 'Base'
+    Base: 'Base',
+    Content:'Content'
 }
 
 
@@ -67,6 +70,7 @@ export const AppConfig = {
     ERROR_MESSAGES: {
         InvalidCredentialsProvided: 'Invalid Credentials Provided.',
         AuthenticationError: 'Authentication Error.',
+        PermissionsDenied: 'You don\'t have access to this resource.',
         BadRequestError: 'Bad Request Error.',
         NotFoundError: 'Resource Not found.',
         InternalServerError: 'Internal Server Error.',
@@ -94,6 +98,7 @@ export const AppConfig = {
         QuotesSuccessfullyRetrievedFromDB: 'Quotes successfully retrieved from DB.',
         QuoteSuccessfullyRetrievedFromDB: 'Quote successfully retrieved from DB.',
         RegistrationSuccessful: 'Registration successful.',
+        InvitedUser: 'User has been successfully invited.',
         LoginSuccessful: 'Login successful',
         PasswordLinkSent: 'A password reset link has been sent to your email account.',
         PasswordResetSuccessful: 'Password has been reset successfully.',
@@ -116,6 +121,10 @@ export const AppConfig = {
         USER: 0,
         ADMIN: 1,
     },
+    ADMIN_ROLES: {
+        SUPERADMIN: 9,
+        MEMBER: 1,
+    },
     ACCOUNT_TYPES: {
         DEFAULT: 0,
         TALENT: 1,
@@ -130,6 +139,20 @@ export const AppConfig = {
         Community: 0,
         Space: 0,
     },
+    CONTENT_CATEGORIES: {
+        Movies: 'Movies',
+        Birthdays: 'Birthdays',
+        HiddenGems: 'Hidden Gems',
+        Flashbacks: 'Flashbacks',
+        Spotlights: 'Collaboration Spotlights',
+        TrendingNews: 'Trending News',
+    },
+    CONTENT_STATUSES: {
+        Published: 'Published',
+        Archived: 'Archived',
+        Draft: 'Draft'
+    },
+    GENERATED_PASSWORD_LENGTH: 10,
     MEMBER_TYPES: {
         Member: 0,
         Admin: 1

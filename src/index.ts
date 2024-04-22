@@ -19,7 +19,9 @@ import {
   postsRouter,
   thirdPartyRouter,
   socialAuthRouter,
-  adminAuthRouter
+  adminAuthRouter,
+  adminRouter,
+  cmsRouter
 } from "./routes";
 import swaggerSpec from "./docs";
 import passport from "passport";
@@ -108,8 +110,16 @@ app.use('/api/v1/spaces', spacesRouter);
 // Define posts routes
 app.use('/api/v1/posts', postsRouter);
 
-// Define socialauth routes
+// Define Admin routes
+app.use('/api/v1/admin', adminRouter);
+
+// Define CMS routes
+app.use('/api/v1/cms', cmsRouter);
+
+// Define thirdParty routes
 app.use('/api/v1', thirdPartyRouter);
+
+
 
 
 // Define thirdparty routes

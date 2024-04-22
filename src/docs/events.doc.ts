@@ -66,7 +66,6 @@ export const eventSchema = {
     }
 };
 
-
 export const eventSwagger = {
     paths: {
         '/api/v1/events/': {
@@ -78,7 +77,7 @@ export const eventSwagger = {
                     required: true,
                     content: {
                         'application/json': {
-                            schema: constructResponseSchema(eventRequestSchema)
+                            schema: eventRequestSchema
                         }
                     }
                 },

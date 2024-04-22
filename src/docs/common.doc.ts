@@ -60,6 +60,7 @@ export const businessSchema = {
         id: { type: 'string' }
     }
 }
+
 export const businessProfileRequestSchema = {
     type: 'object',
     properties: {
@@ -77,13 +78,14 @@ export const verifyBusinessRequestSchema = {
     type: 'object',
     properties: {
         name: { type: 'string' },
+        linkedIn: { type: 'string' },
         logo: fileSwaggerSchema,
         cac: trueFileSwaggerSchema,
         yoe: { type: 'string', format: 'date-time' },
     }
 }
-// TODO: can the user always change yoe
 
+// TODO: can the user always change yoe
 export const subscriptionSchema = {
     type: 'object',
     properties: {
@@ -201,6 +203,27 @@ export const miniUserSchema = {
     }
 }
 
+export const adminMiniUserSchema = {
+    type: 'object',
+    properties: {
+        name: { type: 'string' },
+        avatar: fileSwaggerSchema,
+        id: { type: 'string' },
+        email: { type: 'string' },
+        username: { type: 'string' },
+        dateJoined: { type: 'string', format: 'date-time' },
+        type: { type: 'number' }
+    }
+}
+
+export const adminSubscriptionSchema = {
+    type: 'object',
+    properties: {
+        ...subscriptionSchema.properties,
+        account: miniUserSchema
+    }
+}
+
 export const postSchema = {
     type: 'object',
     properties: {
@@ -269,6 +292,36 @@ export const adminAuthUserSchema = {
         refreshToken: { type: 'string' }
     }
 }
+
+export const timestampProperties = {
+    createdAt: { type: 'string', format: 'date-time' },
+    updatedAt: { type: 'string', format: 'date-time' },
+}
+
+export const cmsSchema = {
+    type: 'object',
+    properties: {
+        id: { type: 'string' },
+        title: { type: 'string' },
+        description: { type: 'string' },
+        status: { type: 'string' },
+        category: { type: 'string' },
+        thumbnail: { type: trueFileSwaggerSchema },
+        ...timestampProperties
+    }
+}
+
+// const userSchema = {
+//     type: 'object',
+//     properties: {
+//       username: { type: 'string' },
+//       email: { type: 'string' }
+//     },
+//     anyOf: [
+//       { required: ['username'] },
+//       { required: ['email'] }
+//     ]
+//   };
 
 export const paginatedSchema = {
     type: 'object',

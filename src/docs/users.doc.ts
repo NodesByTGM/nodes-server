@@ -5,8 +5,8 @@ export const usersSwagger = {
         '/api/v1/users/': {
             get: {
                 summary: 'Get All Users',
-                description: 'Retrieve the authenticated user\'s profile information.',
-                tags: ['Profile'],
+                description: 'Retrieve all users mini-information.',
+                tags: ['Users'],
                 security: [{ bearerAuth: [] }],
                 responses: {
                     '200': {

@@ -12,4 +12,6 @@ export { default as uploadControllers } from './uploads.controllers';
 export { default as usersControllers } from './users.controllers';
 export { default as thirdPartyControllers } from './thirdparty.controllers';
 export { default as socialAuthControllers } from './socialauth.controllers';
+export { default as adminControllers } from './admin.controllers';
+export { default as cmsControllers } from './cms.controllers';
 

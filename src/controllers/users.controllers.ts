@@ -58,8 +58,6 @@ const getAllUsers: RequestHandler = async (req: any, res) => {
 const getUserProfile: RequestHandler = async (req: any, res) => {
     try {
         const data = await AccountModel.findById(req.params.id)
-
-
         if (!data) {
             return constructResponse({
                 res,
@@ -89,21 +87,15 @@ const getUserProfile: RequestHandler = async (req: any, res) => {
 }
 
 
-const profile: RequestHandler = async (req: any, res: any) => {
+const getProfile: RequestHandler = async (req: any, res: any) => {
     try {
         const user = req.user
-        const business = await BusinessModel.findOne({ accountId: req.user.id })
-        const data = {
-            ...user.toJSON(),
-            business
-
-        }
         return constructResponse({
             res,
             code: 200,
-            data,
+            data: user,
             message: AppConfig.STRINGS.Success,
-            apiObject: AppConfig.API_OBJECTS.Media
+            apiObject: AppConfig.API_OBJECTS.Account
         })
     } catch (error) {
         return constructResponse({
@@ -253,7 +245,7 @@ const updateBusinessProfile: RequestHandler = async (req: any, res) => {
 
 
 export default {
-    profile,
+    getProfile,
     updateProfile,
     updateBusinessProfile,
     getAllUsers,

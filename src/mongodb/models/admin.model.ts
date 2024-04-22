@@ -13,8 +13,8 @@ const AdminSchema = new mongoose.Schema({
     role: {
         type: Number,
         required: true,
-        default: AppConfig.ACCOUNT_ROLES.ADMIN,
-        enum: Object.values(AppConfig.ACCOUNT_ROLES)
+        default: AppConfig.ADMIN_ROLES.MEMBER,
+        enum: Object.values(AppConfig.ADMIN_ROLES)
     },
 }, {
     timestamps: true,
@@ -26,22 +26,6 @@ const AdminSchema = new mongoose.Schema({
         }
     }
 });
-
-// AccountSchema.pre('save', async function (next) {
-//     if (!this.cid) {
-//         const lastAccount = await AccountModel.findOne({}, {}, { sort: { cid: -1 } });
-//         if (lastAccount) {
-//             this.cid = lastAccount ? lastAccount.cid + 1 : 1;
-//         } else {
-//             this.cid = 0
-//         }
-//     }
-//     next();
-// });
-
-
-// AccountSchema.index({ anime: 1, character: 1 })
-// AccountSchema.index({ charcter: 1, quote: 1 }, { unique: true });
 
 const AdminModel = mongoose.model('Admin', AdminSchema);
 

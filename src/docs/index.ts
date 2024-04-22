@@ -7,11 +7,13 @@ import { projectsSwagger } from './projects.doc'
 import { jobSwagger } from './jobs.doc';
 import { eventSwagger } from './events.doc';
 import { transactionSwagger } from './transactions.doc';
-import { communitySwagger } from './community.doc';
+// import { communitySwagger } from './community.doc';
 import { postsSwagger } from './posts.doc';
 import { spacesSwagger } from './spaces.doc';
 import { adminAuthSwagger } from './admin.auth.doc';
 import { thirdpartySwagger } from './thirdparty.doc';
+import { adminSwagger } from './admin.doc';
+import { cmsSwagger } from './cms.doc';
 
 // import pjson from '../../package.json';
 const options = {
@@ -63,7 +65,9 @@ const options = {
             // ...communitySwagger.paths,
             ...spacesSwagger.paths,
             ...adminAuthSwagger.paths,
-            ...thirdpartySwagger.paths
+            ...thirdpartySwagger.paths,
+            ...adminSwagger.paths,
+            ...cmsSwagger.paths
             // ...upgradesSwagger.paths,
         }
     },
