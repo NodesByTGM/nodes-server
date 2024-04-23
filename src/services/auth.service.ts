@@ -8,7 +8,7 @@ export const generateAccessToken = (user: any) => {
 
 // Middleware to generate refresh tokens
 export const generateRefreshToken = (user: any) => {
-    return jwt.sign({ accountId: user.id }, `${process.env.REFRESH_TOKEN_SECRET}`, { expiresIn: '3h' });
+    return jwt.sign({ accountId: user.id }, `${process.env.REFRESH_TOKEN_SECRET}`, { expiresIn: '7d' });
 };
 
 // Verify access tokens
