@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/NodesByTGM/nodes-server/compare/v1.0.0...v1.0.1) (2024-04-23)
+
+
+### Bug Fixes
+
+* auth ([88d1f1a](https://github.com/NodesByTGM/nodes-server/commit/88d1f1aba20ef2d296098c395e70c80ed9eae82f))
+
 ## 1.0.0 (2024-04-22)
 
 
