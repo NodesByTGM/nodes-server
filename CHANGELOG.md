@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/NodesByTGM/nodes-server/compare/v1.0.1...v1.0.2) (2024-04-23)
+
+
+### Bug Fixes
+
+* admin and cms endpoints and docs ([d18c332](https://github.com/NodesByTGM/nodes-server/commit/d18c332e72b03ce6870cd2ff501fd8e56d699939))
+
 ## [1.0.1](https://github.com/NodesByTGM/nodes-server/compare/v1.0.0...v1.0.1) (2024-04-23)
 
 
