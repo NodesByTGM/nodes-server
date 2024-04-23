@@ -94,7 +94,7 @@ export const updateEvent: RequestHandler = async (req: any, res) => {
         await event.save()
 
         await EventModel.populate(event, [
-            { path: 'saves', select: 'name id avatar type', options: { autopopulate: false } },
+            { path: 'saves', select: 'name email id avatar type', options: { autopopulate: false } },
             { path: 'business' },
         ]);
         return constructResponse({
@@ -285,7 +285,7 @@ export const getEvents: RequestHandler = async (req: any, res) => {
             { $unset: ["_id", "__v"] }
         ]);
         await EventModel.populate(events, [
-            // { path: 'saves', select: 'name id avatar type', options: { autopopulate: false } },
+            // { path: 'saves', select: 'name email id avatar type', options: { autopopulate: false } },
             { path: 'business' },
         ]);
         const data = paginateData(req.query, events, 'events')
@@ -327,7 +327,7 @@ export const getMyEvents: RequestHandler = async (req: any, res) => {
             { $unset: ["_id", "__v"] }
         ]);
         await EventModel.populate(events, [
-            { path: 'saves', select: 'name id avatar type', options: { autopopulate: false } },
+            { path: 'saves', select: 'name email id avatar type', options: { autopopulate: false } },
             { path: 'business' },
         ]);
         const data = paginateData(req.query, events, 'events')
@@ -369,7 +369,7 @@ export const getSavedEvents: RequestHandler = async (req: any, res) => {
             { $unset: ["_id", "__v"] }
         ]);
         await EventModel.populate(events, [
-            // { path: 'saves', select: 'name id avatar type', options: { autopopulate: false } },
+            // { path: 'saves', select: 'name email id avatar type', options: { autopopulate: false } },
             { path: 'business' },
         ]);
         const data = paginateData(req.query, events, 'events')

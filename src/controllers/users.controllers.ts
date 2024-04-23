@@ -28,6 +28,9 @@ const getAllUsers: RequestHandler = async (req: any, res) => {
                     name: "$name",
                     username: "$username",
                     avatar: "$avatar",
+                    headline: "$headline",
+                    bio: "$bio",
+                    email: "$email",
                     id: "$_id",
                     type: "$type"
                 }
@@ -63,7 +66,7 @@ const getUserProfile: RequestHandler = async (req: any, res) => {
                 res,
                 code: 400,
                 message: AppConfig.ERROR_MESSAGES.ResourceNotFound,
-                apiObject: AppConfig.API_OBJECTS.Post
+                apiObject: AppConfig.API_OBJECTS.MiniAccount
             })
         }
         const { name, id, avatar, type } = data
@@ -72,7 +75,7 @@ const getUserProfile: RequestHandler = async (req: any, res) => {
             code: 200,
             data: { name, id, avatar, type },
             message: AppConfig.STRINGS.Success,
-            apiObject: AppConfig.API_OBJECTS.Post
+            apiObject: AppConfig.API_OBJECTS.MiniAccount
         })
     } catch (error) {
 
@@ -81,11 +84,10 @@ const getUserProfile: RequestHandler = async (req: any, res) => {
             code: 500,
             data: error,
             message: AppConfig.ERROR_MESSAGES.InternalServerError,
-            apiObject: AppConfig.API_OBJECTS.Post
+            apiObject: AppConfig.API_OBJECTS.MiniAccount
         })
     }
 }
-
 
 const getProfile: RequestHandler = async (req: any, res: any) => {
     try {
@@ -126,6 +128,7 @@ const updateProfile: RequestHandler = async (req: any, res: any) => {
             visible,
             height,
             age,
+            firebaseToken,
         } = req.body
 
         const uploadedAvatar = await uploadMedia(avatar)
@@ -142,6 +145,7 @@ const updateProfile: RequestHandler = async (req: any, res: any) => {
             user.headline = headline || user.headline
             user.bio = bio || user.bio
             user.website = website || user.website
+            user.firebaseToken = firebaseToken || user.firebaseToken
 
             user.height = height || user.height
             user.age = age || user.age

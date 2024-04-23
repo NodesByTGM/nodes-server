@@ -33,8 +33,8 @@ const createPost: RequestHandler = async (req: any, res) => {
             author: req.user.id
         });
         await PostModel.populate(data, [
-            { path: 'author', select: 'name id avatar type', options: { autopopulate: false } },
-            { path: 'likes', select: 'name id avatar type', options: { autopopulate: false } },
+            { path: 'author', select: 'name email id avatar type', options: { autopopulate: false } },
+            { path: 'likes', select: 'name email id avatar type', options: { autopopulate: false } },
             { path: 'comments', options: { autopopulate: false } },
         ]);
         if (parent) {
@@ -105,8 +105,8 @@ const getPosts: RequestHandler = async (req: any, res) => {
 
         // Manually populate the field
         await PostModel.populate(posts, [
-            { path: 'author', select: 'name id avatar type', options: { autopopulate: false } },
-            { path: 'likes', select: 'name id avatar type', options: { autopopulate: false } },
+            { path: 'author', select: 'name email id avatar type', options: { autopopulate: false } },
+            { path: 'likes', select: 'name email id avatar type', options: { autopopulate: false } },
             { path: 'comments', options: { autopopulate: false } },
         ]);
         const data = paginateData(req.query, posts, 'posts')
@@ -142,8 +142,8 @@ const getPost: RequestHandler = async (req: any, res) => {
             })
         }
         await PostModel.populate(post, [
-            { path: 'author', select: 'name id avatar type', options: { autopopulate: false } },
-            { path: 'likes', select: 'name id avatar type', options: { autopopulate: false } },
+            { path: 'author', select: 'name email id avatar type', options: { autopopulate: false } },
+            { path: 'likes', select: 'name email id avatar type', options: { autopopulate: false } },
             { path: 'comments', options: { autopopulate: false } },
         ]);
         const data = {
@@ -206,8 +206,8 @@ const getMyPosts: RequestHandler = async (req: any, res) => {
 
         // Manually populate the field
         await PostModel.populate(posts, [
-            { path: 'author', select: 'name id avatar type', options: { autopopulate: false } },
-            { path: 'likes', select: 'name id avatar type', options: { autopopulate: false } },
+            { path: 'author', select: 'name email id avatar type', options: { autopopulate: false } },
+            { path: 'likes', select: 'name email id avatar type', options: { autopopulate: false } },
             { path: 'comments', select: '', options: { autopopulate: false } },
         ]);
         const data = paginateData(req.query, posts, 'posts')
@@ -251,8 +251,8 @@ const likePost: RequestHandler = async (req: any, res) => {
         post.likes.push(req.user)
         await post.save()
         await PostModel.populate(post, [
-            { path: 'author', select: 'name id avatar type', options: { autopopulate: false } },
-            { path: 'likes', select: 'name id avatar type', options: { autopopulate: false } },
+            { path: 'author', select: 'name email id avatar type', options: { autopopulate: false } },
+            { path: 'likes', select: 'name email id avatar type', options: { autopopulate: false } },
             { path: 'comments', options: { autopopulate: false } },
         ]);
         const data: any = post.toJSON()
@@ -294,8 +294,8 @@ const unlikePost: RequestHandler = async (req: any, res) => {
         }
 
         await PostModel.populate(post, [
-            { path: 'author', select: 'name id avatar type', options: { autopopulate: false } },
-            { path: 'likes', select: 'name id avatar type', options: { autopopulate: false } },
+            { path: 'author', select: 'name email id avatar type', options: { autopopulate: false } },
+            { path: 'likes', select: 'name email id avatar type', options: { autopopulate: false } },
             { path: 'comments', options: { autopopulate: false } },
         ]);
         const data: any = post.toJSON()

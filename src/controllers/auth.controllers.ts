@@ -28,7 +28,9 @@ const register: RequestHandler = async (req, res) => {
         dob,
         otp,
         password,
+        firebaseToken,
     } = req.body;
+    // TODO add this to social auth firebaseToken
     try {
         let dbOTP;
         if (otp) {
@@ -77,6 +79,7 @@ const register: RequestHandler = async (req, res) => {
             dob,
             verified: otp ? true : false,
             password: hashedPassword,
+            firebaseToken,
         });
         await user.save();
         if (dbOTP) {
@@ -215,11 +218,13 @@ const refreshToken: RequestHandler = async (req, res) => {
         })
 
     } catch (error) {
+        // 422 Unprocessable Content (WebDAV)
+        // The request was well-formed but was unable to be followed due to semantic errors.
         return constructResponse({
             res,
             data: error,
-            code: 500,
-            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            code: 422,
+            message: AppConfig.ERROR_MESSAGES.AuthenticationError,
             apiObject: AppConfig.API_OBJECTS.Token
         })
     }

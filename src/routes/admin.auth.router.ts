@@ -6,7 +6,7 @@ import { authenticateAdmin } from '../middlewares';
 
 const router = Router();
 
-router.post('/invite-user', authenticateAdmin, adminAuthControllers.inviteAdmin);
+router.post('/invite-admin', authenticateAdmin, adminAuthControllers.inviteAdmin);
 router.post('/login', adminAuthControllers.login);
 router.get('/logout', authenticateAdmin, adminAuthControllers.logout);
 router.post('/reset-password/:accountId/:token', adminAuthControllers.resetPassword);

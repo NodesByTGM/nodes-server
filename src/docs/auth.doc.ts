@@ -1,4 +1,64 @@
-import { authUserSchema, constructResponseSchema, responseSchema, tokensSchema } from "./common.doc";
+
+import {
+    authUserSchema,
+    changePasswordRequestSchema,
+    constructResponseSchema,
+    emailRequestSchema,
+    loginRequestSchema,
+    refreshTokenRequestSchema,
+    resetLinkParameters,
+    resetPasswordRequestSchema,
+    responseSchema,
+    tokensSchema,
+    verifyEmailOTPSchema
+} from "./common.doc";
+
+
+const userRegistrationSchema = {
+    type: 'object',
+    properties: {
+        name: {
+            type: 'string',
+            description: 'The full name of the user.',
+            example: 'John Doe',
+        },
+        username: {
+            type: 'string',
+            description: 'The desired username for the user.',
+            example: 'john_doe',
+        },
+        email: {
+            type: 'string',
+            format: 'email',
+            description: 'The email address of the user.',
+            example: 'john@example.com',
+        },
+        dob: {
+            type: 'string',
+            format: 'date',
+            description: 'The date of birth of the user (in YYYY-MM-DD format).',
+            example: '1990-01-01',
+        },
+        otp: {
+            type: 'string',
+            description: 'One-time password (optional, used for additional verification).',
+            example: '123456',
+        },
+        password: {
+            type: 'string',
+            format: 'password',
+            description: 'The password for the user account.',
+            example: 'securePassword123',
+        },
+        firebaseToken: {
+            type: 'string',
+            description: 'For Notifications',
+            example: 'securePassword123',
+        },
+    },
+    required: ['name', 'username', 'email', 'dob', 'password'],
+}
+
 
 export const authSwagger = {
     paths: {
@@ -11,45 +71,7 @@ export const authSwagger = {
                     required: true,
                     content: {
                         'application/json': {
-                            schema: {
-                                type: 'object',
-                                properties: {
-                                    name: {
-                                        type: 'string',
-                                        description: 'The full name of the user.',
-                                        example: 'John Doe',
-                                    },
-                                    username: {
-                                        type: 'string',
-                                        description: 'The desired username for the user.',
-                                        example: 'john_doe',
-                                    },
-                                    email: {
-                                        type: 'string',
-                                        format: 'email',
-                                        description: 'The email address of the user.',
-                                        example: 'john@example.com',
-                                    },
-                                    dob: {
-                                        type: 'string',
-                                        format: 'date',
-                                        description: 'The date of birth of the user (in YYYY-MM-DD format).',
-                                        example: '1990-01-01',
-                                    },
-                                    otp: {
-                                        type: 'string',
-                                        description: 'One-time password (optional, used for additional verification).',
-                                        example: '123456',
-                                    },
-                                    password: {
-                                        type: 'string',
-                                        format: 'password',
-                                        description: 'The password for the user account.',
-                                        example: 'securePassword123',
-                                    },
-                                },
-                                required: ['name', 'username', 'email', 'dob', 'password'],
-                            },
+                            schema: userRegistrationSchema,
                         },
                     },
                 },
@@ -81,23 +103,7 @@ export const authSwagger = {
                     required: true,
                     content: {
                         'application/json': {
-                            schema: {
-                                type: 'object',
-                                properties: {
-                                    email: {
-                                        type: 'string',
-                                        description: 'The email of the user.',
-                                        example: 'john_doe',
-                                    },
-                                    password: {
-                                        type: 'string',
-                                        format: 'password',
-                                        description: 'The password of the user.',
-                                        example: 'password123',
-                                    },
-                                },
-                                required: ['email', 'password'],
-                            },
+                            schema: loginRequestSchema
                         },
                     },
                 },
@@ -129,17 +135,7 @@ export const authSwagger = {
                     required: true,
                     content: {
                         'application/json': {
-                            schema: {
-                                type: 'object',
-                                properties: {
-                                    refreshToken: {
-                                        type: 'string',
-                                        description: 'The refresh token.',
-                                        example: 'your_refresh_token_here',
-                                    },
-                                },
-                                required: ['refreshToken'],
-                            },
+                            schema: refreshTokenRequestSchema,
                         },
                     },
                 },
@@ -174,18 +170,7 @@ export const authSwagger = {
                     required: true,
                     content: {
                         'application/json': {
-                            schema: {
-                                type: 'object',
-                                properties: {
-                                    email: {
-                                        type: 'string',
-                                        format: 'email',
-                                        description: 'The email address to which the OTP will be sent.',
-                                        example: 'john@example.com',
-                                    },
-                                },
-                                required: ['email'],
-                            },
+                            schema: emailRequestSchema,
                         },
                     },
                 },
@@ -212,23 +197,7 @@ export const authSwagger = {
                     required: true,
                     content: {
                         'application/json': {
-                            schema: {
-                                type: 'object',
-                                properties: {
-                                    email: {
-                                        type: 'string',
-                                        format: 'email',
-                                        description: 'The email address to be verified.',
-                                        example: 'john@example.com',
-                                    },
-                                    otp: {
-                                        type: 'string',
-                                        description: 'The one-time password (OTP) sent to the user\'s email address.',
-                                        example: '123456',
-                                    },
-                                },
-                                required: ['email', 'otp'],
-                            },
+                            schema: verifyEmailOTPSchema,
                         },
                     },
                 },
@@ -258,18 +227,7 @@ export const authSwagger = {
                     required: true,
                     content: {
                         'application/json': {
-                            schema: {
-                                type: 'object',
-                                properties: {
-                                    email: {
-                                        type: 'string',
-                                        format: 'email',
-                                        description: 'The email address to be checked.',
-                                        example: 'john@example.com',
-                                    },
-                                },
-                                required: ['email'],
-                            },
+                            schema: emailRequestSchema
                         },
                     },
                 },
@@ -300,22 +258,7 @@ export const authSwagger = {
                     required: true,
                     content: {
                         'application/json': {
-                            schema: {
-                                type: 'object',
-                                properties: {
-                                    otp: {
-                                        type: 'string',
-                                        description: 'The one-time password (OTP) to be verified.',
-                                        example: '123456',
-                                    },
-                                    email: {
-                                        type: 'string',
-                                        description: 'The email associated with the OTP.',
-                                        example: 'user@example.com',
-                                    },
-                                },
-                                required: ['otp', 'email'],
-                            },
+                            schema: verifyEmailOTPSchema
                         },
                     },
                 },
@@ -346,18 +289,7 @@ export const authSwagger = {
                     required: true,
                     content: {
                         'application/json': {
-                            schema: {
-                                type: 'object',
-                                properties: {
-                                    email: {
-                                        type: 'string',
-                                        format: 'email',
-                                        description: 'The email address for which the password reset link will be sent.',
-                                        example: 'john@example.com',
-                                    },
-                                },
-                                required: ['email'],
-                            },
+                            schema: emailRequestSchema,
                         },
                     },
                 },
@@ -384,28 +316,7 @@ export const authSwagger = {
                 summary: 'Check Reset Link',
                 description: 'Check the validity of the reset link using the provided accountId and token.',
                 tags: ['Authentication'],
-                parameters: [
-                    {
-                        in: 'path',
-                        name: 'accountId',
-                        required: true,
-                        schema: {
-                            type: 'string',
-                        },
-                        description: 'The unique identifier associated with the user\'s account.',
-                        example: 'abc123',
-                    },
-                    {
-                        in: 'path',
-                        name: 'token',
-                        required: true,
-                        schema: {
-                            type: 'string',
-                        },
-                        description: 'The token provided in the reset link.',
-                        example: 'xyz789',
-                    },
-                ],
+                parameters: resetLinkParameters,
                 responses: {
                     '200': {
                         description: 'Reset link is valid. Proceed to reset password.',
@@ -429,44 +340,12 @@ export const authSwagger = {
                 summary: 'Reset Password',
                 description: 'Reset the password for the user using the provided accountId and token.',
                 tags: ['Authentication'],
-                parameters: [
-                    {
-                        in: 'path',
-                        name: 'accountId',
-                        required: true,
-                        schema: {
-                            type: 'string',
-                        },
-                        description: 'The unique identifier associated with the user\'s account.',
-                        example: 'abc123',
-                    },
-                    {
-                        in: 'path',
-                        name: 'token',
-                        required: true,
-                        schema: {
-                            type: 'string',
-                        },
-                        description: 'The token provided for password reset.',
-                        example: 'xyz789',
-                    },
-                ],
+                parameters: resetLinkParameters,
                 requestBody: {
                     required: true,
                     content: {
                         'application/json': {
-                            schema: {
-                                type: 'object',
-                                properties: {
-                                    password: {
-                                        type: 'string',
-                                        format: 'password',
-                                        description: 'The new password for the user.',
-                                        example: 'newPassword456',
-                                    },
-                                },
-                                required: ['password'],
-                            },
+                            schema: resetPasswordRequestSchema,
                         },
                     },
                 },
@@ -498,24 +377,7 @@ export const authSwagger = {
                     required: true,
                     content: {
                         'application/json': {
-                            schema: {
-                                type: 'object',
-                                properties: {
-                                    password: {
-                                        type: 'string',
-                                        format: 'password',
-                                        description: 'The current password of the user.',
-                                        example: 'currentPassword123',
-                                    },
-                                    newPassword: {
-                                        type: 'string',
-                                        format: 'password',
-                                        description: 'The new password for the user.',
-                                        example: 'newPassword456',
-                                    },
-                                },
-                                required: ['password', 'newPassword'],
-                            },
+                            schema: changePasswordRequestSchema,
                         },
                     },
                 },
