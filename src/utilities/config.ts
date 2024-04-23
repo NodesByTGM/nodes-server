@@ -47,6 +47,7 @@ const API_OBJECTS = {
     Space: 'Space',
     Post: 'Post',
     Account: 'Account',
+    MiniAccount: 'MiniAccount',
     Media: 'Media',
     Job: 'Job',
     Event: 'Event',
@@ -58,6 +59,7 @@ const API_OBJECTS = {
     Business: 'Business',
     Auth: 'Auth',
     Admin: 'Admin',
+    Member: 'Member',
     OTP: 'OTP',
     Base: 'Base',
     Content:'Content'

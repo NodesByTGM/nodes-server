@@ -25,7 +25,6 @@ const inviteAdmin: RequestHandler = async (req, res) => {
         name,
         username,
         email,
-        dob,
     } = req.body;
     try {
         const existing = await AdminModel.findOne({ email: email.toLowerCase() });

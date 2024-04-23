@@ -60,6 +60,36 @@ const getAllUsers: RequestHandler = async (req: any, res) => {
     }
 }
 
+const getUserProfile: RequestHandler = async (req: any, res) => {
+    try {
+        const data = await AccountModel.findById(req.params.id)
+        if (!data) {
+            return constructResponse({
+                res,
+                code: 400,
+                message: AppConfig.ERROR_MESSAGES.ResourceNotFound,
+                apiObject: AppConfig.API_OBJECTS.Account
+            })
+        }
+        return constructResponse({
+            res,
+            code: 200,
+            data: data,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Account
+        })
+    } catch (error) {
+
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Account
+        })
+    }
+}
+
 const getAllMembers: RequestHandler = async (req: any, res) => {
     try {
         const { name } = req.query;
@@ -85,7 +115,7 @@ const getAllMembers: RequestHandler = async (req: any, res) => {
             data,
             code: 200,
             message: AppConfig.STRINGS.Success,
-            apiObject: AppConfig.API_OBJECTS.Admin
+            apiObject: AppConfig.API_OBJECTS.Member
         })
     } catch (error) {
         return constructResponse({
@@ -93,7 +123,37 @@ const getAllMembers: RequestHandler = async (req: any, res) => {
             code: 500,
             data: error,
             message: AppConfig.ERROR_MESSAGES.InternalServerError,
-            apiObject: AppConfig.API_OBJECTS.Admin
+            apiObject: AppConfig.API_OBJECTS.Member
+        })
+    }
+}
+
+const getMemberProfile: RequestHandler = async (req: any, res) => {
+    try {
+        const data = await AdminModel.findOne({ _id: req.params.id, role: AppConfig.ADMIN_ROLES.MEMBER })
+        if (!data) {
+            return constructResponse({
+                res,
+                code: 400,
+                message: AppConfig.ERROR_MESSAGES.ResourceNotFound,
+                apiObject: AppConfig.API_OBJECTS.Member
+            })
+        }
+        return constructResponse({
+            res,
+            code: 200,
+            data: data,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Member
+        })
+    } catch (error) {
+
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Member
         })
     }
 }
@@ -149,9 +209,42 @@ const getAnalytics: RequestHandler = async (req: any, res) => {
 
 }
 
+const deleteUser: RequestHandler = async (req: any, res) => {
+    try {
+        const data = await AccountModel.findById(req.params.id)
+        if (!data) {
+            return constructResponse({
+                res,
+                code: 400,
+                message: AppConfig.ERROR_MESSAGES.ResourceNotFound,
+                apiObject: AppConfig.API_OBJECTS.Account
+            })
+        }
+        await data.deleteOne()
+        return constructResponse({
+            res,
+            code: 200,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Account
+        })
+    } catch (error) {
+
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Account
+        })
+    }
+}
+
 export default {
     getAllUsers,
+    getUserProfile,
+    deleteUser,
     getAllMembers,
+    getMemberProfile,
     getSubscriptions,
     getAnalytics
 }

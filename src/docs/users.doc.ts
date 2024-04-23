@@ -1,4 +1,4 @@
-import { businessProfileRequestSchema, constructResponseSchema, miniUserSchema, profileRequestSchema, userSchema } from "./common.doc";
+import { businessProfileRequestSchema, communityUserSchema, constructResponseSchema, miniUserSchema, profileRequestSchema, userSchema } from "./common.doc";
 
 export const usersSwagger = {
     paths: {
@@ -12,7 +12,7 @@ export const usersSwagger = {
                     '200': {
                         description: 'Success.',
                         content: {
-                            'application/json': { schema: constructResponseSchema(miniUserSchema, true) },
+                            'application/json': { schema: constructResponseSchema(communityUserSchema, true) },
                         },
                     },
                     '401': {

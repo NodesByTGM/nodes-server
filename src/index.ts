@@ -26,6 +26,9 @@ import {
 import swaggerSpec from "./docs";
 import passport from "passport";
 import session from 'express-session'
+import { constructResponse } from "./services";
+import { AppConfig } from "./utilities/config";
+import { default as pkg } from "../package.json"
 
 dotenv.config();
 
@@ -128,7 +131,17 @@ app.use('/api/v1/socialauth', socialAuthRouter);
 // Swagger Docs
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.get('/', (_, res) => res.status(200).json({ message: 'Welcome to Nodes API' }));
+app.get('/', (_, res) => constructResponse({
+  res,
+  code: 200,
+  message: 'Welcome to Nodes API',
+  apiObject: AppConfig.API_OBJECTS.Base,
+  data: {
+    version: pkg.version,
+    environment:process.env.NODE_ENV
+  }
+
+}));
 
 
 app.listen(port, () => {

@@ -20,10 +20,10 @@ export const AccountSchema = new mongoose.Schema({
     onboardingPurposes: { type: [String], required: false, default: [] },
     onboardingPurpose: { type: Number, required: false, default: 0 },
     otherPurpose: { type: String, required: false, default: '' },
+    firebaseToken: { type: String, required: false, default: '' },
 
     height: { type: String, required: false, default: '' },
     age: { type: String, required: false, default: '' },
-
     headline: { type: String, required: false, default: '' },
     bio: { type: String, required: false, default: '' },
     website: { type: String, required: false, default: '' },

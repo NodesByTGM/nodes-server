@@ -47,7 +47,7 @@ export const transactionSwagger = {
         //         },
         //     },
         // },
-        'api/v1/transactions/verify/internal': {
+        '/api/v1/transactions/verify/internal': {
             get: {
                 summary: 'Verify Internal Transaction',
                 tags: ['Transactions'],
@@ -67,7 +67,7 @@ export const transactionSwagger = {
                 },
             },
         },
-        'api/v1/transactions/subscription/initiate': {
+        '/api/v1/transactions/subscription/initiate': {
             post: {
                 summary: 'Initiate Subscription Payment',
                 tags: ['Transactions'],

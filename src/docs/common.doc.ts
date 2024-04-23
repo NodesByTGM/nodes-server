@@ -1,28 +1,6 @@
 import { AppConfig } from "../utilities/config";
 
-export const paginationQueryParams = [
-    {
-        name: 'page',
-        in: 'query',
-        description: 'Page number',
-        required: false,
-        schema: {
-            type: 'integer',
-            default: 1
-        }
-    },
-    {
-        name: 'pageSize',
-        in: 'query',
-        description: 'Number of items per page',
-        required: false,
-        schema: {
-            type: 'integer',
-            default: AppConfig.DEFAULT_PAGE_SIZE
-        }
-    }
-]
-
+// Common Schemas
 export const fileSwaggerSchema = {
     anyOf: [
         { type: 'null' },
@@ -44,23 +22,40 @@ export const trueFileSwaggerSchema = {
     }
 }
 
-export const businessSchema = {
+export const timestampProperties = {
+    createdAt: { type: 'string', format: 'date-time' },
+    updatedAt: { type: 'string', format: 'date-time' },
+}
+
+export const paginatedSchema = {
     type: 'object',
     properties: {
-        // _id: { type: 'string' },
-        name: { type: 'string' },
-        yoe: { type: 'string', format: 'date-time' },
-        location: { type: 'string' },
-        linkedIn: { type: 'string' },
-        instagram: { type: 'string' },
-        twitter: { type: 'string' },
-        account: { type: 'string' },
-        createdAt: { type: 'string', format: 'date-time' },
-        updatedAt: { type: 'string', format: 'date-time' },
-        id: { type: 'string' }
+        currentPage: { type: 'number' },
+        pageSize: { type: 'number' },
+        totalPages: { type: 'number' },
+        totalItems: { type: 'number' },
+        items: {
+            type: 'array',
+            items: { type: 'object' }
+        }
     }
 }
 
+export const responseSchema = {
+    type: 'object',
+    properties: {
+        apiObject: { type: 'string' },
+        code: { type: 'integer', example: 200 },
+        status: { type: 'string', example: 'Success.' },
+        isError: { type: 'boolean', example: false },
+        message: { type: 'string' },
+        result: { type: 'object' }
+        // You might want to specify the schema for result if it's not always an empty object
+    }
+}
+
+
+// Request Schemas
 export const businessProfileRequestSchema = {
     type: 'object',
     properties: {
@@ -82,19 +77,6 @@ export const verifyBusinessRequestSchema = {
         logo: fileSwaggerSchema,
         cac: trueFileSwaggerSchema,
         yoe: { type: 'string', format: 'date-time' },
-    }
-}
-
-// TODO: can the user always change yoe
-export const subscriptionSchema = {
-    type: 'object',
-    properties: {
-        plan: { type: 'string' },
-        active: { type: 'boolean' },
-        paidAt: { type: 'string', format: 'date-time' },
-        createdAt: { type: 'string', format: 'date-time' },
-        updatedAt: { type: 'string', format: 'date-time' },
-        id: { type: 'string' }
     }
 }
 
@@ -122,15 +104,181 @@ export const profileRequestSchema = {
     }
 };
 
+export const loginRequestSchema = {
+    type: 'object',
+    properties: {
+        email: {
+            type: 'string',
+            description: 'The email of the user.',
+            example: 'john_doe',
+        },
+        password: {
+            type: 'string',
+            format: 'password',
+            description: 'The password of the user.',
+            example: 'password123',
+        },
+    },
+    required: ['email', 'password'],
+}
+
+export const emailRequestSchema = {
+    type: 'object',
+    properties: {
+        email: {
+            type: 'string',
+            description: 'The email of the user.',
+            example: 'john_doe',
+        },
+    },
+    required: ['email'],
+}
+
+export const verifyEmailOTPSchema = {
+    type: 'object',
+    properties: {
+        email: {
+            type: 'string',
+            description: 'The email of the user.',
+            example: 'john_doe',
+        },
+        otp: {
+            type: 'string',
+            description: 'The one-time password (OTP) sent to the user\'s email address.',
+            example: '123456',
+        },
+    },
+    required: ['email', 'otp'],
+}
+
+export const changePasswordRequestSchema = {
+    type: 'object',
+    properties: {
+        password: {
+            type: 'string',
+            format: 'password',
+            description: 'The current password of the user.',
+            example: 'currentPassword123',
+        },
+        newPassword: {
+            type: 'string',
+            format: 'password',
+            description: 'The new password for the user.',
+            example: 'newPassword456',
+        },
+    },
+    required: ['password', 'newPassword'],
+}
+
+export const resetPasswordRequestSchema = {
+    type: 'object',
+    properties: {
+        password: {
+            type: 'string',
+            format: 'password',
+            description: 'The current password of the user.',
+            example: 'currentPassword123',
+        },
+    },
+    required: ['password', 'newPassword'],
+}
+
+export const refreshTokenRequestSchema = {
+    type: 'object',
+    properties: {
+        refreshToken: {
+            type: 'string',
+            description: 'The refresh token.',
+            example: 'your_refresh_token_here',
+        },
+    },
+    required: ['refreshToken'],
+}
+
+// Query params
+export const paginationQueryParams = [
+    {
+        name: 'page',
+        in: 'query',
+        description: 'Page number',
+        required: false,
+        schema: {
+            type: 'integer',
+            default: 1
+        }
+    },
+    {
+        name: 'pageSize',
+        in: 'query',
+        description: 'Number of items per page',
+        required: false,
+        schema: {
+            type: 'integer',
+            default: AppConfig.DEFAULT_PAGE_SIZE
+        }
+    }
+]
+
+export const resetLinkParameters = [
+    {
+        in: 'path',
+        name: 'accountId',
+        required: true,
+        schema: {
+            type: 'string',
+        },
+        description: 'The unique identifier associated with the user\'s account.',
+        example: 'abc123',
+    },
+    {
+        in: 'path',
+        name: 'token',
+        required: true,
+        schema: {
+            type: 'string',
+        },
+        description: 'The token provided in the reset link.',
+        example: 'xyz789',
+    },
+]
+
+
+// Model Schemas
+export const businessSchema = {
+    type: 'object',
+    properties: {
+        // _id: { type: 'string' },
+        name: { type: 'string' },
+        yoe: { type: 'string', format: 'date-time' }, //TODO: can user change this?
+        location: { type: 'string' },
+        linkedIn: { type: 'string' },
+        instagram: { type: 'string' },
+        twitter: { type: 'string' },
+        account: { type: 'string' },
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
+        id: { type: 'string' }
+    }
+}
+
+export const subscriptionSchema = {
+    type: 'object',
+    properties: {
+        plan: { type: 'string' },
+        tenor: { type: 'string' },
+        active: { type: 'boolean' },
+        paidAt: { type: 'string', format: 'date-time' },
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
+        id: { type: 'string' }
+    }
+}
+
 export const userSchema = {
     type: 'object',
     properties: {
-        onboardingPurposes: {
-            type: 'array',
-            items: {
-                type: 'string'
-            }
-        },
+        id: { type: 'string' },
+        firebaseToken: { type: 'string' },
         name: { type: 'string' },
         username: { type: 'string' },
         email: { type: 'string', format: 'email' },
@@ -139,6 +287,10 @@ export const userSchema = {
         createdAt: { type: 'string', format: 'date-time' },
         updatedAt: { type: 'string', format: 'date-time' },
         verified: { type: 'boolean' },
+        spaces: { type: 'boolean' },
+        step: { type: 'integer' },
+        twitter: { type: 'string', format: 'uri' },
+        website: { type: 'string', format: 'uri' },
         type: { type: 'integer' },
         age: { type: 'string' },
         bio: { type: 'string' },
@@ -150,30 +302,17 @@ export const userSchema = {
         location: { type: 'string' },
         onboardingPurpose: { type: 'integer' },
         otherPurpose: { type: 'string' },
+        visible: { type: 'boolean' },
+        subscription: subscriptionSchema,
+        business: businessSchema,
         skills: {
             type: 'array',
-            items: {
-                type: 'string'
-            }
+            items: { type: 'string' }
         },
-        spaces: { type: 'boolean' },
-        step: { type: 'integer' },
-        twitter: { type: 'string', format: 'uri' },
-        website: { type: 'string', format: 'uri' },
-        business: {
-            anyOf: [
-                { type: 'null' },
-                businessSchema
-            ]
+        onboardingPurposes: {
+            type: 'array',
+            items: { type: 'string' }
         },
-        subscription: {
-            anyOf: [
-                { type: 'null' },
-                subscriptionSchema
-            ]
-        },
-        visible: { type: 'boolean' },
-        id: { type: 'string' }
     }
 };
 
@@ -197,9 +336,41 @@ export const miniUserSchema = {
     type: 'object',
     properties: {
         name: { type: 'string' },
+        email: { type: 'string' },
         avatar: fileSwaggerSchema,
         id: { type: 'string' },
         type: { type: 'number' }
+    }
+}
+
+export const communityUserSchema = {
+    type: 'object',
+    properties: {
+        name: { type: 'string' },
+        email: { type: 'string' },
+        bio: { type: 'string' },
+        headline: { type: 'string' },
+        avatar: fileSwaggerSchema,
+        id: { type: 'string' },
+        type: { type: 'number' },
+    }
+}
+
+export const authUserSchema = {
+    type: 'object',
+    properties: {
+        user: userSchema.properties,
+        accessToken: { type: 'string' },
+        refreshToken: { type: 'string' }
+    }
+}
+
+export const adminAuthUserSchema = {
+    type: 'object',
+    properties: {
+        user: userSchema.properties,
+        accessToken: { type: 'string' },
+        refreshToken: { type: 'string' }
     }
 }
 
@@ -254,18 +425,6 @@ export const postSchema = {
     }
 };
 
-export const responseSchema = {
-    type: 'object',
-    properties: {
-        apiObject: { type: 'string' },
-        code: { type: 'integer', example: 200 },
-        status: { type: 'string', example: 'Success.' },
-        isError: { type: 'boolean', example: false },
-        message: { type: 'string' },
-        result: { type: 'object' }
-        // You might want to specify the schema for result if it's not always an empty object
-    }
-}
 
 export const tokensSchema = {
     type: 'object',
@@ -273,29 +432,6 @@ export const tokensSchema = {
         accessToken: { type: 'string' },
         refreshToken: { type: 'string' }
     }
-}
-
-export const authUserSchema = {
-    type: 'object',
-    properties: {
-        user: userSchema.properties,
-        accessToken: { type: 'string' },
-        refreshToken: { type: 'string' }
-    }
-}
-
-export const adminAuthUserSchema = {
-    type: 'object',
-    properties: {
-        user: userSchema.properties,
-        accessToken: { type: 'string' },
-        refreshToken: { type: 'string' }
-    }
-}
-
-export const timestampProperties = {
-    createdAt: { type: 'string', format: 'date-time' },
-    updatedAt: { type: 'string', format: 'date-time' },
 }
 
 export const cmsSchema = {
@@ -311,32 +447,8 @@ export const cmsSchema = {
     }
 }
 
-// const userSchema = {
-//     type: 'object',
-//     properties: {
-//       username: { type: 'string' },
-//       email: { type: 'string' }
-//     },
-//     anyOf: [
-//       { required: ['username'] },
-//       { required: ['email'] }
-//     ]
-//   };
 
-export const paginatedSchema = {
-    type: 'object',
-    properties: {
-        currentPage: { type: 'number' },
-        pageSize: { type: 'number' },
-        totalPages: { type: 'number' },
-        totalItems: { type: 'number' },
-        items: {
-            type: 'array',
-            items: { type: 'object' }
-        }
-    }
-}
-
+// Schema generative functions
 export const paginateSchema = (schema: any) => {
     return {
         type: 'object',
@@ -359,54 +471,4 @@ export const constructResponseSchema = (schema: any, paginate = false) => {
             result: paginate ? paginateSchema(schema) : schema
         }
     }
-}
-
-export const userSchemaExample = {
-    name: "John Doe",
-    username: "johnDoe",
-    email: "john@tgm.com",
-    dob: "2019-01-31T23:00:00.000Z",
-    avatar: {
-        id: "hyvtjydakafa",
-        url: "https://jbkjnk.com/jubjhvjd/bfjkahbdkb.png"
-    },
-    createdAt: "2024-01-25T15:45:22.352Z",
-    updatedAt: "2024-03-27T11:54:11.160Z",
-    verified: true,
-    type: 1,
-    age: "",
-    bio: "",
-    comments: false,
-    headline: "",
-    height: "",
-    instagram: "",
-    linkedIn: "",
-    location: "",
-    onboardingPurpose: 0,
-    otherPurpose: "",
-    skills: [
-        ""
-    ],
-    spaces: false,
-    step: 0,
-    twitter: "",
-    website: "",
-    business: {
-        name: "John Doe",
-        yoe: "2024-03-17T20:23:42.283Z",
-        account: "xxyyyhhsbbdbgvaj",
-        createdAt: "2024-03-17T20:23:42.442Z",
-        updatedAt: "2024-03-17T20:23:42.442Z",
-        id: "hbgdjagvjhbjds"
-    },
-    subscription: {
-        plan: "Pro",
-        active: true,
-        paidAt: "2024-03-27T11:49:56.000Z",
-        createdAt: "2024-03-27T11:54:11.159Z",
-        updatedAt: "2024-03-27T11:54:11.159Z",
-        id: "khbjvyikgb"
-    },
-    visible: true,
-    id: "xxyyyhhsbbdbgvaj"
 }

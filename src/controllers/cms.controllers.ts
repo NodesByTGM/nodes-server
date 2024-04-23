@@ -57,11 +57,21 @@ const updateContent: RequestHandler = async (req: any, res) => {
         const uploadedThumbnail = await uploadMedia(thumbnail)
         const content = await ContentModel.findById(req.params.id)
 
+
         if (!content) {
             return constructResponse({
                 res,
                 code: 400,
                 message: AppConfig.ERROR_MESSAGES.NotFoundError,
+                apiObject: AppConfig.API_OBJECTS.Content
+            })
+        }
+        
+        if (content.author.id !== req.user.id) {
+            return constructResponse({
+                res,
+                code: 401,
+                message: AppConfig.ERROR_MESSAGES.UnauthorizedAccess,
                 apiObject: AppConfig.API_OBJECTS.Content
             })
         }
@@ -73,6 +83,41 @@ const updateContent: RequestHandler = async (req: any, res) => {
         content.thumbnail = uploadedThumbnail || content.thumbnail
         await content.save()
 
+
+        await ContentModel.populate(content, [
+            { path: 'author', select: 'name avatar id', options: { autopopulate: false } }
+        ])
+
+        return constructResponse({
+            res,
+            code: 200,
+            message: AppConfig.STRINGS.Success,
+            data: content,
+            apiObject: AppConfig.API_OBJECTS.Content
+        })
+    } catch (error) {
+        return constructResponse({
+            res,
+            code: 500,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            data: error,
+            apiObject: AppConfig.API_OBJECTS.Content
+        })
+    }
+}
+
+const getContent: RequestHandler = async (req: any, res) => {
+    try {
+        const content = await ContentModel.findById(req.params.id)
+
+        if (!content) {
+            return constructResponse({
+                res,
+                code: 400,
+                message: AppConfig.ERROR_MESSAGES.NotFoundError,
+                apiObject: AppConfig.API_OBJECTS.Content
+            })
+        }
 
         await ContentModel.populate(content, [
             { path: 'author', select: 'name avatar id', options: { autopopulate: false } }
@@ -230,6 +275,7 @@ const getAllContentsForAdmin: RequestHandler = async (req: any, res) => {
 
 export default {
     createContent,
+    getContent,
     updateContent,
     getAllContents,
     getAllContentsForAdmin

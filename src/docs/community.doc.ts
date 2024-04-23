@@ -16,8 +16,6 @@ const postRequestSchema = {
 };
 // text, author, hashtags, startDate, endDate
 
-
-
 export const qsParams = [
     ...paginationQueryParams,
 
