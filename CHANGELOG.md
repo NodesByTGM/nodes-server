@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/NodesByTGM/nodes-server/compare/v1.0.2...v1.0.3) (2024-04-23)
+
+
+### Bug Fixes
+
+* deployments ([a230f34](https://github.com/NodesByTGM/nodes-server/commit/a230f34ed7f6b917ccc3d33460cc159ca3d9f883))
+
 ## [1.0.2](https://github.com/NodesByTGM/nodes-server/compare/v1.0.1...v1.0.2) (2024-04-23)
 
 
