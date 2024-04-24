@@ -96,7 +96,7 @@ export const authSwagger = {
 
         '/api/v1/auth/login': {
             post: {
-                summary: 'Login with an existing user',
+                summary: 'Login with an existing user using (email or username) and password',
                 description: 'Authenticate a user and generate an access token, which could be used as a cookie or an authorization header.',
                 tags: ['Authentication'],
                 requestBody: {

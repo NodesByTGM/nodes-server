@@ -112,14 +112,24 @@ export const loginRequestSchema = {
             description: 'The email of the user.',
             example: 'john_doe',
         },
+        username: {
+            type: 'string',
+            description: 'The username of the user.',
+            example: 'john_doe',
+        },
+        // firebaseToken: {
+        //     type: 'string',
+        //     description: 'The username of the user.',
+        //     example: 'john_doe',
+        // },
         password: {
             type: 'string',
             format: 'password',
             description: 'The password of the user.',
-            example: 'password123',
+            example: 'Password@123',
         },
     },
-    required: ['email', 'password'],
+    required: ['password'],
 }
 
 export const emailRequestSchema = {
@@ -447,6 +457,21 @@ export const cmsSchema = {
     }
 }
 
+export const transactionSchema = {
+    type: 'object',
+    properties: {
+        id: { type: 'string' },
+        apiId: { type: 'string' },
+        amount: { type: 'number' },
+        txnType: { type: 'string' },
+        source: { type: 'string' },
+        destination: { type: 'string' },
+        status: { type: 'string' },
+        description: { type: 'string' },
+        subscription: subscriptionSchema,
+        paidAt: { type: 'date', format: 'date-time' },
+    }
+}
 
 // Schema generative functions
 export const paginateSchema = (schema: any) => {

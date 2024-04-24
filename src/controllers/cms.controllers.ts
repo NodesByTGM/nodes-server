@@ -67,7 +67,7 @@ const updateContent: RequestHandler = async (req: any, res) => {
             })
         }
         
-        if (content.author.id !== req.user.id) {
+        if (content.author.id !== req.user.id && req.user.role !== AppConfig.ADMIN_ROLES.SUPERADMIN) {
             return constructResponse({
                 res,
                 code: 401,

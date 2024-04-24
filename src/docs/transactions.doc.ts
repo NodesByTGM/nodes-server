@@ -1,4 +1,4 @@
-import { constructResponseSchema, userSchema } from "./common.doc";
+import { constructResponseSchema, transactionSchema, userSchema } from "./common.doc";
 
 
 export const transactionQueryParams = [
@@ -31,22 +31,25 @@ const initiateSubscriptionResponse = {
         reference: { type: 'string' },
     }
 };
-
+// TODO eliminate tag strings
 export const transactionSwagger = {
     paths: {
-        // '/verify': {
-        //     get: {
-        //         summary: 'Verify Transaction for Payment Gateway callbacks',
-        //         tags: ['Transactions'],
-        //         parameters: transactionQueryParams,
-        //         description: 'Endpoint to verify transaction',
-        //         responses: {
-        //             '200': {
-        //                 description: 'OK',
-        //             },
-        //         },
-        //     },
-        // },
+        '/api/v1/transactions/mine': {
+            get: {
+                summary: 'Get User\'s Transactions',
+                tags: ['Transactions'],
+                parameters: transactionQueryParams,
+                description: 'Get User\'s Transactions',
+                responses: {
+                    '200': {
+                        description: 'OK',
+                        content: {
+                            'application/json': { schema: constructResponseSchema(transactionSchema, true) }
+                        }
+                    },
+                },
+            },
+        },
         '/api/v1/transactions/verify/internal': {
             get: {
                 summary: 'Verify Internal Transaction',

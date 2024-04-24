@@ -129,9 +129,14 @@ const login: RequestHandler = async (req, res, next) => {
         })
     };
 
-    const { email, password } = req.body;
+    const { email = '', username = '', password } = req.body;
     try {
-        const user = await AccountModel.findOne({ email: email.toLowerCase() });
+        const user = await AccountModel.findOne({
+            $or: [
+                { username: username.toLowerCase() },
+                { email: email.toLowerCase(), }
+            ]
+        });
 
         if (!user) {
             return constructResponse({
@@ -171,6 +176,7 @@ const login: RequestHandler = async (req, res, next) => {
             apiObject: AppConfig.API_OBJECTS.Auth
         })
     } catch (error) {
+        console.log(error)
         return constructResponse({
             res,
             data: error,
