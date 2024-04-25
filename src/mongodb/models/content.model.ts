@@ -4,7 +4,7 @@ import { fileSchema } from './file.model';
 
 const ContentSchema = new mongoose.Schema({
     title: { type: String, required: true },
-    description: { type: String, required: true, unique: true },
+    description: { type: String, required: true, },
     thumbnail: { type: fileSchema, required: false, default: null },
     category: {
         type: String,

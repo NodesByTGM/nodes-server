@@ -1,4 +1,17 @@
-import { businessProfileRequestSchema, communityUserSchema, constructResponseSchema, miniUserSchema, profileRequestSchema, userSchema } from "./common.doc";
+import {
+    businessProfileRequestSchema,
+    communityUserSchema,
+    connectionRequestSchema,
+    constructResponseSchema,
+    paginationQueryParams,
+    profileRequestSchema,
+    userSchema
+} from "./common.doc";
+
+
+
+// router.post('/connections/request/:id', authenticate, usersControllers.requestConnection);
+// router.delete('/connections/remove/:id', authenticate, usersControllers.removeConnection);
 
 export const usersSwagger = {
     paths: {
@@ -8,6 +21,7 @@ export const usersSwagger = {
                 description: 'Retrieve all users mini-information.',
                 tags: ['Users'],
                 security: [{ bearerAuth: [] }],
+                parameters: paginationQueryParams,
                 responses: {
                     '200': {
                         description: 'Success.',
@@ -45,7 +59,7 @@ export const usersSwagger = {
                     '200': {
                         description: 'Success.',
                         content: {
-                            'application/json': { schema: constructResponseSchema(miniUserSchema) },
+                            'application/json': { schema: constructResponseSchema(communityUserSchema) },
                         },
                     },
                     '401': {
@@ -138,6 +152,160 @@ export const usersSwagger = {
                     },
                 },
             },
-        }
+        },
+
+        '/api/v1/users/connections/request/{id}': {
+            post: {
+                summary: 'Request Connection',
+                tags: ['Users', 'Connections'],
+                security: [{ bearerAuth: [] }],
+                parameters: [
+                    {
+                        name: 'id',
+                        in: 'path',
+                        required: true,
+                        schema: {
+                            type: 'string',
+                        },
+                        description: 'ID of the user.',
+                    }
+                ],
+                responses: {
+                    '200': {
+                        description: 'Successful response',
+                        content: {
+                            'application/json': { schema: constructResponseSchema(communityUserSchema) },
+                        },
+                    },
+                },
+            },
+        },
+        '/api/v1/users/connections/requests': {
+            get: {
+                summary: 'Get All Connection requests',
+                description: 'Retrieve all Connection requests',
+                tags: ['Users', 'Connections'],
+                security: [{ bearerAuth: [] }],
+                parameters: paginationQueryParams,
+                responses: {
+                    '200': {
+                        description: 'Success.',
+                        content: {
+                            'application/json': { schema: constructResponseSchema(connectionRequestSchema, true) },
+                        },
+                    },
+                    '401': {
+                        description: 'Unauthorized. User authentication failed.',
+                    },
+                    '500': {
+                        description: 'Internal Server Error.',
+                    },
+                },
+            },
+        },
+        '/api/v1/users/connections/requests/accept/{id}': {
+            post: {
+                summary: 'Accept Request',
+                tags: ['Users', 'Connections'],
+                security: [{ bearerAuth: [] }],
+                parameters: [
+                    {
+                        name: 'id',
+                        in: 'path',
+                        required: true,
+                        schema: {
+                            type: 'string',
+                        },
+                        description: 'ID of the request.',
+                    }
+                ],
+                responses: {
+                    '200': {
+                        description: 'Successful response',
+                        content: {
+                            'application/json': { schema: constructResponseSchema(userSchema) },
+                        },
+                    },
+                },
+            },
+        },
+        '/api/v1/users/connections/requests/reject/{id}': {
+            post: {
+                summary: 'Reject Request',
+                tags: ['Users', 'Connections'],
+                security: [{ bearerAuth: [] }],
+                parameters: [
+                    {
+                        name: 'id',
+                        in: 'path',
+                        required: true,
+                        schema: {
+                            type: 'string',
+                        },
+                        description: 'ID of the request.',
+                    }
+                ],
+                responses: {
+                    '200': {
+                        description: 'Successful response',
+                        content: {
+                            'application/json': { schema: constructResponseSchema(communityUserSchema) },
+                        },
+                    },
+                },
+            },
+        },
+        '/api/v1/users/connections/requests/abandon/{id}': {
+            post: {
+                summary: 'Abandon Request',
+                tags: ['Users', 'Connections'],
+                security: [{ bearerAuth: [] }],
+                parameters: [
+                    {
+                        name: 'id',
+                        in: 'path',
+                        required: true,
+                        schema: {
+                            type: 'string',
+                        },
+                        description: 'ID of the request.',
+                    }
+                ],
+                responses: {
+                    '200': {
+                        description: 'Successful response',
+                        content: {
+                            'application/json': { schema: constructResponseSchema(communityUserSchema) },
+                        },
+                    },
+                },
+            },
+        },
+        '/api/v1/users/connections/remove/{id}': {
+            delete: {
+                summary: 'Remove Connection',
+                tags: ['Users', 'Connections'],
+                security: [{ bearerAuth: [] }],
+                parameters: [
+                    {
+                        name: 'id',
+                        in: 'path',
+                        required: true,
+                        schema: {
+                            type: 'string',
+                        },
+                        description: 'ID of the user.',
+                    }
+                ],
+                responses: {
+                    '200': {
+                        description: 'Successful response',
+                        content: {
+                            'application/json': { schema: constructResponseSchema(communityUserSchema) },
+                        },
+                    },
+                },
+            },
+        },
     }
 }

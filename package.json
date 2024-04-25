@@ -1,6 +1,6 @@
 {
     "name": "nodes-server",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "Backend server for Nodes App",
     "main": "src/index.ts",
     "private": true,

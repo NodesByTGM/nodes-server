@@ -2,7 +2,7 @@ import mongoose, { Schema } from 'mongoose';
 import { AppConfig } from '../../utilities/config';
 
 
-const Transaction = new mongoose.Schema({
+const TransactionSchema = new mongoose.Schema({
   status: { type: String, required: true },
   paidAt: { type: Date, required: false },
   amount: { type: Number, required: true },
@@ -16,6 +16,7 @@ const Transaction = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     required: false,
     ref: 'Subscription',
+    autopopulate: true
   },
   account: {
     type: Schema.Types.ObjectId,
@@ -26,11 +27,13 @@ const Transaction = new mongoose.Schema({
   toJSON: {
     transform: (_, rec) => {
       const { __v, _id, ...object } = rec;
+      object.id = _id
       return object;
     }
   }
 });
 
-const TransactionSchema = mongoose.model('Transaction', Transaction);
+TransactionSchema.plugin(require('mongoose-autopopulate'));
+const TransactionModel = mongoose.model('Transaction', TransactionSchema);
 
-export default TransactionSchema;
+export default TransactionModel;

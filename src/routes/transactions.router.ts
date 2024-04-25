@@ -4,6 +4,7 @@ import { authenticate } from '../middlewares';
 
 const router = Router();
 
+router.get('/mine', authenticate, transactionControllers.getUserTransactions);
 router.get('/verify', transactionControllers.verifyPaystackTransaction);
 router.get('/verify/internal', authenticate, transactionControllers.verifyInternalTransaction);
 router.post('/webhook/paystack', transactionControllers.paystackWebhook);

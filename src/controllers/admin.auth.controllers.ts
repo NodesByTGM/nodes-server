@@ -96,9 +96,15 @@ const login: RequestHandler = async (req, res, next) => {
         })
     };
 
-    const { email, password } = req.body;
+
+    const { email = '', username = '', password } = req.body;
     try {
-        const user = await AdminModel.findOne({ email: email.toLowerCase() });
+        const user = await AdminModel.findOne({
+            $or: [
+                { username: username.toLowerCase() },
+                { email: email.toLowerCase(), }
+            ]
+        });
 
         if (!user) {
             return constructResponse({

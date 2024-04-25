@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/NodesByTGM/nodes-server/compare/v1.0.3...v1.0.4) (2024-04-23)
+
+
+### Bug Fixes
+
+* extend refresh tokens expiration time ([2db99fc](https://github.com/NodesByTGM/nodes-server/commit/2db99fc8c0b8a2b7c2903d1fe3aa185a1caf9c7d))
+
 ## [1.0.3](https://github.com/NodesByTGM/nodes-server/compare/v1.0.2...v1.0.3) (2024-04-23)
 
 

@@ -71,7 +71,7 @@ export const adminAuthSwagger = {
 
         '/api/v1/admin/auth/login': {
             post: {
-                summary: 'Login with an existing user',
+                summary: 'Login with an existing admin using (email or username) and password',
                 description: 'Authenticate a user and generate an access token, which could be used as a cookie or an authorization header.',
                 tags: ['Admin Authentication'],
                 requestBody: {

@@ -33,7 +33,7 @@ export const AccountSchema = new mongoose.Schema({
 
     subscription: { type: Types.ObjectId, ref: 'Subscription', autopopulate: true },
     business: { type: Types.ObjectId, ref: 'Business', autopopulate: true },
-    // connections: { type: [Types.ObjectId], ref: 'Account' },
+    connections: { type: [Types.ObjectId], ref: 'Account', default: [] },
 
     role: {
         type: Number,

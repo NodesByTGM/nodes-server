@@ -4,8 +4,37 @@ import { AccountModel, SubscriptionModel, TransactionModel } from '../mongodb/mo
 import { constructResponse, initiateSubscription, sendEmail, verifyTxnByReference } from '../services';
 import { sendHTMLEmail } from '../services/email.service';
 import { BUSINESS_PLAN_CODES, PRO_PLAN_CODES, getBusiness } from '../services/transaction.service';
-import { addYearsToDate, formatDate, verifyTransaction } from '../utilities/common';
+import { addYearsToDate, formatDate, paginateData, verifyTransaction } from '../utilities/common';
 import { AppConfig } from '../utilities/config';
+
+
+const getUserTransactions: RequestHandler = async (req: any, res) => {
+    try {
+        const transactions = await TransactionModel.find({
+            $or: [
+                { account: req.user.id },
+                { source: req.user.email }
+            ]
+        });
+        const data = paginateData(req.query, transactions, 'transactions')
+
+        return constructResponse({
+            res,
+            code: 200,
+            data,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Transaction
+        })
+    } catch (error) {
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Transaction
+        })
+    }
+}
 
 const verifyPaystackTransaction: RequestHandler = async (req, res) => {
     try {
@@ -205,6 +234,7 @@ export default {
     verifyInternalTransaction,
     paystackWebhook,
     subscribeToPackage,
+    getUserTransactions,
 }
 
 
