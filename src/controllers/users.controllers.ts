@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
-import { AccountModel, BusinessModel, ConnectionRequestModel } from '../mongodb/models';
-import { constructResponse, uploadMedia } from '../services';
+import { AccountModel, BusinessModel, ConnectionRequestModel, ProjectModel } from '../mongodb/models';
+import { EventsService, JobsService, constructResponse, uploadMedia } from '../services';
 import { AppConfig } from '../utilities/config';
 import { paginateData } from '../utilities/common';
 
@@ -30,31 +30,18 @@ const getAllUsers: RequestHandler = async (req: any, res) => {
             { $match: query },
             { $sort: { createdAt: -1 } },
             {
-                $project: {
-                    name: "$name",
-                    avatar: "$avatar",
-                    headline: "$headline",
-                    bio: "$bio",
-                    email: "$email",
-                    id: "$_id",
-                    type: "$type"
-                }
-            },
-            {
                 $addFields: {
-                    connected: {
-                        $in: [userId, { $map: { input: "$connections", as: "connected", in: { $toString: "$$connected" } } }]
-                    }
-                }
-            },
-            {
-                $addFields: {
+                    connected: { $in: [userId, "$connections"] },
                     requested: { $in: ["$_id", requestedUserIds] }
                 }
             },
 
-            // { $addFields: { id: "$_id" } },
-            { $unset: ["_id", "__v"] },
+            { $addFields: { id: "$_id" } },
+            { $unset: ["_id", "__v", "subscription", "password", "firebaseToken"] },
+        ]);
+
+        await AccountModel.populate(accounts, [
+            { path: 'connections', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
         ]);
 
         const data = paginateData(req.query, accounts, 'accounts')
@@ -63,7 +50,7 @@ const getAllUsers: RequestHandler = async (req: any, res) => {
             data,
             code: 200,
             message: AppConfig.STRINGS.Success,
-            apiObject: AppConfig.API_OBJECTS.Post
+            apiObject: AppConfig.API_OBJECTS.CommunityAccount
         })
     } catch (error) {
         return constructResponse({
@@ -71,7 +58,7 @@ const getAllUsers: RequestHandler = async (req: any, res) => {
             code: 500,
             data: error,
             message: AppConfig.ERROR_MESSAGES.InternalServerError,
-            apiObject: AppConfig.API_OBJECTS.Post
+            apiObject: AppConfig.API_OBJECTS.CommunityAccount
         })
     }
 }
@@ -84,7 +71,7 @@ const getUserProfile: RequestHandler = async (req: any, res) => {
                 res,
                 code: 400,
                 message: AppConfig.ERROR_MESSAGES.ResourceNotFound,
-                apiObject: AppConfig.API_OBJECTS.CommunityAccount
+                apiObject: AppConfig.API_OBJECTS.SingleCommunityAccount
             })
         }
         const connectionRequests = await ConnectionRequestModel.find({
@@ -95,29 +82,37 @@ const getUserProfile: RequestHandler = async (req: any, res) => {
             { path: 'connections', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
         ]);
 
-        const { subscription, connections, ...rest } = user
-        const data = { ...rest, connections, requested: false, connected: false }
+        const { subscription, connections, firebaseToken, ...rest } = user.toJSON()
+        const data:any = { ...rest, connections, requested: false, connected: false, projects: [], events: [], jobs: [] }
         if (connectionRequests.filter(x => x.recipient.toString() === user.id.toString()).length > 0) {
             data.requested = true
         }
-        if (data.connections.filter(x => x.toString() === user.id.toString()).length > 0) {
+        if (data.connections.filter((x:any) => x.toString() === user.id.toString()).length > 0) {
             data.connected = true
         }
+
+        const projects = await ProjectModel.find({ owner: user.id })
+        const jobs = await JobsService.getUserJobs(user, req.user);
+        const events = await EventsService.getUserEvents(user, req.user)
+        data.projects = projects
+        data.jobs = jobs
+        data.events = events
+
         return constructResponse({
             res,
             code: 200,
             data,
             message: AppConfig.STRINGS.Success,
-            apiObject: AppConfig.API_OBJECTS.CommunityAccount
+            apiObject: AppConfig.API_OBJECTS.SingleCommunityAccount
         })
     } catch (error) {
-
+        console.log(error)
         return constructResponse({
             res,
             code: 500,
             data: error,
             message: AppConfig.ERROR_MESSAGES.InternalServerError,
-            apiObject: AppConfig.API_OBJECTS.CommunityAccount
+            apiObject: AppConfig.API_OBJECTS.SingleCommunityAccount
         })
     }
 }
@@ -313,7 +308,7 @@ const requestConnection: RequestHandler = async (req: any, res) => {
             { path: 'connections', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
         ]);
 
-        const { subscription, connections, ...rest } = user
+        const { subscription, connections, firebaseToken, ...rest } = user
         const data = { ...rest, connections, requested: false, connected: false }
         data.requested = true
         data.connected = false
@@ -376,7 +371,7 @@ const acceptRequest: RequestHandler = async (req: any, res) => {
             { path: 'connections', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
         ]);
 
-        const { subscription, connections, ...rest } = user
+        const { subscription, connections, firebaseToken, ...rest } = user
         const data = { ...rest, connections, requested: false, connected: false }
         data.requested = true
         data.connected = true
@@ -418,7 +413,7 @@ const rejectRequest: RequestHandler = async (req: any, res) => {
             { path: 'connections', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
         ]);
 
-        const { subscription, connections, ...rest } = user
+        const { subscription, connections, firebaseToken, ...rest } = user
         const data = { ...rest, connections, requested: false, connected: false }
         data.requested = true
         data.connected = false
@@ -462,7 +457,7 @@ const abandonRequest: RequestHandler = async (req: any, res) => {
             { path: 'connections', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
         ]);
 
-        const { subscription, connections, ...rest } = user
+        const { subscription, connections, firebaseToken, ...rest } = user
         const data = { ...rest, connections, requested: false, connected: false }
         data.requested = true
         data.connected = false
@@ -525,7 +520,7 @@ const removeConnection: RequestHandler = async (req: any, res) => {
         ]);
 
 
-        const { subscription, connections, ...rest } = user
+        const { subscription, connections, firebaseToken, ...rest } = user
         const data = { ...rest, connections, requested: false, connected: false }
         data.requested = false
         return constructResponse({

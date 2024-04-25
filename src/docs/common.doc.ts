@@ -295,6 +295,7 @@ export const connectionRequestSchema = {
     }
 }
 
+
 export const userSchema = {
     type: 'object',
     properties: {
@@ -372,7 +373,113 @@ export const communityUserSchema = {
         ...userSchema.properties,
         connected: { type: 'boolean' },
         requested: { type: 'boolean' },
+        connections: { type: 'array', items: miniUserSchema },
         subscription: undefined,
+        firebaseToken: undefined
+    }
+}
+
+export const jobSchema = {
+    type: 'object',
+    properties: {
+        // _id: { type: 'string' },
+        name: { type: 'string' },
+        description: { type: 'string' },
+        experience: { type: 'string' },
+        payRate: { type: 'string' },
+        workRate: { type: 'string' },
+        skills: {
+            type: 'array',
+            items: { type: 'string' }
+        },
+        jobType: { type: 'integer' },
+        business: businessSchema,
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
+        // TODO
+        applicants: {
+            anyOf: [
+                { type: 'null' },
+                { type: 'string' },
+                {
+                    type: 'array',
+                    items: miniUserSchema
+                }
+            ]
+        },
+        saves: {
+            anyOf: [
+                { type: 'null' },
+                { type: 'string' },
+                {
+                    type: 'array',
+                    items: miniUserSchema
+                }
+            ]
+        },
+        id: { type: 'string' },
+        applied: { type: 'boolean' },
+        saved: { type: 'boolean' }
+    }
+};
+
+export const projectSchema = {
+    type: 'object',
+    properties: {
+        name: { type: 'string' },
+        description: { type: 'string' },
+        projectURL: { type: 'string', format: 'uri' },
+        images: {
+            type: 'array',
+            items: fileSwaggerSchema // Assuming image URLs are strings
+        },
+        collaborators: {
+            type: 'array',
+            items: fileSwaggerSchema // Assuming collaborator IDs are strings
+        },
+        owner: { type: 'string' },
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
+        id: { type: 'string' }
+    }
+};
+
+export const eventSchema = {
+    type: 'object',
+    properties: {
+        //   _id: { type: 'string' },
+        name: { type: 'string' },
+        description: { type: 'string' },
+        location: { type: 'string' },
+        dateTime: { type: 'string', format: 'date-time' },
+        workRate: { type: 'string' },
+        thumbnail: fileSwaggerSchema,
+        business: businessSchema,
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
+        paymentType: { type: 'string' },
+        id: { type: 'string' },
+        saved: { type: 'boolean' },
+        saves: {
+            anyOf: [
+                { type: 'null' },
+                { type: 'string' },
+                {
+                    type: 'array',
+                    items: miniUserSchema
+                }
+            ]
+        },
+    }
+};
+
+export const singleCommunityUserSchema = {
+    type: 'object',
+    properties: {
+        ...communityUserSchema.properties,
+        projects: { type: 'array', items: projectSchema },
+        jobs: { type: 'array', items: jobSchema },
+        events: { type: 'array', items: eventSchema },
     }
 }
 

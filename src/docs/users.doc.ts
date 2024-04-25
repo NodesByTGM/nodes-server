@@ -5,6 +5,7 @@ import {
     constructResponseSchema,
     paginationQueryParams,
     profileRequestSchema,
+    singleCommunityUserSchema,
     userSchema
 } from "./common.doc";
 
@@ -59,7 +60,7 @@ export const usersSwagger = {
                     '200': {
                         description: 'Success.',
                         content: {
-                            'application/json': { schema: constructResponseSchema(communityUserSchema) },
+                            'application/json': { schema: constructResponseSchema(singleCommunityUserSchema) },
                         },
                     },
                     '401': {

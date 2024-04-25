@@ -49,6 +49,7 @@ const API_OBJECTS = {
     Account: 'Account',
     MiniAccount: 'MiniAccount',
     CommunityAccount: 'CommunityAccount',
+    SingleCommunityAccount: 'SingleCommunityAccount',
     ConnectionRequest: 'ConnectionRequest',
     Media: 'Media',
     Job: 'Job',

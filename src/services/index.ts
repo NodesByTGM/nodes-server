@@ -19,3 +19,6 @@ export {
     googleCallback,
     googleRedirect
 } from './socialauth.service'
+
+export { default as JobsService } from './jobs.service'
+export { default as EventsService } from './events.service'
