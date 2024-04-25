@@ -1,8 +1,10 @@
 import {
     businessProfileRequestSchema,
     communityUserSchema,
+    connectionRequestResponseSchema,
     connectionRequestSchema,
     constructResponseSchema,
+    initConnectionRequestResponseSchema,
     paginationQueryParams,
     profileRequestSchema,
     singleCommunityUserSchema,
@@ -175,7 +177,7 @@ export const usersSwagger = {
                     '200': {
                         description: 'Successful response',
                         content: {
-                            'application/json': { schema: constructResponseSchema(communityUserSchema) },
+                            'application/json': { schema: constructResponseSchema(initConnectionRequestResponseSchema) },
                         },
                     },
                 },
@@ -224,7 +226,7 @@ export const usersSwagger = {
                     '200': {
                         description: 'Successful response',
                         content: {
-                            'application/json': { schema: constructResponseSchema(userSchema) },
+                            'application/json': { schema: constructResponseSchema(connectionRequestResponseSchema) },
                         },
                     },
                 },
@@ -250,7 +252,7 @@ export const usersSwagger = {
                     '200': {
                         description: 'Successful response',
                         content: {
-                            'application/json': { schema: constructResponseSchema(communityUserSchema) },
+                            'application/json': { schema: constructResponseSchema(connectionRequestResponseSchema) },
                         },
                     },
                 },
@@ -276,7 +278,7 @@ export const usersSwagger = {
                     '200': {
                         description: 'Successful response',
                         content: {
-                            'application/json': { schema: constructResponseSchema(communityUserSchema) },
+                            'application/json': { schema: constructResponseSchema(connectionRequestResponseSchema) },
                         },
                     },
                 },
@@ -284,7 +286,7 @@ export const usersSwagger = {
         },
         '/api/v1/users/connections/remove/{id}': {
             delete: {
-                summary: 'Remove Connection',
+                summary: 'Remove Connection, request in response is returned as null',
                 tags: ['Users', 'Connections'],
                 security: [{ bearerAuth: [] }],
                 parameters: [
@@ -302,7 +304,52 @@ export const usersSwagger = {
                     '200': {
                         description: 'Successful response',
                         content: {
-                            'application/json': { schema: constructResponseSchema(communityUserSchema) },
+                            'application/json': { schema: constructResponseSchema(connectionRequestResponseSchema) },
+                        },
+                    },
+                },
+            },
+        },
+
+        '/api/v1/users/connections/{id}': {
+            get: {
+                summary: 'Get User Connections',
+                tags: ['Users', 'Connections'],
+                security: [{ bearerAuth: [] }],
+                parameters: [
+                    ...paginationQueryParams,
+                    {
+                        name: 'id',
+                        in: 'path',
+                        required: true,
+                        schema: {
+                            type: 'string',
+                        },
+                        description: 'ID of the user.',
+                    }
+                ],
+                responses: {
+                    '200': {
+                        description: 'Successful response',
+                        content: {
+                            'application/json': { schema: constructResponseSchema(communityUserSchema, true) },
+                        },
+                    },
+                },
+            },
+        },
+
+        '/api/v1/users/connections/mine': {
+            get: {
+                summary: 'Get your Connections',
+                tags: ['Users', 'Connections'],
+                security: [{ bearerAuth: [] }],
+                parameters: paginationQueryParams,
+                responses: {
+                    '200': {
+                        description: 'Successful response',
+                        content: {
+                            'application/json': { schema: constructResponseSchema(communityUserSchema, true) },
                         },
                     },
                 },

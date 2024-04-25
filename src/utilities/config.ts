@@ -51,6 +51,8 @@ const API_OBJECTS = {
     CommunityAccount: 'CommunityAccount',
     SingleCommunityAccount: 'SingleCommunityAccount',
     ConnectionRequest: 'ConnectionRequest',
+    Connections: 'Connections',
+    AcceptConnection: 'AcceptConnection',
     Media: 'Media',
     Job: 'Job',
     Event: 'Event',
@@ -97,6 +99,8 @@ export const AppConfig = {
         AlreadySavedJob: 'You\'ve already saved this job.',
         AlreadyRequestedConnection: 'You\'ve already sent a request to connect.',
         AlreadyConnected: 'You\'ve already connected to this account.',
+        CantConnectYourself: 'You can\'t connect to yourself.',
+        CantConnect: 'You can\'t connect to this account.',
     },
     STRINGS: {
         NewContactSubmission: 'New Contact Submission.',

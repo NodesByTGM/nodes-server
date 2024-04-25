@@ -379,6 +379,22 @@ export const communityUserSchema = {
     }
 }
 
+
+export const connectionRequestResponseSchema = {
+    type: 'object',
+    properties: {
+        user: communityUserSchema,
+        request: connectionRequestSchema
+    }
+}
+export const initConnectionRequestResponseSchema = {
+    type: 'object',
+    properties: {
+        recipient: communityUserSchema,
+        request: connectionRequestSchema
+    }
+}
+
 export const jobSchema = {
     type: 'object',
     properties: {
