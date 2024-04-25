@@ -48,6 +48,8 @@ const API_OBJECTS = {
     Post: 'Post',
     Account: 'Account',
     MiniAccount: 'MiniAccount',
+    CommunityAccount: 'CommunityAccount',
+    ConnectionRequest: 'ConnectionRequest',
     Media: 'Media',
     Job: 'Job',
     Event: 'Event',
@@ -92,6 +94,8 @@ export const AppConfig = {
         AlreadyLiked: 'You\'ve already saved this post.',
         AlreadyApplied: 'You\'ve already applied for this job.',
         AlreadySavedJob: 'You\'ve already saved this job.',
+        AlreadyRequestedConnection: 'You\'ve already sent a request to connect.',
+        AlreadyConnected: 'You\'ve already connected to this account.',
     },
     STRINGS: {
         NewContactSubmission: 'New Contact Submission.',
@@ -153,6 +157,12 @@ export const AppConfig = {
         Published: 'Published',
         Archived: 'Archived',
         Draft: 'Draft'
+    },
+    CONNECTION_REQUEST_STATUS: {
+        Accepted: 'Accepted',
+        Rejected: 'Rejected',
+        Pending: 'Pending',
+        Abandoned: 'Abandoned'
     },
     GENERATED_PASSWORD_LENGTH: 10,
     MEMBER_TYPES: {

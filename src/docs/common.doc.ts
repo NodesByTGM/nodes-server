@@ -284,6 +284,17 @@ export const subscriptionSchema = {
     }
 }
 
+export const connectionRequestSchema = {
+    type: 'object',
+    properties: {
+        sender: { type: 'string' },
+        recipient: { type: 'string' },
+        message: { type: 'string' },
+        id: { type: 'string' },
+        status: { type: 'number' },
+    }
+}
+
 export const userSchema = {
     type: 'object',
     properties: {
@@ -363,6 +374,8 @@ export const communityUserSchema = {
         avatar: fileSwaggerSchema,
         id: { type: 'string' },
         type: { type: 'number' },
+        connected: { type: 'boolean' },
+        requested: { type: 'boolean' },
     }
 }
 
