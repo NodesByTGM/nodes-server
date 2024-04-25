@@ -356,26 +356,23 @@ export const adminSchema = {
 export const miniUserSchema = {
     type: 'object',
     properties: {
+        id: { type: 'string' },
         name: { type: 'string' },
         email: { type: 'string' },
+        type: { type: 'number' },
+        headline: { type: 'string' },
+        bio: { type: 'string' },
         avatar: fileSwaggerSchema,
-        id: { type: 'string' },
-        type: { type: 'number' }
     }
 }
 
 export const communityUserSchema = {
     type: 'object',
     properties: {
-        name: { type: 'string' },
-        email: { type: 'string' },
-        bio: { type: 'string' },
-        headline: { type: 'string' },
-        avatar: fileSwaggerSchema,
-        id: { type: 'string' },
-        type: { type: 'number' },
+        ...userSchema.properties,
         connected: { type: 'boolean' },
         requested: { type: 'boolean' },
+        subscription: undefined,
     }
 }
 

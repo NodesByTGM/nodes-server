@@ -92,18 +92,24 @@ const getUserProfile: RequestHandler = async (req: any, res) => {
         }).lean();
 
         await AccountModel.populate(user, [
-            { path: 'connections', select: 'name email id avatar type headline bio email', options: { autopopulate: false } },
+            { path: 'connections', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
         ]);
-        const { name, id, avatar, type, headline, bio, email, connections } = user
-        const data = { name, id, avatar, type, connections, requested: false }
-        if (connectionRequests.filter(x => x.recipient.toString() === user.id.toString()))
-            return constructResponse({
-                res,
-                code: 200,
-                data,
-                message: AppConfig.STRINGS.Success,
-                apiObject: AppConfig.API_OBJECTS.CommunityAccount
-            })
+
+        const { subscription, connections, ...rest } = user
+        const data = { ...rest, connections, requested: false, connected: false }
+        if (connectionRequests.filter(x => x.recipient.toString() === user.id.toString()).length > 0) {
+            data.requested = true
+        }
+        if (data.connections.filter(x => x.toString() === user.id.toString()).length > 0) {
+            data.connected = true
+        }
+        return constructResponse({
+            res,
+            code: 200,
+            data,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.CommunityAccount
+        })
     } catch (error) {
 
         return constructResponse({
@@ -120,7 +126,7 @@ const getProfile: RequestHandler = async (req: any, res: any) => {
     try {
         const user = req.user
         await AccountModel.populate(user, [
-            { path: 'connections', select: 'name email id avatar type headline bio email', options: { autopopulate: false } },
+            { path: 'connections', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
         ]);
         return constructResponse({
             res,
@@ -304,11 +310,11 @@ const requestConnection: RequestHandler = async (req: any, res) => {
             message: req.body.message || ''
         })
         await AccountModel.populate(user, [
-            { path: 'connections', select: 'name email id avatar type headline bio email', options: { autopopulate: false } },
+            { path: 'connections', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
         ]);
 
-        const { name, id, avatar, type, headline, bio, email, connections } = user
-        const data: any = { name, id, avatar, type, headline, bio, email, connections }
+        const { subscription, connections, ...rest } = user
+        const data = { ...rest, connections, requested: false, connected: false }
         data.requested = true
         data.connected = false
         return constructResponse({
@@ -333,7 +339,7 @@ const requestConnection: RequestHandler = async (req: any, res) => {
 const acceptRequest: RequestHandler = async (req: any, res) => {
     try {
         const request = await ConnectionRequestModel.findById(req.params.id)
-        if (!request) {
+        if (!request || request.recipient !== req.user.id) {
             return constructResponse({
                 res,
                 code: 400,
@@ -367,11 +373,11 @@ const acceptRequest: RequestHandler = async (req: any, res) => {
         request.status = AppConfig.CONNECTION_REQUEST_STATUS.Accepted
         await request.save()
         await AccountModel.populate(user, [
-            { path: 'connections', select: 'name email id avatar type headline bio email', options: { autopopulate: false } },
+            { path: 'connections', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
         ]);
 
-        const { name, id, avatar, type, headline, bio, email, connections } = user
-        const data: any = { name, id, avatar, type, headline, bio, email, connections }
+        const { subscription, connections, ...rest } = user
+        const data = { ...rest, connections, requested: false, connected: false }
         data.requested = true
         data.connected = true
         return constructResponse({
@@ -396,7 +402,7 @@ const acceptRequest: RequestHandler = async (req: any, res) => {
 const rejectRequest: RequestHandler = async (req: any, res) => {
     try {
         const request = await ConnectionRequestModel.findById(req.params.id)
-        if (!request) {
+        if (!request || request.recipient !== req.user.id) {
             return constructResponse({
                 res,
                 code: 400,
@@ -409,11 +415,11 @@ const rejectRequest: RequestHandler = async (req: any, res) => {
         // await request.deleteOne()
         const user: any = await AccountModel.findById(request.sender)
         await AccountModel.populate(user, [
-            { path: 'connections', select: 'name email id avatar type headline bio email', options: { autopopulate: false } },
+            { path: 'connections', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
         ]);
 
-        const { name, id, avatar, type, headline, bio, email, connections } = user
-        const data: any = { name, id, avatar, type, headline, bio, email, connections }
+        const { subscription, connections, ...rest } = user
+        const data = { ...rest, connections, requested: false, connected: false }
         data.requested = true
         data.connected = false
 
@@ -439,7 +445,7 @@ const rejectRequest: RequestHandler = async (req: any, res) => {
 const abandonRequest: RequestHandler = async (req: any, res) => {
     try {
         const request = await ConnectionRequestModel.findById(req.params.id)
-        if (!request) {
+        if (!request || request.recipient !== req.user.id) {
             return constructResponse({
                 res,
                 code: 400,
@@ -453,11 +459,11 @@ const abandonRequest: RequestHandler = async (req: any, res) => {
 
         const user: any = await AccountModel.findById(request.sender)
         await AccountModel.populate(user, [
-            { path: 'connections', select: 'name email id avatar type headline bio email', options: { autopopulate: false } },
+            { path: 'connections', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
         ]);
 
-        const { name, id, avatar, type, headline, bio, email, connections } = user
-        const data: any = { name, id, avatar, type, headline, bio, email, connections }
+        const { subscription, connections, ...rest } = user
+        const data = { ...rest, connections, requested: false, connected: false }
         data.requested = true
         data.connected = false
 
@@ -515,12 +521,12 @@ const removeConnection: RequestHandler = async (req: any, res) => {
         })
 
         await AccountModel.populate(user, [
-            { path: 'connections', select: 'name email id avatar type headline bio email', options: { autopopulate: false } },
+            { path: 'connections', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
         ]);
 
 
-        const { name, id, avatar, type, headline, bio, email, connections } = user
-        const data: any = { name, id, avatar, type, headline, bio, email, connections }
+        const { subscription, connections, ...rest } = user
+        const data = { ...rest, connections, requested: false, connected: false }
         data.requested = false
         return constructResponse({
             res,
@@ -550,8 +556,8 @@ const getConnectionRequests: RequestHandler = async (req: any, res: any) => {
             ]
         })
         await ConnectionRequestModel.populate(requests, [
-            { path: 'sender', select: 'name email id avatar type headline bio email', options: { autopopulate: false } },
-            { path: 'recipient', select: 'name email id avatar type headline bio email', options: { autopopulate: false } },
+            { path: 'sender', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
+            { path: 'recipient', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
         ]);
 
         const data = paginateData(req.query, requests, 'requests')

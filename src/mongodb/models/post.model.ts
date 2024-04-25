@@ -22,7 +22,7 @@ const PostSchema = new Schema({
     },
     author: {
         type: Schema.Types.ObjectId,
-        required: true, ref: 'Account', autopopulate: { select: ['name', 'id', 'avatar', 'type'] }
+        required: true, ref: 'Account', autopopulate: { select: ['id', 'name', 'type', 'email', 'headline', 'bio', 'avatar'] }
     },
 }, {
     timestamps: true,
