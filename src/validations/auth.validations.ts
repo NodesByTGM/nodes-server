@@ -16,12 +16,14 @@ export const registerSchema = Joi.object({
     dob: Joi.date().required(),
     password: Joi.string().required(),
     otp: Joi.string().allow(''),
+    firebaseToken: Joi.string().allow(''),
 });
 
 export const loginSchema = Joi.object({
     username: Joi.string().allow(''),
     email: Joi.string().allow(''),
     password: Joi.string().required(),
+    firebaseToken: Joi.string().allow(''),
 })
 
 export const sendOTPSchema = Joi.object({

@@ -3,7 +3,7 @@ import { EventModel } from "../mongodb/models";
 export const getUserEvents = async (user: any, reqUser: any) => {
     const business = user.business
     // const userId = user.id.toString()
-    // TODO HIDE BASED ON OWNER
+
     const reqUserId = reqUser.id.toString()
     const events = await EventModel.aggregate([
         { $match: { business: business?._id || '' } },

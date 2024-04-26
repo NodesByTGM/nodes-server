@@ -1,10 +1,69 @@
 import { RequestHandler } from 'express';
+import { Types } from 'mongoose';
 import { AccountModel, BusinessModel, ConnectionRequestModel, ProjectModel } from '../mongodb/models';
 import { EventsService, JobsService, constructResponse, uploadMedia } from '../services';
-import { AppConfig } from '../utilities/config';
 import { paginateData } from '../utilities/common';
-import { Types } from 'mongoose';
+import { AppConfig } from '../utilities/config';
 
+
+const discoverUsers: RequestHandler = async (req: any, res) => {
+    try {
+        const { skills, name, connections } = req.query;
+        const userId = req.user.id.toString()
+        // Construct base query
+        let query: any = {};
+
+        // Add filters based on parameters
+        if (skills) {
+            query.skills = { $regex: skills, $options: 'i' }; // Case-insensitive search for text
+        }
+        if (name) {
+            query.name = { $regex: name, $options: 'i' };
+        }
+
+
+        const connectionRequests = await ConnectionRequestModel.find({
+            sender: userId,
+        }).lean();
+        // Get IDs of users with pending connection requests
+        const requestedUserIds = connectionRequests.map(request => request.recipient);
+
+        const accounts = await AccountModel.aggregate([
+            { $match: query },
+            { $sort: { createdAt: -1 } },
+            {
+                $addFields: {
+                    connected: { $in: [userId, "$connections"] },
+                    requested: { $in: ["$_id", requestedUserIds] }
+                }
+            },
+            { $match: { connected: true, requested: true } },
+            { $addFields: { id: "$_id" } },
+            { $unset: ["_id", "__v", "subscription", "password", "firebaseToken", "role"] },
+        ]);
+
+        await AccountModel.populate(accounts, [
+            { path: 'connections', select: 'id name email type headline bio avatar' },
+        ]);
+
+        const data = paginateData(req.query, accounts, 'accounts')
+        return constructResponse({
+            res,
+            data,
+            code: 200,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.CommunityAccount
+        })
+    } catch (error) {
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.CommunityAccount
+        })
+    }
+}
 
 const getAllUsers: RequestHandler = async (req: any, res) => {
     try {
@@ -38,7 +97,7 @@ const getAllUsers: RequestHandler = async (req: any, res) => {
             },
 
             { $addFields: { id: "$_id" } },
-            { $unset: ["_id", "__v", "subscription", "password", "firebaseToken"] },
+            { $unset: ["_id", "__v", "subscription", "password", "firebaseToken", "role"] },
         ]);
 
         await AccountModel.populate(accounts, [
@@ -387,7 +446,7 @@ const acceptRequest: RequestHandler = async (req: any, res) => {
             recipient.connections.push(sender)
             await recipient.save()
         }
-        
+
 
         // request.status = AppConfig.CONNECTION_REQUEST_STATUS.Accepted
         // await request.save()
@@ -686,6 +745,7 @@ export default {
     updateProfile,
     updateBusinessProfile,
     getAllUsers,
+    discoverUsers,
     getUserProfile,
     requestConnection,
     acceptRequest,

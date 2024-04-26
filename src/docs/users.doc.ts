@@ -41,6 +41,29 @@ export const usersSwagger = {
                 },
             },
         },
+        '/api/v1/users/discover': {
+            get: {
+                summary: 'Discover Users',
+                description: 'Discover users you\'ve not connected with.',
+                tags: ['Users'],
+                security: [{ bearerAuth: [] }],
+                parameters: paginationQueryParams,
+                responses: {
+                    '200': {
+                        description: 'Success.',
+                        content: {
+                            'application/json': { schema: constructResponseSchema(communityUserSchema, true) },
+                        },
+                    },
+                    '401': {
+                        description: 'Unauthorized. User authentication failed.',
+                    },
+                    '500': {
+                        description: 'Internal Server Error.',
+                    },
+                },
+            },
+        },
         '/api/v1/users/{id}': {
             get: {
                 summary: 'Get All Users',
@@ -284,6 +307,7 @@ export const usersSwagger = {
                 },
             },
         },
+
         '/api/v1/users/connections/remove/{id}': {
             delete: {
                 summary: 'Remove Connection, request in response is returned as null',
@@ -310,10 +334,10 @@ export const usersSwagger = {
                 },
             },
         },
-
         '/api/v1/users/connections/{id}': {
             get: {
                 summary: 'Get User Connections',
+                description: 'Get Connections of other users using their ID',
                 tags: ['Users', 'Connections'],
                 security: [{ bearerAuth: [] }],
                 parameters: [
@@ -338,7 +362,6 @@ export const usersSwagger = {
                 },
             },
         },
-
         '/api/v1/users/connections/mine': {
             get: {
                 summary: 'Get your Connections',
