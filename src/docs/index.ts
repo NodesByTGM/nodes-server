@@ -44,12 +44,12 @@ const options = {
         },
         servers: [
             {
-                url: "http://localhost:3001/",
-                description: "Local server"
-            },
-            {
                 url: "https://dev.api.nodesafrica.com/",
                 description: "Dev server"
+            },
+            {
+                url: "http://localhost:3001/",
+                description: "Local server"
             },
         ],
         paths: {
