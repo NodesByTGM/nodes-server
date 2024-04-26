@@ -37,7 +37,7 @@ const discoverUsers: RequestHandler = async (req: any, res) => {
                     requested: { $in: ["$_id", requestedUserIds] }
                 }
             },
-            { $match: { connected: true, requested: true } },
+            { $match: { connected: false, requested: false } },
             { $addFields: { id: "$_id" } },
             { $unset: ["_id", "__v", "subscription", "password", "firebaseToken", "role"] },
         ]);
