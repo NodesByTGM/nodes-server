@@ -8,8 +8,8 @@ export const getSpaces: RequestHandler = async (req: any, res) => {
     try {
         const spaces = await SpaceModel.find()
         await SpaceModel.populate(spaces, [
-            { path: 'owner', select: 'name email id avatar type', options: { autopopulate: false } },
-            { path: 'members.account', select: 'name email id avatar type', options: { autopopulate: false } }
+            { path: 'owner', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
+            { path: 'members.account', select: 'id name email type headline bio avatar', options: { autopopulate: false } }
         ]);
         const data = paginateData(req.query, spaces, 'spaces')
 
@@ -36,8 +36,8 @@ export const getMySpaces: RequestHandler = async (req: any, res) => {
     try {
         const spaces = await SpaceModel.find({ owner: req.user.id })
         await SpaceModel.populate(spaces, [
-            { path: 'owner', select: 'name email id avatar type', options: { autopopulate: false } },
-            { path: 'members.account', select: 'name email id avatar type', options: { autopopulate: false } }
+            { path: 'owner', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
+            { path: 'members.account', select: 'id name email type headline bio avatar', options: { autopopulate: false } }
         ]);
         const data = paginateData(req.query, spaces, 'spaces')
 
@@ -80,8 +80,8 @@ export const createSpace: RequestHandler = async (req: any, res) => {
         })
         space.members.create({ account: req.user.id, status: AppConfig.MEMBER_TYPES.Admin })
         await SpaceModel.populate(space, [
-            { path: 'owner', select: 'name email id avatar type', options: { autopopulate: false } },
-            { path: 'members.account', select: 'name email id avatar type', options: { autopopulate: false } }
+            { path: 'owner', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
+            { path: 'members.account', select: 'id name email type headline bio avatar', options: { autopopulate: false } }
         ]);
         return constructResponse({
             res,
@@ -136,8 +136,8 @@ export const updateSpace: RequestHandler = async (req: any, res) => {
         space = await space.save()
 
         await SpaceModel.populate(space, [
-            { path: 'owner', select: 'name email id avatar type', options: { autopopulate: false } },
-            { path: 'members.account', select: 'name email id avatar type', options: { autopopulate: false } }
+            { path: 'owner', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
+            { path: 'members.account', select: 'id name email type headline bio avatar', options: { autopopulate: false } }
         ]);
 
         return constructResponse({
@@ -172,8 +172,8 @@ export const getSpace: RequestHandler = async (req: any, res) => {
             })
         }
         await SpaceModel.populate(space, [
-            { path: 'owner', select: 'name email id avatar type', options: { autopopulate: false } },
-            { path: 'members.account', select: 'name email id avatar type', options: { autopopulate: false } }
+            { path: 'owner', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
+            { path: 'members.account', select: 'id name email type headline bio avatar', options: { autopopulate: false } }
         ]);
 
         return constructResponse({
@@ -251,8 +251,8 @@ export const joinSpace: RequestHandler = async (req: any, res) => {
         await space.save()
 
         await SpaceModel.populate(space, [
-            { path: 'owner', select: 'name email id avatar type', options: { autopopulate: false } },
-            { path: 'members.account', select: 'name email id avatar type', options: { autopopulate: false } }
+            { path: 'owner', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
+            { path: 'members.account', select: 'id name email type headline bio avatar', options: { autopopulate: false } }
         ]);
         return constructResponse({
             res,
@@ -297,8 +297,8 @@ export const leaveSpace: RequestHandler = async (req: any, res) => {
         await space.save()
 
         await SpaceModel.populate(space, [
-            { path: 'owner', select: 'name email id avatar type', options: { autopopulate: false } },
-            { path: 'members.account', select: 'name email id avatar type', options: { autopopulate: false } }
+            { path: 'owner', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
+            { path: 'members.account', select: 'id name email type headline bio avatar', options: { autopopulate: false } }
         ]);
         return constructResponse({
             res,
@@ -344,8 +344,8 @@ export const addMemberToSpace: RequestHandler = async (req: any, res) => {
         space.members.create({ account: req.user.id, status })
         await space.save()
         await SpaceModel.populate(space, [
-            { path: 'owner', select: 'name email id avatar type', options: { autopopulate: false } },
-            { path: 'members.account', select: 'name email id avatar type', options: { autopopulate: false } }
+            { path: 'owner', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
+            { path: 'members.account', select: 'id name email type headline bio avatar', options: { autopopulate: false } }
         ]);
         return constructResponse({
             res,
@@ -391,8 +391,8 @@ export const removeMemberFromSpace: RequestHandler = async (req: any, res) => {
         space.members.remove({ account: req.user.id })
         await space.save()
         await SpaceModel.populate(space, [
-            { path: 'owner', select: 'name email id avatar type', options: { autopopulate: false } },
-            { path: 'members.account', select: 'name email id avatar type', options: { autopopulate: false } }
+            { path: 'owner', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
+            { path: 'members.account', select: 'id name email type headline bio avatar', options: { autopopulate: false } }
         ]);
         return constructResponse({
             res,
@@ -452,8 +452,8 @@ export const makeSpaceAdmin: RequestHandler = async (req: any, res) => {
         space = await space.save()
 
         await SpaceModel.populate(space, [
-            { path: 'owner', select: 'name email id avatar type', options: { autopopulate: false } },
-            { path: 'members.account', select: 'name email id avatar type', options: { autopopulate: false } }
+            { path: 'owner', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
+            { path: 'members.account', select: 'id name email type headline bio avatar', options: { autopopulate: false } }
         ]);
         return constructResponse({
             res,

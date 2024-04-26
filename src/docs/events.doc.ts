@@ -1,4 +1,4 @@
-import { businessSchema, constructResponseSchema, fileSwaggerSchema, miniUserSchema, paginationQueryParams } from "./common.doc";
+import { constructResponseSchema, eventSchema, paginationQueryParams } from "./common.doc";
 
 const eventRequestSchema = {
     type: 'object',
@@ -35,35 +35,6 @@ const eventRequestSchema = {
         },
     },
     required: ['name', 'description', 'location', 'dateTime', 'paymentType']
-};
-
-export const eventSchema = {
-    type: 'object',
-    properties: {
-        //   _id: { type: 'string' },
-        name: { type: 'string' },
-        description: { type: 'string' },
-        location: { type: 'string' },
-        dateTime: { type: 'string', format: 'date-time' },
-        workRate: { type: 'string' },
-        thumbnail: fileSwaggerSchema,
-        business: businessSchema,
-        createdAt: { type: 'string', format: 'date-time' },
-        updatedAt: { type: 'string', format: 'date-time' },
-        paymentType: { type: 'string' },
-        id: { type: 'string' },
-        saved: { type: 'boolean' },
-        saves: {
-            anyOf: [
-                { type: 'null' },
-                { type: 'string' },
-                {
-                    type: 'array',
-                    items: miniUserSchema
-                }
-            ]
-        },
-    }
 };
 
 export const eventSwagger = {

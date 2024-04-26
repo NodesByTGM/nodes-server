@@ -1,5 +1,5 @@
 import { AppConfig } from "../utilities/config";
-import { businessSchema, constructResponseSchema, miniUserSchema, paginationQueryParams } from "./common.doc";
+import { constructResponseSchema, jobSchema, paginationQueryParams } from "./common.doc";
 
 const jobRequestSchema = {
     type: 'object',
@@ -14,51 +14,6 @@ const jobRequestSchema = {
     },
     required: ['name', 'description', 'experience', 'payRate', 'workRate', 'skills', 'jobType']
 };
-
-const jobSchema = {
-    type: 'object',
-    properties: {
-        // _id: { type: 'string' },
-        name: { type: 'string' },
-        description: { type: 'string' },
-        experience: { type: 'string' },
-        payRate: { type: 'string' },
-        workRate: { type: 'string' },
-        skills: {
-            type: 'array',
-            items: { type: 'string' }
-        },
-        jobType: { type: 'integer' },
-        business: businessSchema,
-        createdAt: { type: 'string', format: 'date-time' },
-        updatedAt: { type: 'string', format: 'date-time' },
-        // TODO
-        applicants: {
-            anyOf: [
-                { type: 'null' },
-                { type: 'string' },
-                {
-                    type: 'array',
-                    items: miniUserSchema
-                }
-            ]
-        },
-        saves: {
-            anyOf: [
-                { type: 'null' },
-                { type: 'string' },
-                {
-                    type: 'array',
-                    items: miniUserSchema
-                }
-            ]
-        },
-        id: { type: 'string' },
-        applied: { type: 'boolean' },
-        saved: { type: 'boolean' }
-    }
-};
-
 
 const paginatedJobSchema = {
     type: 'object',

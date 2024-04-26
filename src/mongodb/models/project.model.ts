@@ -23,7 +23,7 @@ const ProjectSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         required: true,
         ref: 'Account',
-        // autopopulate: { select: ['name', 'id', 'avatar', 'type'] }
+        // autopopulate: { select: ['id', 'name', 'type', 'email', 'headline', 'bio', 'avatar'] }
     },
 }, {
     timestamps: true,

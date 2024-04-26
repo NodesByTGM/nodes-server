@@ -11,14 +11,14 @@ const ConnectionRequest = new mongoose.Schema({
     sender: {
         type: Schema.Types.ObjectId,
         required: true,
-        ref: 'Admin',
-        autopopulate: { select: ['name', 'id', 'avatar', 'type'] }
+        ref: 'Account',
+        autopopulate: { select: ['id', 'name', 'type', 'email', 'headline', 'bio', 'avatar'] }
     },
     recipient: {
         type: Schema.Types.ObjectId,
         required: true,
-        ref: 'Admin',
-        autopopulate: { select: ['name', 'id', 'avatar', 'type'] }
+        ref: 'Account',
+        autopopulate: { select: ['id', 'name', 'type', 'email', 'headline', 'bio', 'avatar'] }
     }
 }, {
     timestamps: true,

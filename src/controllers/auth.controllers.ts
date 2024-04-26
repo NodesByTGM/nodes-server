@@ -89,7 +89,7 @@ const register: RequestHandler = async (req, res) => {
 
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
-        // TODO: Refresh Tokens
+
         res.cookie('nodesToken', accessToken, {
             httpOnly: true,
             maxAge: 24 * 60 * 60 * 1000, // Outpost: 86400000
@@ -158,7 +158,7 @@ const login: RequestHandler = async (req, res, next) => {
 
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
-        // TODO: Refresh Tokens
+
         res.cookie('nodesToken', accessToken, {
             httpOnly: true,
             maxAge: 24 * 60 * 60 * 1000, // Outpost: 86400000
@@ -387,10 +387,6 @@ const verifyOTP: RequestHandler = async (req: any, res) => {
 };
 
 const forgotPassword: RequestHandler = async (req, res) => {
-    // Generate a unique reset token and store it (e.g., in a database).
-    // Send a password reset email with a link containing the reset token.
-    // Include a link to your reset password page where users can enter a new password.
-    // You can use Nodemailer to send the email.
     try {
         const { email } = req.body;
 
