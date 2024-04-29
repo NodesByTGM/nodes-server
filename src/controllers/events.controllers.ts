@@ -163,7 +163,7 @@ export const saveEvent: RequestHandler = async (req: any, res) => {
                 apiObject: AppConfig.API_OBJECTS.Event
             })
         }
-        if (event.saves.filter(x => x.toString() === req.user.id.toString()).length > 0) {
+        if (event.saves.filter(x => x.id.toString() === req.user.id.toString()).length > 0) {
             return constructResponse({
                 res,
                 code: 400,
@@ -206,8 +206,8 @@ export const unsaveEvent: RequestHandler = async (req: any, res) => {
                 apiObject: AppConfig.API_OBJECTS.Event
             })
         }
-        if (event.saves.filter(x => x.toString() === req.user.id.toString()).length > 0) {
-            event.saves = event.saves.filter(x => x.toString() !== req.user.id.toString())
+        if (event.saves.filter(x => x.id.toString() === req.user.id.toString()).length > 0) {
+            event.saves = event.saves.filter(x => x.id.toString() !== req.user.id.toString())
             await event.save()
         }
         const data: any = event.toJSON()
@@ -245,7 +245,7 @@ export const getEvent: RequestHandler = async (req: any, res) => {
         }
         const data = {
             ...event?.toJSON(),
-            saved: event.saves.map((y: any) => y.toString()).includes(req.user.id),
+            saved: event.saves.map(y => y.id.toString()).includes(req.user.id),
             saves: event.business === req.user.business ? event.saves : event.saves.length
         }
         return constructResponse({

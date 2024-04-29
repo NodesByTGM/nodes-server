@@ -174,13 +174,14 @@ const applyToJob: RequestHandler = async (req: any, res) => {
                 apiObject: AppConfig.API_OBJECTS.Job
             })
         }
-        job.applicants.push(req.user.id)
+        job.applicants.push(req.user)
         await job.save()
+
         const data: any = job.toJSON()
         data.saves = job.saves.length
         data.applicants = job.applicants.length
         data.applied = true
-        data.saved = job.saves.includes(req.user.id)
+        data.saved = job.saves.map(x => x.id).includes(req.user.id)
 
         return constructResponse({
             res,
@@ -211,7 +212,7 @@ const saveJob: RequestHandler = async (req: any, res) => {
                 apiObject: AppConfig.API_OBJECTS.Job
             })
         }
-        if (job.saves.filter(x => x.toString() === req.user.id.toString()).length > 0) {
+        if (job.saves.filter(x => x.id.toString() === req.user.id.toString()).length > 0) {
             return constructResponse({
                 res,
                 code: 400,
@@ -219,13 +220,15 @@ const saveJob: RequestHandler = async (req: any, res) => {
                 apiObject: AppConfig.API_OBJECTS.Job
             })
         }
-        job.saves.push(req.user.id)
+
+        job.saves.push(req.user)
         await job.save()
+
         const data: any = job.toJSON()
         data.saves = job.saves.length
         data.applicants = job.applicants.length
         data.saved = true
-        data.applied = job.applicants.includes(req.user.id)
+        data.applied = job.applicants.map(x => x.id).includes(req.user.id)
 
         return constructResponse({
             res,
@@ -256,15 +259,15 @@ const unsaveJob: RequestHandler = async (req: any, res) => {
                 apiObject: AppConfig.API_OBJECTS.Job
             })
         }
-        if (job.saves.filter(x => x.toString() === req.user.id.toString()).length > 0) {
-            job.saves = job.saves.filter(x => x.toString() !== req.user.id.toString())
+        if (job.saves.filter(x => x.id.toString() === req.user.id.toString()).length > 0) {
+            job.saves = job.saves.filter(x => x.id.toString() !== req.user.id.toString())
             await job.save()
         }
         const data: any = job.toJSON()
         data.saves = job.saves.length
         data.applicants = job.applicants.length
         data.saved = false
-        data.applied = job.applicants.includes(req.user.id)
+        data.applied = job.applicants.map(x => x.id).includes(req.user.id)
 
         return constructResponse({
             res,
@@ -306,8 +309,8 @@ const getJob: RequestHandler = async (req: any, res) => {
         // TODO HIDE BASED ON OWNER
         const data = {
             ...job?.toJSON(),
-            applied: job.applicants.includes(req.user.id),
-            saved: job.saves.includes(req.user.id),
+            applied: job.applicants.map(x => x.id).includes(req.user.id),
+            saved: job.saves.map(x => x.id).includes(req.user.id),
             saves: job.business === req.user.business ? job.saves : job.saves.length,
             applicants: job.business === req.user.business ? job.applicants : job.applicants.length,
         }
@@ -346,7 +349,7 @@ const getJobs: RequestHandler = async (req: any, res) => {
                     }
                 }
             },
-            { $addFields: { applicants: { $size: '$applicants' }, saves: { $size: '$saves' }  } },
+            { $addFields: { applicants: { $size: '$applicants' }, saves: { $size: '$saves' } } },
             { $addFields: { id: "$_id" } },
             { $unset: ["_id", "__v"] }
         ]);
@@ -391,7 +394,7 @@ const getAppliedJobs: RequestHandler = async (req: any, res) => {
                     }
                 }
             },
-            { $addFields: { applicants: { $size: '$applicants' }, saves: { $size: '$saves' }  } },
+            { $addFields: { applicants: { $size: '$applicants' }, saves: { $size: '$saves' } } },
             { $addFields: { id: "$_id" } },
             { $unset: ["_id", "__v"] } //"applicants", "saves"
         ]);
@@ -435,7 +438,7 @@ const getSavedJobs: RequestHandler = async (req: any, res) => {
                     }
                 }
             },
-            { $addFields: { applicants: { $size: '$applicants' }, saves: { $size: '$saves' }  } },
+            { $addFields: { applicants: { $size: '$applicants' }, saves: { $size: '$saves' } } },
             { $addFields: { id: "$_id" } },
             { $unset: ["_id", "__v"] }
         ]);
