@@ -180,6 +180,8 @@ const applyToJob: RequestHandler = async (req: any, res) => {
         data.saves = job.saves.length
         data.applicants = job.applicants.length
         data.applied = true
+        data.saved = job.saves.includes(req.user.id)
+
         return constructResponse({
             res,
             data,
@@ -223,6 +225,7 @@ const saveJob: RequestHandler = async (req: any, res) => {
         data.saves = job.saves.length
         data.applicants = job.applicants.length
         data.saved = true
+        data.applied = job.applicants.includes(req.user.id)
 
         return constructResponse({
             res,
@@ -261,6 +264,7 @@ const unsaveJob: RequestHandler = async (req: any, res) => {
         data.saves = job.saves.length
         data.applicants = job.applicants.length
         data.saved = false
+        data.applied = job.applicants.includes(req.user.id)
 
         return constructResponse({
             res,
