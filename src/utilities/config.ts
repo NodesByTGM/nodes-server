@@ -67,7 +67,7 @@ const API_OBJECTS = {
     Member: 'Member',
     OTP: 'OTP',
     Base: 'Base',
-    Content:'Content'
+    Content: 'Content'
 }
 
 
@@ -183,6 +183,11 @@ export const AppConfig = {
         WE: 'WE', // Wallet to External
         EW: 'EW', // External to Wallet
         EE: 'EE' // External to Wallet
+    },
+    NOTIFICATION_TYPES: {
+        JOB_APPLICATION: 'JOB_APPLICATION',
+        BUSINESS_VERIFIED: 'BUSINESS_VERIFIED',
+        POST_ACTIVITY: 'POST_ACTIVITY'
     },
     PLANS: {
         Pro: { name: 'Pro Plan', planCode: `${process.env.PRO_PLAN}` },
