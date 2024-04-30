@@ -30,6 +30,7 @@ const discoverUsers: RequestHandler = async (req: any, res) => {
 
         const accounts = await AccountModel.aggregate([
             { $match: query },
+            { $match: { _id: { $ne: req.user._id } } },
             { $sort: { createdAt: -1 } },
             {
                 $addFields: {
