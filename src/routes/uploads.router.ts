@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import { uploadControllers } from '../controllers';
-import { isAdminOrUser } from '../middlewares/auth.middlewares';
+import { AuthMiddlewares } from '../middlewares';
 
 const router = Router();
 
-router.post('/media', isAdminOrUser, uploadControllers.uploadMediaController);
-router.delete('/media/delete/:id', isAdminOrUser, uploadControllers.deleteMediaController);
+router.post('/media', AuthMiddlewares.isAdminOrUser, uploadControllers.uploadMediaController);
+router.delete('/media/delete/:id', AuthMiddlewares.isAdminOrUser, uploadControllers.deleteMediaController);
 
 
 export default router;

@@ -1,21 +1,11 @@
 import { RequestHandler } from "express";
-import { BusinessModel, EventModel } from "../mongodb/models";
+import { EventModel } from "../mongodb/models";
 import { constructResponse, uploadMedia } from "../services";
 import { paginateData } from "../utilities/common";
 import { AppConfig } from "../utilities/config";
 
 export const createEvent: RequestHandler = async (req: any, res) => {
     try {
-        // TODO: remove this
-        if (!req.user.business) {
-            const business = await BusinessModel.create({
-                name: req.user.name,
-                yoe: new Date(Date.now()),
-                account: req.user
-            })
-            req.user.business = business
-            await req.user.save()
-        }
         const {
             name,
             description,

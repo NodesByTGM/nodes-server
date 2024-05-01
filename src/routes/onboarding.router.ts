@@ -1,12 +1,12 @@
 import { Router } from 'express';
 import { onboardingControllers } from '../controllers';
-import { authenticate } from '../middlewares';
+import { AuthMiddlewares } from '../middlewares';
 
 const router = Router();
 
-router.post('/', authenticate, onboardingControllers.onboarding);
-router.post('/talent', authenticate, onboardingControllers.talentOnboarding);
-router.post('/business', authenticate, onboardingControllers.businessOnboarding);
-router.post('/verify-business', authenticate, onboardingControllers.verifyBusiness);
+router.post('/', AuthMiddlewares.isAuthenticated, onboardingControllers.onboarding);
+router.post('/talent', AuthMiddlewares.isAuthenticated, onboardingControllers.talentOnboarding);
+router.post('/business', AuthMiddlewares.isAuthenticated, onboardingControllers.businessOnboarding);
+router.post('/verify-business', AuthMiddlewares.isAuthenticated, onboardingControllers.verifyBusiness);
 
 export default router;

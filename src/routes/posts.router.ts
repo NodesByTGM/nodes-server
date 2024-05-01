@@ -1,15 +1,15 @@
 import { Router } from 'express';
 import { postControllers } from '../controllers';
-import { authenticate } from '../middlewares';
+import { AuthMiddlewares } from '../middlewares';
 
 const router = Router();
 
-router.get('/', authenticate, postControllers.getPosts);
-router.get('/mine', authenticate, postControllers.getMyPosts);
-router.post('/', authenticate, postControllers.createPost);
-router.get('/:id', authenticate, postControllers.getPost);
-router.post('/like/:id', authenticate, postControllers.likePost);
-router.post('/unlike/:id', authenticate, postControllers.unlikePost);
+router.get('/', AuthMiddlewares.isAuthenticated, postControllers.getPosts);
+router.get('/mine', AuthMiddlewares.isAuthenticated, postControllers.getMyPosts);
+router.post('/', AuthMiddlewares.isAuthenticated, postControllers.createPost);
+router.get('/:id', AuthMiddlewares.isAuthenticated, postControllers.getPost);
+router.post('/like/:id', AuthMiddlewares.isAuthenticated, postControllers.likePost);
+router.post('/unlike/:id', AuthMiddlewares.isAuthenticated, postControllers.unlikePost);
 
 
 export default router;

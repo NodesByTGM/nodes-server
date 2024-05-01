@@ -81,6 +81,7 @@ export const AppConfig = {
         BadRequestError: 'Bad Request Error.',
         NotFoundError: 'Resource Not found.',
         InternalServerError: 'Internal Server Error.',
+        NotBusiness: 'You need to switch to a business acount to do this.',
         ServiceUnavailable: 'Service Unavailable.',
         ResourceNotFound: 'Unable to process. Resource not found.',
         UnauthorizedAccess: 'Unable to process. You\'re not the owner of this resource.',

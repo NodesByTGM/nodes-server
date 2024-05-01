@@ -1,6 +1,5 @@
 import { RequestHandler } from "express";
-import { Types } from "mongoose";
-import { BusinessModel, JobModel } from "../mongodb/models";
+import { JobModel } from "../mongodb/models";
 import { constructResponse } from "../services";
 import { paginateData } from "../utilities/common";
 import { AppConfig } from "../utilities/config";
@@ -15,17 +14,8 @@ const createJob: RequestHandler = async (req: any, res) => {
             workRate,
             skills,
             jobType,
+            location,
         } = req.body
-        // TODO: remove this
-        if (!req.user.business) {
-            const business = await BusinessModel.create({
-                name: req.user.name,
-                yoe: new Date(Date.now()),
-                account: req.user
-            })
-            req.user.business = business
-            await req.user.save()
-        }
         const job = await JobModel.create({
             name,
             description,
@@ -34,6 +24,7 @@ const createJob: RequestHandler = async (req: any, res) => {
             workRate,
             skills,
             jobType,
+            location,
             business: req.user.business
         })
         return constructResponse({
@@ -64,6 +55,7 @@ const updateJob: RequestHandler = async (req: any, res) => {
             workRate,
             skills,
             jobType,
+            location,
         } = req.body
         const job = await JobModel.findById(req.params.id)
         if (!job) {
@@ -89,6 +81,7 @@ const updateJob: RequestHandler = async (req: any, res) => {
         job.workRate = workRate || job.workRate
         job.skills = skills || job.skills
         job.jobType = jobType || job.jobType
+        job.location = location || job.location
 
         await job.save()
 

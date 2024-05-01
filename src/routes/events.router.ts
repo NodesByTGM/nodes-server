@@ -1,18 +1,18 @@
 import { Router } from 'express';
 import { eventControllers } from '../controllers';
-import { authenticate } from '../middlewares';
+import { AuthMiddlewares } from '../middlewares';
 
 const router = Router();
 
-router.post('/', authenticate, eventControllers.createEvent);
-router.get('/', authenticate, eventControllers.getEvents);
-router.get('/saved', authenticate, eventControllers.getSavedEvents);
-router.get('/mine', authenticate, eventControllers.getMyEvents);
-router.get('/:id', authenticate, eventControllers.getEvent);
-router.put('/:id', authenticate, eventControllers.updateEvent);
-router.delete('/:id', authenticate, eventControllers.deleteEvent);
-router.post('/save/:id', authenticate, eventControllers.saveEvent);
-router.post('/unsave/:id', authenticate, eventControllers.unsaveEvent);
+router.post('/', AuthMiddlewares.isBusinessAccount, eventControllers.createEvent);
+router.get('/', AuthMiddlewares.isAuthenticated, eventControllers.getEvents);
+router.get('/saved', AuthMiddlewares.isAuthenticated, eventControllers.getSavedEvents);
+router.get('/mine', AuthMiddlewares.isAuthenticated, eventControllers.getMyEvents);
+router.get('/:id', AuthMiddlewares.isAuthenticated, eventControllers.getEvent);
+router.put('/:id', AuthMiddlewares.isBusinessAccount, eventControllers.updateEvent);
+router.delete('/:id', AuthMiddlewares.isAuthenticated, eventControllers.deleteEvent);
+router.post('/save/:id', AuthMiddlewares.isAuthenticated, eventControllers.saveEvent);
+router.post('/unsave/:id', AuthMiddlewares.isAuthenticated, eventControllers.unsaveEvent);
 
 
 export default router;
