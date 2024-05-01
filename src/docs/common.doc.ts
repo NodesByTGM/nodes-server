@@ -296,9 +296,9 @@ export const notificationSchema = {
     type: 'object',
     properties: {
         id: { type: 'string' },
-        message: { type: 'string' },
+        message: { type: 'string', example:'A user just liked your post' },
         foreignKey: { type: 'string' },
-        type: { type: 'boolean' },
+        type: { type: 'string', example: AppConfig.NOTIFICATION_TYPES.POST_ACTIVITY },
         account: { type: 'string', format: 'date-time' },
         ...timestampProperties
     }

@@ -27,6 +27,29 @@ const getMyNotifications: RequestHandler = async (req: any, res) => {
     }
 }
 
+const getMyInteractions: RequestHandler = async (req: any, res) => {
+    try {
+        const interactions = await NotificationModel.find({ account: req.user.id, type: AppConfig.NOTIFICATION_TYPES.POST_ACTIVITY })
+
+        const data = paginateData(req.query, interactions, 'interactions')
+        return constructResponse({
+            res,
+            data,
+            code: 200,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Content
+        })
+    } catch (error) {
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Content
+        })
+    }
+}
+
 const removeNotification: RequestHandler = async (req: any, res) => {
     try {
         const notification = await NotificationModel.findById(req.params.id)
@@ -57,5 +80,6 @@ const removeNotification: RequestHandler = async (req: any, res) => {
 
 export default {
     getMyNotifications,
-    removeNotification
+    removeNotification,
+    getMyInteractions
 }
