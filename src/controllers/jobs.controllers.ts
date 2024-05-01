@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
 import { JobModel } from "../mongodb/models";
 import { constructResponse } from "../services";
-import { paginateData } from "../utilities/common";
+import { getRegexList, paginateData } from "../utilities/common";
 import { AppConfig } from "../utilities/config";
 
 const createJob: RequestHandler = async (req: any, res) => {
@@ -327,10 +327,77 @@ const getJob: RequestHandler = async (req: any, res) => {
 
 const getJobs: RequestHandler = async (req: any, res) => {
     try {
+        const { skills, search, role, workRate, payRate, jobType } = req.query;
+        // Construct base query
+        let query: any = {};
+        let searchQuery: any = {};
+
+        // Add filters based on parameters
+        if (skills) {
+            if (typeof (skills) === 'object') {
+                query.skills = {
+                    $elemMatch: { $in: getRegexList(skills) }
+                };
+            } else {
+                query.skills = { $regex: skills, $options: 'i' };
+            }
+
+        }
+        if (role) {
+            if (typeof (role) === 'object') {
+                query.role = {
+                    $elemMatch: { $in: getRegexList(role) }
+                };
+            } else {
+                query.role = { $regex: role, $options: 'i' };
+            }
+
+        }
+        if (payRate) {
+            if (typeof (payRate) === 'object') {
+                query.payRate = {
+                    $elemMatch: { $in: getRegexList(payRate) }
+                };
+            } else {
+                query.payRate = { $regex: payRate, $options: 'i' };
+            }
+
+        }
+        if (jobType) {
+            if (typeof (jobType) === 'object') {
+                query.jobType = {
+                    $elemMatch: { $in: getRegexList(jobType) }
+                };
+            } else {
+                query.jobType = { $regex: jobType, $options: 'i' };
+            }
+
+        }
+        if (workRate) {
+            if (typeof (workRate) === 'object') {
+                query.workRate = {
+                    $elemMatch: { $in: getRegexList(workRate) }
+                };
+            } else {
+                query.workRate = { $regex: workRate, $options: 'i' };
+            }
+
+        }
+
+        if (search) {
+            searchQuery = {
+                $or: [
+                    { name: { $regex: search, $options: 'i' } },
+                    { location: { $regex: search, $options: 'i' }, },
+                    { description: { $regex: search, $options: 'i' }, },
+                ]
+            }
+        }
         const userId = req.user.id.toString()
         // TODO HIDE BASED ON OWNER
         const jobs = await JobModel.aggregate([
-            // { $match: { saves: req.user._id } },
+            { $match: query },
+            { $match: searchQuery },
             { $sort: { createdAt: -1 } },
             {
                 $addFields: {
@@ -461,10 +528,24 @@ const getSavedJobs: RequestHandler = async (req: any, res) => {
 
 const getMyJobs: RequestHandler = async (req: any, res) => {
     try {
+        const { search } = req.query;
+        // Construct base query
+        let searchQuery: any = {};
+
+        if (search) {
+            searchQuery = {
+                $or: [
+                    { name: { $regex: search, $options: 'i' } },
+                    { location: { $regex: search, $options: 'i' }, },
+                    { description: { $regex: search, $options: 'i' }, },
+                ]
+            }
+        }
         const business = req.user.business
         const userId = req.user.id.toString()
         const jobs = await JobModel.aggregate([
             { $match: { business: business._id } },
+            { $match: searchQuery },
             { $sort: { createdAt: -1 } },
             {
                 $addFields: {

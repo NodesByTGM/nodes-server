@@ -34,6 +34,73 @@ const paginatedJobSchema = {
     }
 }
 
+
+const queryParameters = [
+    ...paginationQueryParams,
+    {
+        name: 'skills',
+        in: 'query',
+        description: 'Job skills, can be multiple',
+        required: false,
+        schema: {
+            type: 'string',
+        }
+    },
+    {
+        name: 'search',
+        in: 'query',
+        description: 'Search Jobs, by name, location and description',
+        required: false,
+        schema: {
+            type: 'string',
+        }
+    },
+    {
+        name: 'role',
+        in: 'query',
+        required: false,
+        schema: {
+            type: 'string',
+        }
+    },
+    {
+        name: 'workRate',
+        in: 'query',
+        required: false,
+        schema: {
+            type: 'string',
+        }
+    },
+    {
+        name: 'payRate',
+        in: 'query',
+        required: false,
+        schema: {
+            type: 'string',
+        }
+    },
+    {
+        name: 'jobType',
+        in: 'query',
+        required: false,
+        schema: {
+            type: 'string',
+        }
+    }
+]
+const myQueryParameters = [
+    ...paginationQueryParams,
+    {
+        name: 'search',
+        in: 'query',
+        description: 'Search Jobs, by name, location and description',
+        required: false,
+        schema: {
+            type: 'string',
+        }
+    },
+]
+
 export const jobSwagger = {
     paths: {
         '/api/v1/jobs/': {
@@ -58,7 +125,7 @@ export const jobSwagger = {
             get: {
                 summary: 'Get all jobs',
                 tags: ['Jobs'],
-                parameters: paginationQueryParams,
+                parameters: queryParameters,
                 security: [{ bearerAuth: [] }],
                 responses: {
                     200: { description: 'OK' },
@@ -253,7 +320,7 @@ export const jobSwagger = {
                 summary: "Get jobs created by you",
                 tags: ['Jobs'],
                 security: [{ bearerAuth: [] }],
-                parameters: paginationQueryParams,
+                parameters: myQueryParameters,
                 responses: {
                     200: {
                         description: "A list of applied jobs",

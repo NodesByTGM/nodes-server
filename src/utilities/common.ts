@@ -89,3 +89,8 @@ export function generateRandomPassword(length = AppConfig.GENERATED_PASSWORD_LEN
     }
     return password;
 }
+
+
+export const getRegexList = (items: any[]) => {
+    return items.map((item: string) => new RegExp(item, 'i'))
+}
