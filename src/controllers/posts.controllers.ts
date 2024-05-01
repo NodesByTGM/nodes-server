@@ -256,7 +256,7 @@ const likePost: RequestHandler = async (req: any, res) => {
             { path: 'comments', options: { autopopulate: false } },
         ]);
         const data: any = post.toJSON()
-        data.saved = true
+        data.liked = true
 
         return constructResponse({
             res,

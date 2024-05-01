@@ -1,7 +1,6 @@
 import { RequestHandler } from "express";
-import { AccountModel, PostModel } from "../mongodb/models";
+import { PostModel } from "../mongodb/models";
 import { constructResponse } from "../services";
-import { paginateData } from "../utilities/common";
 import { AppConfig } from "../utilities/config";
 
 
