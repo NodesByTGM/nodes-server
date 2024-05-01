@@ -62,8 +62,14 @@ export const getExternalMedia = async () => {
             const data = result.data
             return {
                 ...data,
-                results: data.results.map(x => ({
+                result: undefined,
+                currentPage: data.page,
+                pageSize: data.results.length,
+                totalPages: data.total_pages,
+                totalItems: data.total_results,
+                items: data.results.map(x => ({
                     ...x,
+                    adult: undefined,
                     backdrop_path: `https://image.tmdb.org/t/p${x.backdrop_path}`,
                     poster_path: `https://image.tmdb.org/t/p${x.poster_path}`,
                 }))
