@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { JobModel } from "../mongodb/models";
+import { AccountModel, JobModel, NotificationModel } from "../mongodb/models";
 import { constructResponse } from "../services";
 import { getRegexList, paginateData } from "../utilities/common";
 import { AppConfig } from "../utilities/config";
@@ -169,6 +169,16 @@ const applyToJob: RequestHandler = async (req: any, res) => {
         }
         job.applicants.push(req.user)
         await job.save()
+
+        const owner = await AccountModel.find({ business: job.business })
+        if (owner) {
+            await NotificationModel.create({
+                account: owner,
+                message: `${req.user.name} just applied for ${job.name} `,
+                foreignKey: req.user.id.toString(),
+                type: AppConfig.NOTIFICATION_TYPES.JOB_APPLICATION,
+            })
+        }
 
         const data: any = job.toJSON()
         data.saves = job.saves.length

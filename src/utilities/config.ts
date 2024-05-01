@@ -67,7 +67,8 @@ const API_OBJECTS = {
     Member: 'Member',
     OTP: 'OTP',
     Base: 'Base',
-    Content: 'Content'
+    Content: 'Content',
+    Notification: 'Notification'
 }
 
 
@@ -187,8 +188,14 @@ export const AppConfig = {
     },
     NOTIFICATION_TYPES: {
         JOB_APPLICATION: 'JOB_APPLICATION',
+        EVENT_REGISTRATION: 'EVENT_REGISTRATION',
         BUSINESS_VERIFIED: 'BUSINESS_VERIFIED',
         POST_ACTIVITY: 'POST_ACTIVITY'
+    },
+    NOTIFICATION_MESSAGES: {
+        JOB_APPLICATION: '',
+        BUSINESS_VERIFIED: '',
+        POST_ACTIVITY: ''
     },
     PLANS: {
         Pro: { name: 'Pro Plan', planCode: `${process.env.PRO_PLAN}` },

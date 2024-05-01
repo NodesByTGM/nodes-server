@@ -3,11 +3,11 @@ import crypto from 'crypto';
 import { RequestHandler } from 'express';
 import Joi from 'joi';
 import { AccountModel, OTPModel, TokenModel } from '../mongodb/models';
-import { constructResponse, generateAccessToken, generateRefreshToken, sendEmail } from '../services';
+import { EmailService, constructResponse, generateAccessToken, generateRefreshToken } from '../services';
 import { verifyRefreshToken } from '../services/auth.service';
 import { generateOTP } from '../utilities/common';
 import { AppConfig, BASE_APP_URL } from '../utilities/config';
-import { loginSchema, registerSchema, emailSchema, sendOTPSchema, usernameSchema, verifyEmailSchema, verifyOTPSchema } from '../validations';
+import { emailSchema, loginSchema, registerSchema, sendOTPSchema, usernameSchema, verifyEmailSchema, verifyOTPSchema } from '../validations';
 
 
 const register: RequestHandler = async (req, res) => {
@@ -273,7 +273,7 @@ const sendOTP: RequestHandler = async (req: any, res) => {
             email,
             password: otp
         })
-        sendEmail(email,
+        EmailService.sendEmail(email,
             'Email Verification',
             `Please use this OTP For your verification: ${created.password}. Please note this is only valid for 1 hour.`
         )
@@ -413,7 +413,7 @@ const forgotPassword: RequestHandler = async (req, res) => {
         // console.log(link);
 
         // TODO: Customize email sent
-        sendEmail(user.email, AppConfig.STRINGS.PasswordLinkEmailTitle, link);
+        EmailService.sendEmail(user.email, AppConfig.STRINGS.PasswordLinkEmailTitle, link);
 
         return constructResponse({
             res,

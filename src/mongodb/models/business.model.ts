@@ -14,6 +14,11 @@ export const BusinessSchema = new mongoose.Schema({
     verified: { type: Boolean, default: false },
     logo: { type: fileSchema, default: null },
     cac: { type: fileSchema, default: null },
+    verifiedBy: {
+        type: Schema.Types.ObjectId,
+        ref: 'Admin',
+        default: null
+    },
     account: {
         type: Schema.Types.ObjectId,
         required: true,

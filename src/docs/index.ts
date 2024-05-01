@@ -14,6 +14,7 @@ import { adminAuthSwagger } from './admin.auth.doc';
 import { thirdpartySwagger } from './thirdparty.doc';
 import { adminSwagger } from './admin.doc';
 import { cmsSwagger } from './cms.doc';
+import { notificationSwagger } from './notifications.doc';
 
 // import pjson from '../../package.json';
 const options = {
@@ -67,7 +68,8 @@ const options = {
             ...adminAuthSwagger.paths,
             ...thirdpartySwagger.paths,
             ...adminSwagger.paths,
-            ...cmsSwagger.paths
+            ...cmsSwagger.paths,
+            ...notificationSwagger.paths
             // ...upgradesSwagger.paths,
         }
     },

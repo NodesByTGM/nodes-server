@@ -6,7 +6,7 @@ const router = Router();
 
 router.post('/', AuthMiddlewares.isAuthenticated, onboardingControllers.onboarding);
 router.post('/talent', AuthMiddlewares.isAuthenticated, onboardingControllers.talentOnboarding);
-router.post('/business', AuthMiddlewares.isAuthenticated, onboardingControllers.businessOnboarding);
-router.post('/verify-business', AuthMiddlewares.isAuthenticated, onboardingControllers.verifyBusiness);
+router.post('/business', AuthMiddlewares.isBusinessAccount, onboardingControllers.businessOnboarding);
+router.post('/verify-business', AuthMiddlewares.isBusinessAccount, onboardingControllers.verifyBusiness);
 
 export default router;

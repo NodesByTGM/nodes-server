@@ -235,6 +235,41 @@ export const eventSwagger = {
                 },
             },
         },
+        '/api/v1/events/register/{id}': {
+            post: {
+                summary: 'Register for an event',
+                tags: ['Events'],
+                security: [{ bearerAuth: [] }],
+                parameters: [
+                    {
+                        name: 'id',
+                        in: 'path',
+                        required: true,
+                        schema: {
+                            type: 'string',
+                        },
+                        description: 'ID of the event to register for.',
+                    }
+                ],
+                responses: {
+                    '200': {
+                        description: 'Event registered successfully.',
+                        content: {
+                            'application/json': { schema: constructResponseSchema(eventSchema) }
+                        }
+                    },
+                    '401': {
+                        description: 'Unauthorized. User authentication failed.',
+                    },
+                    '404': {
+                        description: 'Event not found.',
+                    },
+                    '500': {
+                        description: 'Internal Server Error.',
+                    },
+                },
+            },
+        },
         '/api/v1/events/unsave/{id}': {
             post: {
                 summary: 'Unsave an event',
@@ -295,6 +330,22 @@ export const eventSwagger = {
                 responses: {
                     200: {
                         description: "A list of applied events",
+                        content: {
+                            'application/json': { schema: constructResponseSchema(eventSchema, true) }
+                        }
+                    },
+                },
+            },
+        },
+        "/api/v1/events/registered": {
+            get: {
+                summary: "Get registered events by you",
+                tags: ['Events'],
+                security: [{ bearerAuth: [] }],
+                parameters: paginationQueryParams,
+                responses: {
+                    200: {
+                        description: "A list of registered events",
                         content: {
                             'application/json': { schema: constructResponseSchema(eventSchema, true) }
                         }

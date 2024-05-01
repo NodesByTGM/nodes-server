@@ -41,7 +41,7 @@ export const adminAuthSwagger = {
             post: {
                 summary: 'Invite Admin',
                 description: 'Invite a new admin.',
-                tags: ['Admin Authentication', 'Team Management'],
+                tags: ['Admin Authentication', 'Team management'],
                 requestBody: {
                     required: true,
                     content: {

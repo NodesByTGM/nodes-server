@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
-import { AccountModel, AdminModel, SubscriptionModel } from "../mongodb/models";
-import { constructResponse } from "../services";
+import { AccountModel, AdminModel, BusinessModel, NotificationModel, SubscriptionModel } from "../mongodb/models";
+import { EmailService, constructResponse } from "../services";
 import { paginateData } from "../utilities/common";
 import { AppConfig } from "../utilities/config";
 
@@ -209,6 +209,93 @@ const getAnalytics: RequestHandler = async (req: any, res) => {
 
 }
 
+const verifyBusiness: RequestHandler = async (req: any, res) => {
+    try {
+        const business = await BusinessModel.findById(req.params.id);
+        if (!business) {
+            return constructResponse({
+                res,
+                code: 400,
+                message: AppConfig.ERROR_MESSAGES.ResourceNotFound,
+                apiObject: AppConfig.API_OBJECTS.Business
+            })
+        }
+        business.verified = true;
+        business.verifiedBy = req.user.id
+        await business.save()
+
+
+        EmailService.sendHTMLEmail({
+            email: req.user.email,
+            subject: 'Business Verification Successful',
+            params: {
+                subject: 'Business Verification Successful',
+                message: 'Your business has been verified successfully.',
+            },
+            emailType: 'general'
+        })
+
+        const owner = await AccountModel.find({ business: business })
+        if (owner) {
+            await NotificationModel.create({
+                account: owner,
+                message: `Your business has been verified.`,
+                foreignKey: req.user.id.toString(),
+                type: AppConfig.NOTIFICATION_TYPES.BUSINESS_VERIFIED,
+            })
+        }
+
+        return constructResponse({
+            res,
+            data: business,
+            code: 200,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Subscription
+        })
+    } catch (error) {
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Business
+        })
+    }
+}
+
+const sendEmailToUsers: RequestHandler = async (req: any, res) => {
+    try {
+        const { subject, message, email } = req.body
+        let users = email
+        if (!email) {
+            users = (await AccountModel.find()).map(x => x.email).join(',');
+        }
+        EmailService.sendHTMLEmail({
+            email: users,
+            subject,
+            params: {
+                subject,
+                message,
+            },
+            emailType: 'general'
+        })
+        return constructResponse({
+            res,
+            code: 200,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Subscription
+        })
+    } catch (error) {
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Business
+        })
+    }
+}
+
 const deleteUser: RequestHandler = async (req: any, res) => {
     try {
         const data = await AccountModel.findById(req.params.id)
@@ -228,7 +315,6 @@ const deleteUser: RequestHandler = async (req: any, res) => {
             apiObject: AppConfig.API_OBJECTS.Account
         })
     } catch (error) {
-
         return constructResponse({
             res,
             code: 500,
@@ -246,5 +332,7 @@ export default {
     getAllMembers,
     getMemberProfile,
     getSubscriptions,
-    getAnalytics
+    getAnalytics,
+    verifyBusiness,
+    sendEmailToUsers
 }

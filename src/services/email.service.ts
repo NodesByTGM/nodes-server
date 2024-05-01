@@ -19,7 +19,7 @@ export const sendEmail = async (email: string, subject: string, text: string) =>
             subject: subject,
             text: text,
         });
-        
+
         if (sent) {
             return true
         }
@@ -33,14 +33,13 @@ const pathKVP = {
     reset: 'src/templates/reset.html',
     welcome: 'src/templates/welcome.html',
     subscription: 'src/templates/subscription.html',
-    submittedForm: 'src/templates/submitted-form.html',
-    formReminder: 'src/templates/form-reminder.html'
+    general: 'src/templates/general.html',
 }
 interface HTMLEmailProps {
     email: string,
     subject: string,
     params: any,
-    emailType: 'registration' | 'welcome' | 'reset' | 'subscription' | 'submittedForm' | 'formReminder'
+    emailType: 'registration' | 'welcome' | 'reset' | 'subscription' | 'general'
 }
 
 export const sendHTMLEmail = async ({
@@ -83,3 +82,7 @@ export const sendHTMLEmail = async ({
     }
 };
 
+export default {
+    sendEmail,
+    sendHTMLEmail
+}

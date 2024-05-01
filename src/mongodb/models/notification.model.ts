@@ -4,8 +4,8 @@ import { AppConfig } from '../../utilities/config';
 
 export const NotificationSchema = new mongoose.Schema({
     message: { type: String, default: '' },
-    foreignKey: { type: String, default: '', enum: Object.values(AppConfig.NOTIFICATION_TYPES) },
-    type: { type: String, default: '' },
+    foreignKey: { type: String, default: '' },
+    type: { type: String, default: '', enum: Object.values(AppConfig.NOTIFICATION_TYPES) },
     account: {
         type: Schema.Types.ObjectId,
         required: true,
