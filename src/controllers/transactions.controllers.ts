@@ -212,6 +212,11 @@ const paystackWebhook: RequestHandler = async (req, res) => {
         }
     }
 
+    if (eventData.event === 'subscription.create') {
+        EmailService.sendEmail(`${process.env.EMAIL_USER}`, 'Nodes: Webhook Event from paystack', JSON.stringify(eventData))
+        return res.sendStatus(200)
+    }
+
     if (eventData.event === 'subscription.disable') {
         const data: SubscriptionDisabledEventData = eventData.data
         const user = await AccountModel.findOne({ email: data.customer.email })
