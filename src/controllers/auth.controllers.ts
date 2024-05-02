@@ -74,7 +74,7 @@ const register: RequestHandler = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = new AccountModel({
             name: name.trim(),
-            username: name.trim(),
+            username: username.trim(),
             email: email.toLowerCase().trim(),
             dob,
             verified: otp ? true : false,

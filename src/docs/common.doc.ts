@@ -49,7 +49,8 @@ export const responseSchema = {
         status: { type: 'string', example: 'Success.' },
         isError: { type: 'boolean', example: false },
         message: { type: 'string' },
-        result: { type: 'object' }
+        result: { type: 'object' },
+        errorMessage: { type: 'string' }
         // You might want to specify the schema for result if it's not always an empty object
     }
 }
@@ -296,7 +297,7 @@ export const notificationSchema = {
     type: 'object',
     properties: {
         id: { type: 'string' },
-        message: { type: 'string', example:'A user just liked your post' },
+        message: { type: 'string', example: 'A user just liked your post' },
         foreignKey: { type: 'string' },
         type: { type: 'string', example: AppConfig.NOTIFICATION_TYPES.POST_ACTIVITY },
         account: { type: 'string', format: 'date-time' },

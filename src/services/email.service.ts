@@ -73,11 +73,15 @@ export const sendHTMLEmail = async ({
             html: filledTemplate,
         });
         if (sent) {
-            console.log('[email]: Email sent sucessfully!');
+            if (process.env.NODE_ENV === 'development') {
+                console.log('[email]: Email sent sucessfully!');
+            }
             return true
         }
     } catch (error) {
-        console.log('[email]: Email not sent!', error);
+        if (process.env.NODE_ENV === 'development') {
+            console.log('[email]: Email not sent!', error);
+        }
         return false
     }
 };
