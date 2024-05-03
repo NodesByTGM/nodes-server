@@ -49,7 +49,8 @@ export const responseSchema = {
         status: { type: 'string', example: 'Success.' },
         isError: { type: 'boolean', example: false },
         message: { type: 'string' },
-        result: { type: 'object' }
+        result: { type: 'object' },
+        errorMessage: { type: 'string' }
         // You might want to specify the schema for result if it's not always an empty object
     }
 }
@@ -77,6 +78,15 @@ export const verifyBusinessRequestSchema = {
         logo: fileSwaggerSchema,
         cac: trueFileSwaggerSchema,
         yoe: { type: 'string', format: 'date-time' },
+    }
+}
+
+export const sendEmailToUsersRequestScema = {
+    type: 'object',
+    properties: {
+        email: { type: 'string' },
+        subject: { type: 'string' },
+        message: { type: 'string' },
     }
 }
 
@@ -278,9 +288,20 @@ export const subscriptionSchema = {
         tenor: { type: 'string' },
         active: { type: 'boolean' },
         paidAt: { type: 'string', format: 'date-time' },
-        createdAt: { type: 'string', format: 'date-time' },
-        updatedAt: { type: 'string', format: 'date-time' },
-        id: { type: 'string' }
+        id: { type: 'string' },
+        ...timestampProperties
+    }
+}
+
+export const notificationSchema = {
+    type: 'object',
+    properties: {
+        id: { type: 'string' },
+        message: { type: 'string', example: 'A user just liked your post' },
+        foreignKey: { type: 'string' },
+        type: { type: 'string', example: AppConfig.NOTIFICATION_TYPES.POST_ACTIVITY },
+        account: { type: 'string', format: 'date-time' },
+        ...timestampProperties
     }
 }
 
@@ -476,10 +497,19 @@ export const eventSchema = {
         paymentType: { type: 'string' },
         id: { type: 'string' },
         saved: { type: 'boolean' },
+        registered: { type: 'boolean' },
         saves: {
             anyOf: [
                 { type: 'null' },
-                { type: 'string' },
+                {
+                    type: 'array',
+                    items: miniUserSchema
+                }
+            ]
+        },
+        attendees: {
+            anyOf: [
+                { type: 'null' },
                 {
                     type: 'array',
                     items: miniUserSchema

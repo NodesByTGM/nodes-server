@@ -8,6 +8,7 @@ const JobSchema = new mongoose.Schema({
     experience: { type: String, required: true },
     payRate: { type: String, required: true },
     workRate: { type: String, required: true },
+    location: { type: String, required: true },
     skills: { type: [String], required: true },
     jobType: { type: Number, required: true, enum: Object.values(AppConfig.JOB_TYPES) },
     applicants: {

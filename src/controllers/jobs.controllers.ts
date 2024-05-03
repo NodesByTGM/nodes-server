@@ -1,8 +1,7 @@
 import { RequestHandler } from "express";
-import { Types } from "mongoose";
-import { BusinessModel, JobModel } from "../mongodb/models";
+import { AccountModel, JobModel, NotificationModel } from "../mongodb/models";
 import { constructResponse } from "../services";
-import { paginateData } from "../utilities/common";
+import { getRegexList, paginateData } from "../utilities/common";
 import { AppConfig } from "../utilities/config";
 
 const createJob: RequestHandler = async (req: any, res) => {
@@ -15,17 +14,8 @@ const createJob: RequestHandler = async (req: any, res) => {
             workRate,
             skills,
             jobType,
+            location,
         } = req.body
-        // TODO: remove this
-        if (!req.user.business) {
-            const business = await BusinessModel.create({
-                name: req.user.name,
-                yoe: new Date(Date.now()),
-                account: req.user
-            })
-            req.user.business = business
-            await req.user.save()
-        }
         const job = await JobModel.create({
             name,
             description,
@@ -34,6 +24,7 @@ const createJob: RequestHandler = async (req: any, res) => {
             workRate,
             skills,
             jobType,
+            location,
             business: req.user.business
         })
         return constructResponse({
@@ -64,6 +55,7 @@ const updateJob: RequestHandler = async (req: any, res) => {
             workRate,
             skills,
             jobType,
+            location,
         } = req.body
         const job = await JobModel.findById(req.params.id)
         if (!job) {
@@ -89,6 +81,7 @@ const updateJob: RequestHandler = async (req: any, res) => {
         job.workRate = workRate || job.workRate
         job.skills = skills || job.skills
         job.jobType = jobType || job.jobType
+        job.location = location || job.location
 
         await job.save()
 
@@ -174,12 +167,25 @@ const applyToJob: RequestHandler = async (req: any, res) => {
                 apiObject: AppConfig.API_OBJECTS.Job
             })
         }
-        job.applicants.push(req.user.id)
+        job.applicants.push(req.user)
         await job.save()
+
+        const owner = await AccountModel.find({ business: job.business })
+        if (owner) {
+            await NotificationModel.create({
+                account: owner,
+                message: `${req.user.name} just applied for ${job.name} `,
+                foreignKey: req.user.id.toString(),
+                type: AppConfig.NOTIFICATION_TYPES.JOB_APPLICATION,
+            })
+        }
+
         const data: any = job.toJSON()
         data.saves = job.saves.length
         data.applicants = job.applicants.length
         data.applied = true
+        data.saved = job.saves.map(x => x.id).includes(req.user.id)
+
         return constructResponse({
             res,
             data,
@@ -209,7 +215,7 @@ const saveJob: RequestHandler = async (req: any, res) => {
                 apiObject: AppConfig.API_OBJECTS.Job
             })
         }
-        if (job.saves.filter(x => x.toString() === req.user.id.toString()).length > 0) {
+        if (job.saves.filter(x => x.id.toString() === req.user.id.toString()).length > 0) {
             return constructResponse({
                 res,
                 code: 400,
@@ -217,12 +223,15 @@ const saveJob: RequestHandler = async (req: any, res) => {
                 apiObject: AppConfig.API_OBJECTS.Job
             })
         }
-        job.saves.push(req.user.id)
+
+        job.saves.push(req.user)
         await job.save()
+
         const data: any = job.toJSON()
         data.saves = job.saves.length
         data.applicants = job.applicants.length
         data.saved = true
+        data.applied = job.applicants.map(x => x.id).includes(req.user.id)
 
         return constructResponse({
             res,
@@ -253,14 +262,15 @@ const unsaveJob: RequestHandler = async (req: any, res) => {
                 apiObject: AppConfig.API_OBJECTS.Job
             })
         }
-        if (job.saves.filter(x => x.toString() === req.user.id.toString()).length > 0) {
-            job.saves = job.saves.filter(x => x.toString() !== req.user.id.toString())
+        if (job.saves.filter(x => x.id.toString() === req.user.id.toString()).length > 0) {
+            job.saves = job.saves.filter(x => x.id.toString() !== req.user.id.toString())
             await job.save()
         }
         const data: any = job.toJSON()
         data.saves = job.saves.length
         data.applicants = job.applicants.length
         data.saved = false
+        data.applied = job.applicants.map(x => x.id).includes(req.user.id)
 
         return constructResponse({
             res,
@@ -302,8 +312,8 @@ const getJob: RequestHandler = async (req: any, res) => {
         // TODO HIDE BASED ON OWNER
         const data = {
             ...job?.toJSON(),
-            applied: job.applicants.includes(req.user.id),
-            saved: job.saves.includes(req.user.id),
+            applied: job.applicants.map(x => x.id).includes(req.user.id),
+            saved: job.saves.map(x => x.id).includes(req.user.id),
             saves: job.business === req.user.business ? job.saves : job.saves.length,
             applicants: job.business === req.user.business ? job.applicants : job.applicants.length,
         }
@@ -327,10 +337,77 @@ const getJob: RequestHandler = async (req: any, res) => {
 
 const getJobs: RequestHandler = async (req: any, res) => {
     try {
+        const { skills, search, role, workRate, payRate, jobType } = req.query;
+        // Construct base query
+        let query: any = {};
+        let searchQuery: any = {};
+
+        // Add filters based on parameters
+        if (skills) {
+            if (typeof (skills) === 'object') {
+                query.skills = {
+                    $elemMatch: { $in: getRegexList(skills) }
+                };
+            } else {
+                query.skills = { $regex: skills, $options: 'i' };
+            }
+
+        }
+        if (role) {
+            if (typeof (role) === 'object') {
+                query.role = {
+                    $elemMatch: { $in: getRegexList(role) }
+                };
+            } else {
+                query.role = { $regex: role, $options: 'i' };
+            }
+
+        }
+        if (payRate) {
+            if (typeof (payRate) === 'object') {
+                query.payRate = {
+                    $elemMatch: { $in: getRegexList(payRate) }
+                };
+            } else {
+                query.payRate = { $regex: payRate, $options: 'i' };
+            }
+
+        }
+        if (jobType) {
+            if (typeof (jobType) === 'object') {
+                query.jobType = {
+                    $elemMatch: { $in: getRegexList(jobType) }
+                };
+            } else {
+                query.jobType = { $regex: jobType, $options: 'i' };
+            }
+
+        }
+        if (workRate) {
+            if (typeof (workRate) === 'object') {
+                query.workRate = {
+                    $elemMatch: { $in: getRegexList(workRate) }
+                };
+            } else {
+                query.workRate = { $regex: workRate, $options: 'i' };
+            }
+
+        }
+
+        if (search) {
+            searchQuery = {
+                $or: [
+                    { name: { $regex: search, $options: 'i' } },
+                    { location: { $regex: search, $options: 'i' }, },
+                    { description: { $regex: search, $options: 'i' }, },
+                ]
+            }
+        }
         const userId = req.user.id.toString()
         // TODO HIDE BASED ON OWNER
         const jobs = await JobModel.aggregate([
-            // { $match: { saves: req.user._id } },
+            { $match: query },
+            { $match: searchQuery },
             { $sort: { createdAt: -1 } },
             {
                 $addFields: {
@@ -342,7 +419,7 @@ const getJobs: RequestHandler = async (req: any, res) => {
                     }
                 }
             },
-            { $addFields: { applicants: { $size: '$applicants' }, saves: { $size: '$saves' }  } },
+            { $addFields: { applicants: { $size: '$applicants' }, saves: { $size: '$saves' } } },
             { $addFields: { id: "$_id" } },
             { $unset: ["_id", "__v"] }
         ]);
@@ -387,7 +464,7 @@ const getAppliedJobs: RequestHandler = async (req: any, res) => {
                     }
                 }
             },
-            { $addFields: { applicants: { $size: '$applicants' }, saves: { $size: '$saves' }  } },
+            { $addFields: { applicants: { $size: '$applicants' }, saves: { $size: '$saves' } } },
             { $addFields: { id: "$_id" } },
             { $unset: ["_id", "__v"] } //"applicants", "saves"
         ]);
@@ -431,7 +508,7 @@ const getSavedJobs: RequestHandler = async (req: any, res) => {
                     }
                 }
             },
-            { $addFields: { applicants: { $size: '$applicants' }, saves: { $size: '$saves' }  } },
+            { $addFields: { applicants: { $size: '$applicants' }, saves: { $size: '$saves' } } },
             { $addFields: { id: "$_id" } },
             { $unset: ["_id", "__v"] }
         ]);
@@ -461,10 +538,24 @@ const getSavedJobs: RequestHandler = async (req: any, res) => {
 
 const getMyJobs: RequestHandler = async (req: any, res) => {
     try {
+        const { search } = req.query;
+        // Construct base query
+        let searchQuery: any = {};
+
+        if (search) {
+            searchQuery = {
+                $or: [
+                    { name: { $regex: search, $options: 'i' } },
+                    { location: { $regex: search, $options: 'i' }, },
+                    { description: { $regex: search, $options: 'i' }, },
+                ]
+            }
+        }
         const business = req.user.business
         const userId = req.user.id.toString()
         const jobs = await JobModel.aggregate([
             { $match: { business: business._id } },
+            { $match: searchQuery },
             { $sort: { createdAt: -1 } },
             {
                 $addFields: {

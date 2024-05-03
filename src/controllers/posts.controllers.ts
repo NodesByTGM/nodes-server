@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
-import { PostModel } from "../mongodb/models";
+import { AccountModel, NotificationModel, PostModel } from "../mongodb/models";
 import { constructResponse } from "../services";
-import { paginateData } from "../utilities/common";
+import { getLimitedText, paginateData } from "../utilities/common";
 import { AppConfig } from "../utilities/config";
 
 const createPost: RequestHandler = async (req: any, res) => {
@@ -44,6 +44,16 @@ const createPost: RequestHandler = async (req: any, res) => {
                     post.comments.push(data.id)
                     await post.save()
                 }
+            }
+
+            const author = await AccountModel.findById(data.author.id)
+            if (author) {
+                await NotificationModel.create({
+                    account: author,
+                    message: `${req.user.name} just commented on your post ${getLimitedText(data.body)} `,
+                    foreignKey: data.id.toString(),
+                    type: AppConfig.NOTIFICATION_TYPES.POST_ACTIVITY,
+                })
             }
         }
         // const posts = await PostModel.find();
@@ -256,7 +266,18 @@ const likePost: RequestHandler = async (req: any, res) => {
             { path: 'comments', options: { autopopulate: false } },
         ]);
         const data: any = post.toJSON()
-        data.saved = true
+        data.liked = true
+
+
+        const author = await AccountModel.findById(post.author.id)
+        if (author) {
+            await NotificationModel.create({
+                account: author,
+                message: `${req.user.name} just liked your post ${getLimitedText(post.body)} `,
+                foreignKey: post.id.toString(),
+                type: AppConfig.NOTIFICATION_TYPES.POST_ACTIVITY,
+            })
+        }
 
         return constructResponse({
             res,
@@ -300,6 +321,15 @@ const unlikePost: RequestHandler = async (req: any, res) => {
         ]);
         const data: any = post.toJSON()
         data.liked = false
+
+        const notification = await NotificationModel.findOne({
+            account: post.author,
+            foreignKey: post.id.toString(),
+            message: { $regex: `${req.user.name} just liked`, $options: 'i' }
+        })
+        if (notification) {
+            await notification.deleteOne()
+        }
 
         return constructResponse({
             res,

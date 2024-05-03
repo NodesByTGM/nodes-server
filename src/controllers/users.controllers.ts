@@ -8,19 +8,35 @@ import { AppConfig } from '../utilities/config';
 
 const discoverUsers: RequestHandler = async (req: any, res) => {
     try {
-        const { skills, name, connections } = req.query;
+        const { skills, search } = req.query;
         const userId = req.user.id.toString()
         // Construct base query
         let query: any = {};
+        let searchQuery: any = {};
 
         // Add filters based on parameters
         if (skills) {
-            query.skills = { $regex: skills, $options: 'i' }; // Case-insensitive search for text
-        }
-        if (name) {
-            query.name = { $regex: name, $options: 'i' };
+            if (typeof (skills) === 'object') {
+                query.skills = {
+                    $elemMatch: { $in: skills.map((skill: string) => new RegExp(skill, 'i')) }
+                }; // Case-insensitive search for text
+            } else {
+                query.skills = { $regex: skills, $options: 'i' }; // Case-insensitive search for text
+            }
+
         }
 
+        if (search) {
+            searchQuery = {
+                $or: [
+                    { name: { $regex: search, $options: 'i' } },
+                    { email: { $regex: search, $options: 'i' }, },
+                    { username: { $regex: search, $options: 'i' }, },
+                    { location: { $regex: search, $options: 'i' }, },
+                    { headline: { $regex: search, $options: 'i' }, },
+                ]
+            }
+        }
 
         const connectionRequests = await ConnectionRequestModel.find({
             sender: userId,
@@ -30,6 +46,8 @@ const discoverUsers: RequestHandler = async (req: any, res) => {
 
         const accounts = await AccountModel.aggregate([
             { $match: query },
+            { $match: searchQuery },
+            { $match: { _id: { $ne: req.user._id } } },
             { $sort: { createdAt: -1 } },
             {
                 $addFields: {
@@ -37,7 +55,7 @@ const discoverUsers: RequestHandler = async (req: any, res) => {
                     requested: { $in: ["$_id", requestedUserIds] }
                 }
             },
-            { $match: { connected: true, requested: true } },
+            { $match: { connected: false, requested: false } },
             { $addFields: { id: "$_id" } },
             { $unset: ["_id", "__v", "subscription", "password", "firebaseToken", "role"] },
         ]);
@@ -55,6 +73,7 @@ const discoverUsers: RequestHandler = async (req: any, res) => {
             apiObject: AppConfig.API_OBJECTS.CommunityAccount
         })
     } catch (error) {
+        console.log(error)
         return constructResponse({
             res,
             code: 500,

@@ -13,8 +13,29 @@ import {
 
 
 
-// router.post('/connections/request/:id', authenticate, usersControllers.requestConnection);
-// router.delete('/connections/remove/:id', authenticate, usersControllers.removeConnection);
+const queryParams = [
+    ...paginationQueryParams,
+    {
+        name: 'search',
+        in: 'query',
+        description: 'Search by name, username, email, and location',
+        required: false,
+        schema: {
+            type: 'string',
+            default: ''
+        }
+    },
+    {
+        name: 'skills',
+        in: 'query',
+        description: 'Filter by skills/categories - User skills=A&skills=B to filter for multiple skills',
+        required: false,
+        schema: {
+            type: 'string',
+            default: ''
+        }
+    },
+]
 
 export const usersSwagger = {
     paths: {
@@ -47,7 +68,7 @@ export const usersSwagger = {
                 description: 'Discover users you\'ve not connected with.',
                 tags: ['Users'],
                 security: [{ bearerAuth: [] }],
-                parameters: paginationQueryParams,
+                parameters: queryParams,
                 responses: {
                     '200': {
                         description: 'Success.',

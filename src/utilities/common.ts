@@ -89,3 +89,20 @@ export function generateRandomPassword(length = AppConfig.GENERATED_PASSWORD_LEN
     }
     return password;
 }
+
+
+export const getRegexList = (items: any[]) => {
+    return items.map((item: string) => new RegExp(item, 'i'))
+}
+
+export const getLimitedText = (sentence: string = "") => {
+    let words = sentence.split(" ");
+    if (words.length > 10) {
+        let limited = words.slice(0, 6).join(" ");
+        if (limited.length > 130) {
+            return `${limited.slice(0, 130)}...`;
+        }
+        return `${limited}...`;
+    }
+    return sentence;
+};

@@ -1,4 +1,4 @@
-import { adminMiniUserSchema, adminSchema, adminSubscriptionSchema, constructResponseSchema, userSchema } from "./common.doc";
+import { adminMiniUserSchema, adminSchema, adminSubscriptionSchema, businessSchema, constructResponseSchema, sendEmailToUsersRequestScema, userSchema } from "./common.doc";
 
 const subscriptionQueryParams = [
     {
@@ -21,8 +21,6 @@ const subscriptionQueryParams = [
         }
     }
 ]
-
-// router.delete('/users/:id', authenticateAdmin, adminControllers.deleteUser);
 
 export const adminSwagger = {
     paths: {
@@ -154,6 +152,64 @@ export const adminSwagger = {
                         content: {
                             'application/json': { schema: constructResponseSchema(userSchema) },
                         },
+                    },
+                    '401': {
+                        description: 'Unauthorized. User authentication failed.',
+                    },
+                    '500': {
+                        description: 'Internal Server Error.',
+                    },
+                },
+            },
+        },
+        '/api/v1/admin/verify-business/{id}': {
+            post: {
+                summary: 'Verify a business',
+                description: 'Verify a business',
+                tags: ['Admin'],
+                security: [{ bearerAuth: [] }],
+                parameters: [
+                    {
+                        name: 'id',
+                        in: 'path',
+                        required: true,
+                        schema: {
+                            type: 'string',
+                        },
+                        description: 'ID of the user to retrieve.',
+                    }
+                ],
+                responses: {
+                    '200': {
+                        description: 'Success.',
+                        content: {
+                            'application/json': { schema: constructResponseSchema(businessSchema) },
+                        },
+                    },
+                    '401': {
+                        description: 'Unauthorized. User authentication failed.',
+                    },
+                    '500': {
+                        description: 'Internal Server Error.',
+                    },
+                },
+            },
+        },
+        '/api/v1/admin/send-email-to-users': {
+            post: {
+                summary: 'Verify a business',
+                description: 'Verify a business',
+                tags: ['Admin'],
+                security: [{ bearerAuth: [] }],
+                requestBody: {
+                    required: true,
+                    content: {
+                        'application/json': { schema: sendEmailToUsersRequestScema },
+                    },
+                },
+                responses: {
+                    '200': {
+                        description: 'Success.',
                     },
                     '401': {
                         description: 'Unauthorized. User authentication failed.',

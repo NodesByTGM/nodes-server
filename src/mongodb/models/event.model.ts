@@ -15,6 +15,12 @@ const EventSchema = new mongoose.Schema({
         default: [],
         autopopulate: true
     },
+    attendees: {
+        type: [Schema.Types.ObjectId],
+        ref: 'Account',
+        default: [],
+        autopopulate: true
+    },
     business: {
         type: Schema.Types.ObjectId,
         ref: 'Business',

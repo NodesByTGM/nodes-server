@@ -1,21 +1,11 @@
 import { RequestHandler } from "express";
-import { BusinessModel, EventModel } from "../mongodb/models";
+import { AccountModel, EventModel, NotificationModel } from "../mongodb/models";
 import { constructResponse, uploadMedia } from "../services";
 import { paginateData } from "../utilities/common";
 import { AppConfig } from "../utilities/config";
 
-export const createEvent: RequestHandler = async (req: any, res) => {
+const createEvent: RequestHandler = async (req: any, res) => {
     try {
-        // TODO: remove this
-        if (!req.user.business) {
-            const business = await BusinessModel.create({
-                name: req.user.name,
-                yoe: new Date(Date.now()),
-                account: req.user
-            })
-            req.user.business = business
-            await req.user.save()
-        }
         const {
             name,
             description,
@@ -54,7 +44,7 @@ export const createEvent: RequestHandler = async (req: any, res) => {
     }
 }
 
-export const updateEvent: RequestHandler = async (req: any, res) => {
+const updateEvent: RequestHandler = async (req: any, res) => {
     try {
         const {
             name,
@@ -115,7 +105,7 @@ export const updateEvent: RequestHandler = async (req: any, res) => {
     }
 }
 
-export const deleteEvent: RequestHandler = async (req: any, res) => {
+const deleteEvent: RequestHandler = async (req: any, res) => {
     try {
         const event = await EventModel.findById(req.params.id)
         if (!event) {
@@ -152,7 +142,7 @@ export const deleteEvent: RequestHandler = async (req: any, res) => {
     }
 }
 
-export const saveEvent: RequestHandler = async (req: any, res) => {
+const saveEvent: RequestHandler = async (req: any, res) => {
     try {
         const event = await EventModel.findById(req.params.id)
         if (!event) {
@@ -163,7 +153,7 @@ export const saveEvent: RequestHandler = async (req: any, res) => {
                 apiObject: AppConfig.API_OBJECTS.Event
             })
         }
-        if (event.saves.filter(x => x.toString() === req.user.id.toString()).length > 0) {
+        if (event.saves.filter(x => x.id.toString() === req.user.id.toString()).length > 0) {
             return constructResponse({
                 res,
                 code: 400,
@@ -174,8 +164,10 @@ export const saveEvent: RequestHandler = async (req: any, res) => {
         event.saves.push(req.user)
         await event.save()
         const data: any = event.toJSON()
-        data.saves = event.saves.length
         data.saved = true
+        data.saves = event.business === req.user.business ? event.saves : event.saves.length
+        data.registered = event.attendees.map(y => y.id.toString()).includes(req.user.id)
+        data.attendees = event.business === req.user.business ? event.attendees : event.attendees.length
 
         return constructResponse({
             res,
@@ -195,7 +187,7 @@ export const saveEvent: RequestHandler = async (req: any, res) => {
     }
 }
 
-export const unsaveEvent: RequestHandler = async (req: any, res) => {
+const unsaveEvent: RequestHandler = async (req: any, res) => {
     try {
         const event = await EventModel.findById(req.params.id)
         if (!event) {
@@ -206,13 +198,15 @@ export const unsaveEvent: RequestHandler = async (req: any, res) => {
                 apiObject: AppConfig.API_OBJECTS.Event
             })
         }
-        if (event.saves.filter(x => x.toString() === req.user.id.toString()).length > 0) {
-            event.saves = event.saves.filter(x => x.toString() !== req.user.id.toString())
+        if (event.saves.filter(x => x.id.toString() === req.user.id.toString()).length > 0) {
+            event.saves = event.saves.filter(x => x.id.toString() !== req.user.id.toString())
             await event.save()
         }
         const data: any = event.toJSON()
-        data.saves = event.saves.length
         data.saved = false
+        data.saves = event.business === req.user.business ? event.saves : event.saves.length
+        data.registered = event.attendees.map(y => y.id.toString()).includes(req.user.id)
+        data.attendees = event.business === req.user.business ? event.attendees : event.attendees.length
 
         return constructResponse({
             res,
@@ -232,7 +226,63 @@ export const unsaveEvent: RequestHandler = async (req: any, res) => {
     }
 }
 
-export const getEvent: RequestHandler = async (req: any, res) => {
+const registerToEvent: RequestHandler = async (req: any, res) => {
+    try {
+        let event = await EventModel.findById(req.params.id)
+        if (!event) {
+            return constructResponse({
+                res,
+                code: 404,
+                message: AppConfig.ERROR_MESSAGES.NotFoundError,
+                apiObject: AppConfig.API_OBJECTS.Event
+            })
+        }
+        if (event.attendees.filter(x => x.toString() === req.user._id.toString()).length > 0) {
+            return constructResponse({
+                res,
+                code: 400,
+                message: AppConfig.ERROR_MESSAGES.AlreadyApplied,
+                apiObject: AppConfig.API_OBJECTS.Event
+            })
+        }
+        event.attendees.push(req.user)
+        await event.save()
+
+        const owner = await AccountModel.find({ business: event.business })
+        if (owner) {
+            await NotificationModel.create({
+                account: owner,
+                message: `${req.user.name} just registered for ${event.name} `,
+                foreignKey: req.user.id.toString(),
+                type: AppConfig.NOTIFICATION_TYPES.EVENT_REGISTRATION,
+            })
+        }
+
+        const data: any = event.toJSON()
+        data.saved = event.saves.map(x => x.id).includes(req.user.id)
+        data.saves = event.business === req.user.business ? event.saves : event.saves.length
+        data.registered = event.attendees.map(y => y.id.toString()).includes(req.user.id)
+        data.attendees = event.business === req.user.business ? event.attendees : event.attendees.length
+
+        return constructResponse({
+            res,
+            data,
+            code: 200,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Event
+        })
+    } catch (error) {
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Event
+        })
+    }
+}
+
+const getEvent: RequestHandler = async (req: any, res) => {
     try {
         const event = await EventModel.findById(req.params.id).populate('business')
         if (!event) {
@@ -245,8 +295,10 @@ export const getEvent: RequestHandler = async (req: any, res) => {
         }
         const data = {
             ...event?.toJSON(),
-            saved: event.saves.map((y: any) => y.toString()).includes(req.user.id),
-            saves: event.business === req.user.business ? event.saves : event.saves.length
+            saved: event.saves.map(y => y.id.toString()).includes(req.user.id),
+            registered: event.attendees.map(y => y.id.toString()).includes(req.user.id),
+            saves: event.business === req.user.business ? event.saves : event.saves.length,
+            attendees: event.business === req.user.business ? event.attendees : event.attendees.length
         }
         return constructResponse({
             res,
@@ -266,7 +318,7 @@ export const getEvent: RequestHandler = async (req: any, res) => {
     }
 }
 
-export const getEvents: RequestHandler = async (req: any, res) => {
+const getEvents: RequestHandler = async (req: any, res) => {
     try {
         const userId = req.user.id.toString()
         // TODO HIDE BASED ON OWNER
@@ -275,12 +327,11 @@ export const getEvents: RequestHandler = async (req: any, res) => {
             { $sort: { createdAt: -1 } },
             {
                 $addFields: {
-                    saved: {
-                        $in: [userId, { $map: { input: "$saves", as: "saved", in: { $toString: "$$saved" } } }]
-                    }
+                    saved: { $in: [userId, { $map: { input: "$saves", as: "saved", in: { $toString: "$$saved" } } }] },
+                    registered: { $in: [userId, { $map: { input: "$attendees", as: "registered", in: { $toString: "$$registered" } } }] },
                 }
             },
-            { $addFields: { saves: { $size: '$saves' } } },
+            { $addFields: { saves: { $size: '$saves' }, attendees: { $size: '$attendees' } } },
             { $addFields: { id: "$_id" } },
             { $unset: ["_id", "__v"] }
         ]);
@@ -308,7 +359,7 @@ export const getEvents: RequestHandler = async (req: any, res) => {
     }
 }
 
-export const getMyEvents: RequestHandler = async (req: any, res) => {
+const getMyEvents: RequestHandler = async (req: any, res) => {
     try {
         const business = req.user.business
         const userId = req.user.id.toString()
@@ -318,9 +369,8 @@ export const getMyEvents: RequestHandler = async (req: any, res) => {
             { $sort: { createdAt: -1 } },
             {
                 $addFields: {
-                    saved: {
-                        $in: [userId, { $map: { input: "$saves", as: "saved", in: { $toString: "$$saved" } } }]
-                    }
+                    saved: { $in: [userId, { $map: { input: "$saves", as: "saved", in: { $toString: "$$saved" } } }] },
+                    registered: { $in: [userId, { $map: { input: "$attendees", as: "registered", in: { $toString: "$$registered" } } }] },
                 }
             },
             { $addFields: { id: "$_id" } },
@@ -350,7 +400,7 @@ export const getMyEvents: RequestHandler = async (req: any, res) => {
     }
 }
 
-export const getSavedEvents: RequestHandler = async (req: any, res) => {
+const getSavedEvents: RequestHandler = async (req: any, res) => {
     try {
         const userId = req.user.id.toString()
         // TODO HIDE BASED ON OWNER
@@ -359,12 +409,52 @@ export const getSavedEvents: RequestHandler = async (req: any, res) => {
             { $sort: { createdAt: -1 } },
             {
                 $addFields: {
-                    saved: {
-                        $in: [userId, { $map: { input: "$saves", as: "saved", in: { $toString: "$$saved" } } }]
-                    }
+                    saved: { $in: [userId, { $map: { input: "$saves", as: "saved", in: { $toString: "$$saved" } } }] },
+                    registered: { $in: [userId, { $map: { input: "$attendees", as: "registered", in: { $toString: "$$registered" } } }] },
                 }
             },
-            { $addFields: { saves: { $size: '$saves' } } },
+            { $addFields: { saves: { $size: '$saves' }, attendees: { $size: '$attendees' } } },
+            { $addFields: { id: "$_id" } },
+            { $unset: ["_id", "__v"] }
+        ]);
+        await EventModel.populate(events, [
+            // { path: 'saves', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
+            { path: 'business' },
+        ]);
+        const data = paginateData(req.query, events, 'events')
+
+        return constructResponse({
+            res,
+            data,
+            code: 200,
+            message: AppConfig.STRINGS.Success,
+            apiObject: AppConfig.API_OBJECTS.Event
+        })
+    } catch (error) {
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Event
+        })
+    }
+}
+
+const getRegisteredEvents: RequestHandler = async (req: any, res) => {
+    try {
+        const userId = req.user.id.toString()
+        // TODO HIDE BASED ON OWNER
+        const events = await EventModel.aggregate([
+            { $match: { attendees: req.user._id } },
+            { $sort: { createdAt: -1 } },
+            {
+                $addFields: {
+                    saved: { $in: [userId, { $map: { input: "$saves", as: "saved", in: { $toString: "$$saved" } } }] },
+                    registered: { $in: [userId, { $map: { input: "$attendees", as: "registered", in: { $toString: "$$registered" } } }] },
+                }
+            },
+            { $addFields: { saves: { $size: '$saves' }, attendees: { $size: '$attendees' } } },
             { $addFields: { id: "$_id" } },
             { $unset: ["_id", "__v"] }
         ]);
@@ -401,5 +491,7 @@ export default {
     getEvents,
     getEvent,
     getMyEvents,
-    getSavedEvents
+    getSavedEvents,
+    getRegisteredEvents,
+    registerToEvent
 }

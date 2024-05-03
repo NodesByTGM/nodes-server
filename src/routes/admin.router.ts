@@ -1,14 +1,17 @@
 import { Router } from 'express';
 import { adminControllers } from '../controllers';
-import { authenticateAdmin, authenticateSuperAdmin } from '../middlewares';
+import { AuthMiddlewares } from '../middlewares';
 
 const router = Router();
 
-router.get('/users', authenticateAdmin, adminControllers.getAllUsers);
-router.get('/users/:id', authenticateAdmin, adminControllers.getUserProfile);
-router.delete('/users/:id', authenticateAdmin, adminControllers.deleteUser);
-router.get('/members', authenticateAdmin, adminControllers.getAllMembers);
-router.get('/members/:id', authenticateAdmin, adminControllers.getMemberProfile);
-router.get('/subscriptions', authenticateSuperAdmin, adminControllers.getSubscriptions);
+
+router.get('/users', AuthMiddlewares.isAdmin, adminControllers.getAllUsers);
+router.get('/users/:id', AuthMiddlewares.isAdmin, adminControllers.getUserProfile);
+router.delete('/users/:id', AuthMiddlewares.isAdmin, adminControllers.deleteUser);
+router.get('/members', AuthMiddlewares.isAdmin, adminControllers.getAllMembers);
+router.get('/members/:id', AuthMiddlewares.isAdmin, adminControllers.getMemberProfile);
+router.get('/subscriptions', AuthMiddlewares.isSuperAdmin, adminControllers.getSubscriptions);
+router.post('/verify-business/:id', AuthMiddlewares.isAdmin, adminControllers.verifyBusiness);
+router.post('/send-email-to-users', AuthMiddlewares.isSuperAdmin, adminControllers.sendEmailToUsers);
 
 export default router;

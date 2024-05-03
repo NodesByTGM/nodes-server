@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import { AccountModel, BusinessModel, TalentDetailsModel } from "../mongodb/models";
-import { constructResponse, uploadMedia } from "../services";
+import { EmailService, constructResponse, uploadMedia } from "../services";
 import { AppConfig } from "../utilities/config";
 import { talentUpgradeSchema } from "../validations/upgrades.validations";
 
@@ -195,6 +195,16 @@ const verifyBusiness: RequestHandler = async (req: any, res) => {
         business.linkedIn = linkedIn || business.linkedIn
         await business.save()
         const account = await AccountModel.findById(user.id)
+
+        EmailService.sendHTMLEmail({
+            email: req.user.email,
+            subject: 'Business Verification',
+            params: {
+                subject: 'Business Verification',
+                message: 'We have recieved your details and its currently in review, we would let you know when its done.',
+            },
+            emailType: 'general'
+        })
         return constructResponse({
             res,
             code: 200,
@@ -202,6 +212,7 @@ const verifyBusiness: RequestHandler = async (req: any, res) => {
             message: AppConfig.STRINGS.DetailsSentForVerification,
             apiObject: AppConfig.API_OBJECTS.Account
         })
+
     } catch (error) {
         return constructResponse({
             res,

@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { ChargeSuccessEventData, PaystackWebhookEvent, SubscriptionDisabledEventData } from '../interfaces/paystack';
 import { AccountModel, SubscriptionModel, TransactionModel } from '../mongodb/models';
-import { constructResponse, initiateSubscription, sendEmail, verifyTxnByReference } from '../services';
+import { EmailService, constructResponse, initiateSubscription, verifyTxnByReference } from '../services';
 import { sendHTMLEmail } from '../services/email.service';
 import { BUSINESS_PLAN_CODES, PRO_PLAN_CODES, getBusiness } from '../services/transaction.service';
 import { addYearsToDate, formatDate, paginateData, verifyTransaction } from '../utilities/common';
@@ -150,7 +150,7 @@ const paystackWebhook: RequestHandler = async (req, res) => {
         if (txnn) {
             return res.sendStatus(200)
         }
-        sendEmail(`${process.env.EMAIL_USER}`, 'Nodes: Webhook Event from paystack', JSON.stringify(eventData))
+        EmailService.sendEmail(`${process.env.EMAIL_USER}`, 'Nodes: Webhook Event from paystack', JSON.stringify(eventData))
         const user = await AccountModel.findOne({ email: data.customer.email })
         if (user) {
             const txn = await TransactionModel.create({
@@ -210,6 +210,11 @@ const paystackWebhook: RequestHandler = async (req, res) => {
                 emailType: "subscription"
             })
         }
+    }
+
+    if (eventData.event === 'subscription.create') {
+        EmailService.sendEmail(`${process.env.EMAIL_USER}`, 'Nodes: Webhook Event from paystack', JSON.stringify(eventData))
+        return res.sendStatus(200)
     }
 
     if (eventData.event === 'subscription.disable') {

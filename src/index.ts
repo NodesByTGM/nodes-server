@@ -21,7 +21,8 @@ import {
   socialAuthRouter,
   adminAuthRouter,
   adminRouter,
-  cmsRouter
+  cmsRouter,
+  notificationRouter
 } from "./routes";
 import swaggerSpec from "./docs";
 import passport from "passport";
@@ -119,10 +120,11 @@ app.use('/api/v1/admin', adminRouter);
 // Define CMS routes
 app.use('/api/v1/cms', cmsRouter);
 
+// Define Notifications routes
+app.use('/api/v1/notifications', notificationRouter);
+
 // Define thirdParty routes
 app.use('/api/v1', thirdPartyRouter);
-
-
 
 
 // Define thirdparty routes

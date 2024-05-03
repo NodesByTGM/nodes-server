@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import { RequestHandler } from 'express';
 import Joi from 'joi';
 import { AdminModel, OTPModel, TokenModel } from '../mongodb/models';
-import { constructResponse, generateAccessToken, generateRefreshToken, sendEmail } from '../services';
+import { EmailService, constructResponse, generateAccessToken, generateRefreshToken } from '../services';
 import { verifyRefreshToken } from '../services/auth.service';
 import { generateOTP, generateRandomPassword } from '../utilities/common';
 import { AppConfig, BASE_ADMIN_APP_URL, BASE_APP_URL } from '../utilities/config';
@@ -58,7 +58,7 @@ const inviteAdmin: RequestHandler = async (req, res) => {
         });
         await user.save();
 
-        await sendEmail(
+        EmailService.sendEmail(
             user.email,
             'Admin Invitation',
             `Hello, you've been invited as a member to the Nodes Team, please log into ${BASE_ADMIN_APP_URL} using the following details:\n\n
@@ -237,7 +237,7 @@ const sendOtp: RequestHandler = async (req: any, res) => {
             email,
             password: otp
         })
-        sendEmail(email,
+        EmailService.sendEmail(email,
             'Email Verification',
             `Please use this OTP For your verification: ${created.password}. Please note this is only valid for 1 hour.`
         )
@@ -377,7 +377,7 @@ const forgotPassword: RequestHandler = async (req, res) => {
         // console.log(link);
 
         // TODO: Customize email sent
-        sendEmail(user.email, AppConfig.STRINGS.PasswordLinkEmailTitle, link);
+        EmailService.sendEmail(user.email, AppConfig.STRINGS.PasswordLinkEmailTitle, link);
 
         return constructResponse({
             res,

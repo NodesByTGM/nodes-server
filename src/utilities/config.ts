@@ -67,7 +67,8 @@ const API_OBJECTS = {
     Member: 'Member',
     OTP: 'OTP',
     Base: 'Base',
-    Content:'Content'
+    Content: 'Content',
+    Notification: 'Notification'
 }
 
 
@@ -81,6 +82,7 @@ export const AppConfig = {
         BadRequestError: 'Bad Request Error.',
         NotFoundError: 'Resource Not found.',
         InternalServerError: 'Internal Server Error.',
+        NotBusiness: 'You need to switch to a business acount to do this.',
         ServiceUnavailable: 'Service Unavailable.',
         ResourceNotFound: 'Unable to process. Resource not found.',
         UnauthorizedAccess: 'Unable to process. You\'re not the owner of this resource.',
@@ -183,6 +185,17 @@ export const AppConfig = {
         WE: 'WE', // Wallet to External
         EW: 'EW', // External to Wallet
         EE: 'EE' // External to Wallet
+    },
+    NOTIFICATION_TYPES: {
+        JOB_APPLICATION: 'JOB_APPLICATION',
+        EVENT_REGISTRATION: 'EVENT_REGISTRATION',
+        BUSINESS_VERIFIED: 'BUSINESS_VERIFIED',
+        POST_ACTIVITY: 'POST_ACTIVITY'
+    },
+    NOTIFICATION_MESSAGES: {
+        JOB_APPLICATION: '',
+        BUSINESS_VERIFIED: '',
+        POST_ACTIVITY: ''
     },
     PLANS: {
         Pro: { name: 'Pro Plan', planCode: `${process.env.PRO_PLAN}` },

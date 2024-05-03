@@ -22,3 +22,4 @@ export {
 
 export { default as JobsService } from './jobs.service'
 export { default as EventsService } from './events.service'
+export { default as EmailService } from './email.service'

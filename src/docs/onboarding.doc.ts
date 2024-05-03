@@ -98,7 +98,7 @@ export const onboardingSwagger = {
         },
         '/api/v1/onboarding/verify-business': {
             post: {
-                summary: 'Verify Business',
+                summary: 'Apply for Business Verification',
                 tags: ['Onboarding'],
                 security: [{ bearerAuth: [] }],
                 requestBody: {
