@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express';
-import { ChargeSuccessEventData, PaystackWebhookEvent, SubscriptionDisabledEventData } from '../interfaces/paystack';
+import { ChargeSuccessEventData, PaystackWebhookEvent, SubscriptionCreatedData, SubscriptionDisabledEventData } from '../interfaces/paystack';
 import { AccountModel, SubscriptionModel, TransactionModel } from '../mongodb/models';
 import { EmailService, constructResponse, initiateSubscription, verifyTxnByReference } from '../services';
 import { sendHTMLEmail } from '../services/email.service';
@@ -213,7 +213,8 @@ const paystackWebhook: RequestHandler = async (req, res) => {
     }
 
     if (eventData.event === 'subscription.create') {
-        EmailService.sendEmail(`${process.env.EMAIL_USER}`, 'Nodes: Webhook Event from paystack', JSON.stringify(eventData))
+        EmailService.sendEmail(`elijah@thegridmanagement.com`, 'Nodes: Webhook Event from paystack', JSON.stringify(eventData))
+        const data: SubscriptionCreatedData = eventData.data
         return res.sendStatus(200)
     }
 
@@ -231,7 +232,6 @@ const paystackWebhook: RequestHandler = async (req, res) => {
 
     return res.sendStatus(200);
     // TODO: should it send back a fail to paystack when the system itself fails and not because it didnt recieve somethnig right?
-    // Change the paystack pop up flow
 }
 
 export default {

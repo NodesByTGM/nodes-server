@@ -433,7 +433,6 @@ export const jobSchema = {
         business: businessSchema,
         createdAt: { type: 'string', format: 'date-time' },
         updatedAt: { type: 'string', format: 'date-time' },
-        // TODO
         applicants: {
             anyOf: [
                 { type: 'null' },

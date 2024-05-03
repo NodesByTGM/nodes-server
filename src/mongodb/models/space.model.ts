@@ -1,6 +1,4 @@
 import mongoose, { Schema } from 'mongoose';
-import { fileSchema } from './file.model';
-import { mongooseLeanId } from './plugin';
 import { AppConfig } from '../../utilities/config';
 
 // export interface ISpace extends Document {
@@ -32,7 +30,7 @@ MemberSchema.plugin(require('mongoose-autopopulate'));
 const SpaceSchema = new Schema({
     name: { type: String, required: true },
     description: { type: String, required: true },
-    thumbnail: { type: fileSchema, default: null },
+    thumbnail: { type: Schema.Types.ObjectId, ref: 'File', autopopulate: true },
     rules: { type: [String], required: false, default: [] },
     members: { type: [MemberSchema], default: [] },
     // followers: { type: [Schema.Types.ObjectId], ref: 'Account', default: [] },

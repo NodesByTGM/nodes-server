@@ -1,5 +1,4 @@
 import mongoose, { Schema } from 'mongoose';
-import { fileSchema } from './file.model';
 
 const collaborator = new mongoose.Schema({
     name: {
@@ -16,8 +15,8 @@ const ProjectSchema = new mongoose.Schema({
     name: { type: String, required: true },
     description: { type: String, required: true },
     projectURL: { type: String, required: true },
-    thumbnail: fileSchema,
-    images:[fileSchema],
+    thumbnail: { type: Schema.Types.ObjectId, ref: 'File', autopopulate: true },
+    images: { type: [Schema.Types.ObjectId], ref: 'File', autopopulate: true },
     collaborators: [collaborator],
     owner: {
         type: Schema.Types.ObjectId,

@@ -1,9 +1,10 @@
 import { Schema, model } from 'mongoose';
 
 export const SubscriptionSchema = new Schema({
+    apiId: { type: String },
     plan: { type: String, required: true },
     active: { type: Boolean, required: true, default: false },
-    // status: { type: Boolean, required: true, default: false }, in case of refunds
+    status: { type: String, default: '' },
     paidAt: { type: Date, required: false },
     account: {
         type: Schema.Types.ObjectId,

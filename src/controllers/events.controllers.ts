@@ -321,9 +321,8 @@ const getEvent: RequestHandler = async (req: any, res) => {
 const getEvents: RequestHandler = async (req: any, res) => {
     try {
         const userId = req.user.id.toString()
-        // TODO HIDE BASED ON OWNER
+
         const events = await EventModel.aggregate([
-            // { $match: { saves: req.user._id } },
             { $sort: { createdAt: -1 } },
             {
                 $addFields: {
@@ -336,7 +335,6 @@ const getEvents: RequestHandler = async (req: any, res) => {
             { $unset: ["_id", "__v"] }
         ]);
         await EventModel.populate(events, [
-            // { path: 'saves', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
             { path: 'business' },
         ]);
         const data = paginateData(req.query, events, 'events')
@@ -363,7 +361,6 @@ const getMyEvents: RequestHandler = async (req: any, res) => {
     try {
         const business = req.user.business
         const userId = req.user.id.toString()
-        // TODO HIDE BASED ON OWNER
         const events = await EventModel.aggregate([
             { $match: { business: business._id } },
             { $sort: { createdAt: -1 } },
@@ -403,7 +400,6 @@ const getMyEvents: RequestHandler = async (req: any, res) => {
 const getSavedEvents: RequestHandler = async (req: any, res) => {
     try {
         const userId = req.user.id.toString()
-        // TODO HIDE BASED ON OWNER
         const events = await EventModel.aggregate([
             { $match: { saves: req.user._id } },
             { $sort: { createdAt: -1 } },
@@ -444,7 +440,6 @@ const getSavedEvents: RequestHandler = async (req: any, res) => {
 const getRegisteredEvents: RequestHandler = async (req: any, res) => {
     try {
         const userId = req.user.id.toString()
-        // TODO HIDE BASED ON OWNER
         const events = await EventModel.aggregate([
             { $match: { attendees: req.user._id } },
             { $sort: { createdAt: -1 } },

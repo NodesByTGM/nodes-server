@@ -1,6 +1,7 @@
 import { v2 as cloudinary } from 'cloudinary';
 import dotenv from "dotenv";
 import { isURL, isValid } from '../utilities/common';
+import { FileModel } from '../mongodb/models';
 
 dotenv.config();
 cloudinary.config({
@@ -14,7 +15,11 @@ cloudinary.config({
 export const uploadMedia = async (file: any) => {
   try {
     if (typeof (file) === 'object') {
-      return file
+      const _file: any = await FileModel.findOne({ id: file.id })
+      if (_file) {
+        return _file
+      }
+      return undefined
     }
     if (!file) {
       return undefined
@@ -23,10 +28,11 @@ export const uploadMedia = async (file: any) => {
       return undefined
     }
     const uploaded = await cloudinary.uploader.upload(file);
-    return {
+    const _file = await FileModel.create({
       id: uploaded.public_id,
       url: uploaded.secure_url
-    }
+    })
+    return _file
   } catch (error: any) {
     throw new Error(error);
   }
@@ -58,4 +64,11 @@ export const uploadMultipleMedia = async (files: string[]) => {
     }
   }
   return links.filter(x => isValid(x))
+}
+
+
+export default {
+  uploadMedia,
+  deleteMedia,
+  uploadMultipleMedia
 }

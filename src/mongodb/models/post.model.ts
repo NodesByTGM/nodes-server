@@ -1,10 +1,9 @@
 import mongoose, { Schema } from 'mongoose';
 import { AppConfig } from '../../utilities/config';
-import { fileSchema } from './file.model';
 
 const PostSchema = new Schema({
     body: { type: String, required: true },
-    attachments: { type: [fileSchema], default: [] },
+    attachments: { type: [Schema.Types.ObjectId], ref: 'File', autopopulate: true },
     hashtags: { type: [String], required: false, default: [] },
     foreignKey: { type: String },
     type: { type: String, enum: Object.values(AppConfig.POST_TYPES), default: AppConfig.POST_TYPES.Community },

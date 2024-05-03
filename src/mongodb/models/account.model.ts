@@ -1,6 +1,5 @@
 import mongoose, { Types } from 'mongoose';
 import { AppConfig } from '../../utilities/config';
-import { fileSchema } from './file.model';
 
 export const AccountSchema = new mongoose.Schema({
     name: { type: String, required: true },
@@ -9,7 +8,7 @@ export const AccountSchema = new mongoose.Schema({
     dob: { type: Date, required: true, },
     password: { type: String, required: true, },
     verified: { type: Boolean, required: false, default: false },
-    avatar: { type: fileSchema, required: false, default: null },
+    avatar: { type: Types.ObjectId, ref: 'File', autopopulate: true },
 
     skills: { type: [String], required: false, default: [] },
     location: { type: String, required: false, default: '' },

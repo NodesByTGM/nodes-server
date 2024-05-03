@@ -1,16 +1,36 @@
 import mongoose from "mongoose";
+import { CloudinaryService } from "../../services";
 
-export const fileSchema = new mongoose.Schema({
-    id: { type: String, required: false, default:'' },
-    url: { type: String, required: false, default:'' }
-}, { _id: false })
+interface IFile extends Document {
+    id: string;
+    url: string;
+}
 
-// fileSchema.pre('save', async function (next) {
-//     if (!this.id) {
-//         this.id = ''
-//     }
-//     if (!this.url) {
-//         this.url = ''
-//     }
-//     next();
-// });
+
+export const FileSchema = new mongoose.Schema({
+    id: { type: String, required: false, default: '' },
+    url: { type: String, required: false, default: '' }
+}, {
+    id: false,
+    timestamps: true,
+    toJSON: {
+        transform: (_: any, rec: Record<string, any>) => {
+            const { __v, ...object } = rec;
+
+            return object;
+        }
+    }
+})
+
+FileSchema.pre('deleteOne', async function (next) {
+    const doc: any = this;
+    try {
+        if (doc?.id) {
+            await CloudinaryService.deleteMedia(doc.id)
+        }
+    } catch (error) { }
+    next();
+});
+
+const FileModel = mongoose.model('File', FileSchema);
+export default FileModel

@@ -1,5 +1,4 @@
 import mongoose, { Schema } from 'mongoose';
-import { fileSchema } from './file.model';
 import { mongooseLeanId } from './plugin';
 
 export const BusinessSchema = new mongoose.Schema({
@@ -12,8 +11,8 @@ export const BusinessSchema = new mongoose.Schema({
     bio: { type: String, default: '' },
     yoe: { type: Date, default: Date.now() },
     verified: { type: Boolean, default: false },
-    logo: { type: fileSchema, default: null },
-    cac: { type: fileSchema, default: null },
+    cac: { type: Schema.Types.ObjectId, ref: 'File', autopopulate: true },
+    logo: { type: Schema.Types.ObjectId, ref: 'File', autopopulate: true },
     verifiedBy: {
         type: Schema.Types.ObjectId,
         ref: 'Admin',

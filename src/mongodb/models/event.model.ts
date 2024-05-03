@@ -1,5 +1,4 @@
 import mongoose, { Schema } from 'mongoose';
-import { fileSchema } from './file.model';
 import { mongooseLeanId } from './plugin';
 
 const EventSchema = new mongoose.Schema({
@@ -8,7 +7,7 @@ const EventSchema = new mongoose.Schema({
     location: { type: String, required: true },
     dateTime: { type: Date, required: true },
     paymentType: { type: String, required: false, enum: ['free', 'paid'], default: 'free' },
-    thumbnail: { type: fileSchema, required: false, default: null },
+    thumbnail: { type: Schema.Types.ObjectId, ref: 'File', autopopulate: true },
     saves: {
         type: [Schema.Types.ObjectId],
         ref: 'Account',

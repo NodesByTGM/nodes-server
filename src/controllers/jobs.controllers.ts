@@ -309,7 +309,6 @@ const getJob: RequestHandler = async (req: any, res) => {
             { path: 'business' },
         ]);
 
-        // TODO HIDE BASED ON OWNER
         const data = {
             ...job?.toJSON(),
             applied: job.applicants.map(x => x.id).includes(req.user.id),
@@ -404,7 +403,6 @@ const getJobs: RequestHandler = async (req: any, res) => {
             }
         }
         const userId = req.user.id.toString()
-        // TODO HIDE BASED ON OWNER
         const jobs = await JobModel.aggregate([
             { $match: query },
             { $match: searchQuery },
