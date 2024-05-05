@@ -8,7 +8,7 @@ interface IFile extends Document {
 
 
 export const FileSchema = new mongoose.Schema({
-    id: { type: String, required: false, default: '' },
+    id: { type: String, required: false, default: '', unique:true },
     url: { type: String, required: false, default: '' }
 }, {
     id: false,

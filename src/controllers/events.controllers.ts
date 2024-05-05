@@ -86,6 +86,7 @@ const updateEvent: RequestHandler = async (req: any, res) => {
         await EventModel.populate(event, [
             { path: 'saves', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
             { path: 'business' },
+            { path: 'thumbnail' },
         ]);
         return constructResponse({
             res,
@@ -336,6 +337,7 @@ const getEvents: RequestHandler = async (req: any, res) => {
         ]);
         await EventModel.populate(events, [
             { path: 'business' },
+            { path: 'thumbnail' },
         ]);
         const data = paginateData(req.query, events, 'events')
 
@@ -376,6 +378,7 @@ const getMyEvents: RequestHandler = async (req: any, res) => {
         await EventModel.populate(events, [
             { path: 'saves', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
             { path: 'business' },
+            { path: 'thumbnail' },
         ]);
         const data = paginateData(req.query, events, 'events')
 
@@ -416,6 +419,7 @@ const getSavedEvents: RequestHandler = async (req: any, res) => {
         await EventModel.populate(events, [
             // { path: 'saves', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
             { path: 'business' },
+            { path: 'thumbnail' },
         ]);
         const data = paginateData(req.query, events, 'events')
 
@@ -456,6 +460,7 @@ const getRegisteredEvents: RequestHandler = async (req: any, res) => {
         await EventModel.populate(events, [
             // { path: 'saves', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
             { path: 'business' },
+            { path: 'thumbnail' },
         ]);
         const data = paginateData(req.query, events, 'events')
 

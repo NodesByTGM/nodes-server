@@ -185,6 +185,7 @@ const getAllContents: RequestHandler = async (req: any, res) => {
 
         await ContentModel.populate(contents, [
             { path: 'author', select: 'name avatar', options: { autopopulate: false } },
+            { path: 'thumbnail' },
         ])
 
         const data = paginateData(req.query, contents, 'contents')

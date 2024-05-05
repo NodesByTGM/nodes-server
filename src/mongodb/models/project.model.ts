@@ -34,7 +34,7 @@ const ProjectSchema = new mongoose.Schema({
         }
     }
 });
-// ProjectSchema.plugin(require('mongoose-autopopulate'));
+ProjectSchema.plugin(require('mongoose-autopopulate'));
 const ProjectModel = mongoose.model('Project', ProjectSchema);
 
 export default ProjectModel;

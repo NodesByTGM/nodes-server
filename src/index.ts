@@ -3,33 +3,34 @@ import cookieParser from "cookie-parser";
 import cors from 'cors';
 import dotenv from "dotenv";
 import express, { Express, json } from "express";
+import session from 'express-session';
+import passport from "passport";
 import swaggerUi from 'swagger-ui-express';
+import { default as pkg } from "../package.json";
+import swaggerSpec from "./docs";
 import connectDB from "./mongodb/connect";
+import { FileModel, PostModel, ProjectModel, SpaceModel } from "./mongodb/models";
 import {
-  authRouter,
-  onboardingRouter,
-  projectRouter,
-  uploadsRouter,
-  userRouter,
-  eventsRouter,
-  jobsRouter,
-  transactionsRouter,
-  communityRouter,
-  spacesRouter,
-  postsRouter,
-  thirdPartyRouter,
-  socialAuthRouter,
   adminAuthRouter,
   adminRouter,
+  authRouter,
   cmsRouter,
-  notificationRouter
+  communityRouter,
+  eventsRouter,
+  jobsRouter,
+  notificationRouter,
+  onboardingRouter,
+  postsRouter,
+  projectRouter,
+  socialAuthRouter,
+  spacesRouter,
+  thirdPartyRouter,
+  transactionsRouter,
+  uploadsRouter,
+  userRouter
 } from "./routes";
-import swaggerSpec from "./docs";
-import passport from "passport";
-import session from 'express-session'
 import { constructResponse } from "./services";
 import { AppConfig } from "./utilities/config";
-import { default as pkg } from "../package.json"
 
 dotenv.config();
 
@@ -140,10 +141,33 @@ app.get('/', (_, res) => constructResponse({
   apiObject: AppConfig.API_OBJECTS.Base,
   data: {
     version: pkg.version,
-    environment:process.env.NODE_ENV
+    environment: process.env.NODE_ENV
   }
-
 }));
+
+// app.get('/scripts', async (_, res) => {
+//   const users = await SpaceModel.find()
+//   const files = await FileModel.find().lean()
+//   const randomIndex = Math.floor(Math.random() * files.length);
+//   for (let user of users) {
+//     user.thumbnail = null
+//     await user.save()
+
+//   }
+//   await FileModel.deleteMany({ url: '' })
+//   return constructResponse({
+//     res,
+//     code: 200,
+//     message: 'Welcome to Nodes API',
+//     apiObject: AppConfig.API_OBJECTS.Base,
+//     data: {
+//       version: pkg.version,
+//       environment: process.env.NODE_ENV
+//     }
+//   })
+// });
+
+
 
 
 app.listen(port, () => {

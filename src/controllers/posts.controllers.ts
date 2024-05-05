@@ -34,6 +34,7 @@ const createPost: RequestHandler = async (req: any, res) => {
         });
         await PostModel.populate(data, [
             { path: 'author', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
+            { path: 'attachments' },
             { path: 'likes', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
             { path: 'comments', options: { autopopulate: false } },
         ]);
@@ -116,6 +117,7 @@ const getPosts: RequestHandler = async (req: any, res) => {
         // Manually populate the field
         await PostModel.populate(posts, [
             { path: 'author', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
+            { path: 'attachments' },
             { path: 'likes', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
             { path: 'comments', options: { autopopulate: false } },
         ]);
@@ -153,6 +155,7 @@ const getPost: RequestHandler = async (req: any, res) => {
         }
         await PostModel.populate(post, [
             { path: 'author', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
+            { path: 'attachments' },
             { path: 'likes', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
             { path: 'comments', options: { autopopulate: false } },
         ]);
@@ -217,6 +220,7 @@ const getMyPosts: RequestHandler = async (req: any, res) => {
         // Manually populate the field
         await PostModel.populate(posts, [
             { path: 'author', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
+            { path: 'attachments' },
             { path: 'likes', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
             { path: 'comments', select: '', options: { autopopulate: false } },
         ]);
@@ -262,6 +266,7 @@ const likePost: RequestHandler = async (req: any, res) => {
         await post.save()
         await PostModel.populate(post, [
             { path: 'author', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
+            { path: 'attachments' },
             { path: 'likes', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
             { path: 'comments', options: { autopopulate: false } },
         ]);
@@ -316,6 +321,7 @@ const unlikePost: RequestHandler = async (req: any, res) => {
 
         await PostModel.populate(post, [
             { path: 'author', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
+            { path: 'attachments' },
             { path: 'likes', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
             { path: 'comments', options: { autopopulate: false } },
         ]);

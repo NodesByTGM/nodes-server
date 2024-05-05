@@ -21,6 +21,7 @@ export const getUserEvents = async (user: any, reqUser: any) => {
     await EventModel.populate(events, [
         { path: 'saves', select: 'id name email type headline bio avatar', options: { autopopulate: false } },
         { path: 'business' },
+        { path: 'thumbnail' },
     ]);
 
     return events
