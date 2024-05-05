@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/NodesByTGM/nodes-server/compare/v1.1.0...v1.1.1) (2024-05-05)
+
+
+### Bug Fixes
+
+* file system ([f2a408c](https://github.com/NodesByTGM/nodes-server/commit/f2a408cc8a889a9e5c3b8619cf51011e8c6e3b94))
+
 ## [1.1.0](https://github.com/NodesByTGM/nodes-server/compare/v1.0.4...v1.1.0) (2024-05-03)
 
 
