@@ -1,6 +1,6 @@
 import { AxiosResponse } from "axios"
 import dotenv from "dotenv"
-import { InitiateTransactionResult, PaystackVerifiedTransaction } from "../interfaces/paystack"
+import { InitiateTransactionResult, PaystackVerifiedTransaction, SubscriptionRecievedBody } from "../interfaces/paystack"
 import { AccountModel, BusinessModel, SubscriptionModel, TransactionModel } from "../mongodb/models"
 import { mainClient } from "../utilities/axios.client"
 import { addYearsToDate, formatDate } from "../utilities/common"
@@ -76,13 +76,15 @@ export const createTransaction = async (reqData: PaystackVerifiedTransaction) =>
 
             let sub = await SubscriptionModel.findOne({ account: user.id })
             if (sub) {
-                sub.plan = data.plan_object.name
+                sub.planCode = data.plan_object.plan_code
                 sub.active = true
                 sub.paidAt = new Date(data.paidAt)
                 sub.account = user.id
                 await sub.save()
             } else {
                 sub = await SubscriptionModel.create({
+                    customerId: data.customer.id,
+                    customerCode: data.customer.customer_code,
                     plan: data.plan_object.name,
                     active: true,
                     paidAt: data.paidAt,
@@ -91,7 +93,9 @@ export const createTransaction = async (reqData: PaystackVerifiedTransaction) =>
             }
 
             txn.subscription = sub.id
-            user.subscription = sub.id
+
+            await fetchSubscriptions()
+
             if (BUSINESS_PLAN_CODES.includes(data.plan_object.plan_code)) {
                 const business = await getBusiness(user, data.plan_object.name)
                 if (business) {
@@ -157,6 +161,28 @@ export const initiateSubscription = async ({
     }
 }
 
+export const cancelSubscription = async ({ code, token }: {
+    code?: string,
+    token?: string,
+}) => {
+    try {
+        const result = await mainClient.post('https://api.paystack.co/subscription/disable', {
+            code, token,
+        }, { headers: { Authorization: `Bearer ${process.env.PAYSTACK_API_SECRET_KEY}` } })
+        if (result.status === 200) {
+            const data = result.data;
+            if (data.status) {
+                return data.data
+                // TODO handle the db subscription part
+            }
+        }
+        return null
+    } catch (error) {
+        throw error
+        // return ""
+    }
+}
+
 export const checkTxnExists = async (reference: string) => {
     const txn = await TransactionModel.findOne({ reference })
     if (txn) {
@@ -175,4 +201,51 @@ export const getBusiness = async (user: any, planName: string) => {
         business = await BusinessModel.create({ account: user.id })
     }
     return business
+}
+
+export const fetchSubscriptions = async (customer?: number) => {
+    const url = `https://api.paystack.co/subscription?customer=${customer}`
+    const headers = {
+        Authorization: `Bearer ${process.env.PAYSTACK_API_SECRET_KEY}`,
+    }
+    try {
+        const req = await mainClient.get(url, { headers })
+        if (req.status === 200) {
+            const reqData: SubscriptionRecievedBody = req.data;
+            if (reqData.status) {
+                // await createTransaction(reqData)
+                const subscriptions = reqData.data
+                const firstSubscription = subscriptions?.[0]
+                if (firstSubscription) {
+                    const user = await AccountModel.findOne({ email: firstSubscription?.customer.email })
+                    if (user) {
+                        let sub = await SubscriptionModel.findOne({ account: user.id })
+                        if (sub) {
+                            sub.apiId = firstSubscription.id
+                            sub.apiCode = firstSubscription.subscription_code
+                            sub.status = firstSubscription.status
+                            sub.token = firstSubscription.email_token
+                            await sub.save()
+                        }
+                    }
+                }
+
+                return { status: reqData.status }
+            }
+            return { status: false }
+        }
+    } catch (error) {
+        // console.log(error)
+        return { status: false }
+    }
+}
+
+export default {
+    verifyTxnByReference,
+    createTransaction,
+    initiateSubscription,
+    cancelSubscription,
+    checkTxnExists,
+    getBusiness,
+    fetchSubscriptions
 }

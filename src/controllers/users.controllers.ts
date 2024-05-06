@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Types } from 'mongoose';
-import { AccountModel, BusinessModel, ConnectionRequestModel, ProjectModel } from '../mongodb/models';
+import { AccountModel, BusinessModel, ConnectionRequestModel, ProjectModel, SubscriptionModel } from '../mongodb/models';
 import { EventsService, JobsService, constructResponse, uploadMedia } from '../services';
 import { paginateData } from '../utilities/common';
 import { AppConfig } from '../utilities/config';
@@ -172,8 +172,10 @@ const getUserProfile: RequestHandler = async (req: any, res) => {
             { path: 'avatar' },
         ]);
 
-        const { subscription, connections, firebaseToken, ...rest } = user.toJSON()
-        const data: any = { ...rest, connections, requested: false, connected: false, projects: [], events: [], jobs: [] }
+        const subscription = await SubscriptionModel.findOne({ account: user.id })
+
+        const { connections, firebaseToken, ...rest } = user.toJSON()
+        const data: any = { ...rest, connections, subscription, requested: false, connected: false, projects: [], events: [], jobs: [] }
         if (connectionRequests.filter(x => x.recipient.toString() === user.id.toString()).length > 0) {
             data.requested = true
         }
@@ -407,9 +409,11 @@ const requestConnection: RequestHandler = async (req: any, res) => {
             { path: 'connections', select: 'id name email type headline bio avatar' },
             { path: 'avatar' },
         ]);
+        
+        const subscription = await SubscriptionModel.findOne({ account: recipient.id })
 
-        const { subscription, connections, firebaseToken, ...rest } = recipient.toJSON()
-        const data = { recipient: { ...rest, connections, requested: false, connected: false }, request }
+        const { connections, firebaseToken, ...rest } = recipient.toJSON()
+        const data = { recipient: { ...rest, connections, subscription, requested: false, connected: false }, request }
         data.recipient.requested = true
         data.recipient.connected = false
         return constructResponse({
@@ -480,7 +484,7 @@ const acceptRequest: RequestHandler = async (req: any, res) => {
             { path: 'avatar' },
         ]);
 
-        const { subscription, connections, firebaseToken, ...rest } = sender.toJSON()
+        const { connections, firebaseToken, ...rest } = sender.toJSON()
         const data = { sender: { ...rest, connections, requested: false, connected: false }, request: null }
         data.sender.requested = false
         data.sender.connected = true

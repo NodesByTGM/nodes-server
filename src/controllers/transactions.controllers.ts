@@ -1,9 +1,9 @@
 import { RequestHandler } from 'express';
 import { ChargeSuccessEventData, PaystackWebhookEvent, SubscriptionCreatedData, SubscriptionDisabledEventData } from '../interfaces/paystack';
 import { AccountModel, SubscriptionModel, TransactionModel } from '../mongodb/models';
-import { EmailService, constructResponse, initiateSubscription, verifyTxnByReference } from '../services';
+import { EmailService, TransactionService, constructResponse, initiateSubscription, verifyTxnByReference } from '../services';
 import { sendHTMLEmail } from '../services/email.service';
-import { BUSINESS_PLAN_CODES, PRO_PLAN_CODES, getBusiness } from '../services/transaction.service';
+import { BUSINESS_PLAN_CODES, PRO_PLAN_CODES, fetchSubscriptions, getBusiness } from '../services/transaction.service';
 import { addYearsToDate, formatDate, paginateData, verifyTransaction } from '../utilities/common';
 import { AppConfig } from '../utilities/config';
 
@@ -166,7 +166,7 @@ const paystackWebhook: RequestHandler = async (req, res) => {
             })
             let sub = await SubscriptionModel.findOne({ account: user.id })
             if (sub) {
-                sub.plan = data.plan.name
+                sub.planCode = data.plan.plan_code
                 sub.active = true
                 sub.paidAt = new Date(data.paidAt)
                 sub.account = user.id
@@ -174,7 +174,9 @@ const paystackWebhook: RequestHandler = async (req, res) => {
                 return res.sendStatus(200)
             } else {
                 sub = await SubscriptionModel.create({
-                    plan: data.plan.name,
+                    customerId: data.customer.id,
+                    customerCode: data.customer.customer_code,
+                    planCode: data.plan.plan_code,
                     active: true,
                     paidAt: data.paidAt,
                     account: user.id,
@@ -182,7 +184,8 @@ const paystackWebhook: RequestHandler = async (req, res) => {
             }
 
             txn.subscription = sub.id
-            user.subscription = sub.id
+            await fetchSubscriptions()
+
 
             if (BUSINESS_PLAN_CODES.includes(data.plan.plan_code)) {
                 const business = await getBusiness(user, data.plan.name)
@@ -222,7 +225,7 @@ const paystackWebhook: RequestHandler = async (req, res) => {
         const data: SubscriptionDisabledEventData = eventData.data
         const user = await AccountModel.findOne({ email: data.customer.email })
         if (user) {
-            const sub = await SubscriptionModel.findById(user.subscription)
+            const sub = await SubscriptionModel.findOne({ account: user.id })
             if (sub) {
                 sub.active = false
                 await sub.save()
@@ -234,12 +237,52 @@ const paystackWebhook: RequestHandler = async (req, res) => {
     // TODO: should it send back a fail to paystack when the system itself fails and not because it didnt recieve somethnig right?
 }
 
+
+const cancelSubscription: RequestHandler = async (req: any, res) => {
+    try {
+        const subscription = await SubscriptionModel.findOne({ account: req.user.id })
+        if (!subscription) {
+            return constructResponse({
+                res,
+                code: 400,
+                message: 'You\'re not on an active subscription',
+                apiObject: AppConfig.API_OBJECTS.Transaction
+            })
+        }
+        const data = await TransactionService.cancelSubscription({
+            code: subscription.planCode,
+            token: subscription.token
+        })
+
+        if (data) {
+            return constructResponse({
+                res,
+                code: 200,
+                data,
+                message: AppConfig.STRINGS.Success,
+                apiObject: AppConfig.API_OBJECTS.Transaction
+            })
+        }
+
+    } catch (error) {
+
+        return constructResponse({
+            res,
+            code: 500,
+            data: error,
+            message: AppConfig.ERROR_MESSAGES.InternalServerError,
+            apiObject: AppConfig.API_OBJECTS.Transaction
+        })
+    }
+}
+
 export default {
     verifyPaystackTransaction,
     verifyInternalTransaction,
     paystackWebhook,
     subscribeToPackage,
     getUserTransactions,
+    cancelSubscription,
 }
 
 

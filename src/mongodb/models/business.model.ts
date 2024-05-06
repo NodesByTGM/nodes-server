@@ -35,7 +35,7 @@ export const BusinessSchema = new mongoose.Schema({
 });
 
 BusinessSchema.plugin(mongooseLeanId);
-
+BusinessSchema.plugin(require('mongoose-autopopulate'));
 const BusinessModel = mongoose.model('Business', BusinessSchema);
 
 export default BusinessModel;

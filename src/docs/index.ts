@@ -49,6 +49,10 @@ const options = {
                 description: "Dev server"
             },
             {
+                url: "https://api.nodesafrica.com/",
+                description: "Prod server"
+            },
+            {
                 url: "http://localhost:3001/",
                 description: "Local server"
             },

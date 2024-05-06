@@ -261,5 +261,83 @@ export interface SubscriptionCreatedData {
     created_at: string;
 }
 
+export interface SubscriptionRecievedBody {
+    status: boolean;
+    message: string;
+    data: {
+        customer: {
+            first_name: string;
+            last_name: string;
+            email: string;
+            phone: string;
+            metadata?: any;
+            domain: string;
+            customer_code: string;
+            risk_action: string;
+            id: number;
+            integration: number;
+            createdAt: string;
+            updatedAt: string;
+        };
+        plan: {
+            domain: string;
+            name: string;
+            plan_code: string;
+            description: string;
+            amount: number;
+            interval: string;
+            send_invoices: boolean;
+            send_sms: boolean;
+            hosted_page: boolean;
+            hosted_page_url?: any;
+            hosted_page_summary?: any;
+            currency: string;
+            migrate?: any;
+            id: number;
+            integration: number;
+            createdAt: string;
+            updatedAt: string;
+        };
+        integration: number;
+        authorization: {
+            authorization_code: string;
+            bin: string;
+            last4: string;
+            exp_month: string;
+            exp_year: string;
+            channel: string;
+            card_type: string;
+            bank: string;
+            country_code: string;
+            brand: string;
+            reusable: boolean;
+            signature: string;
+            account_name: string;
+        };
+        domain: string;
+        start: number;
+        status: string;
+        quantity: number;
+        amount: number;
+        subscription_code: string;
+        email_token: string;
+        easy_cron_id: string;
+        cron_expression: string;
+        next_payment_date: string;
+        open_invoice: string;
+        id: number;
+        createdAt: string;
+        updatedAt: string;
+    }[];
+    meta: {
+        total: number;
+        skipped: number;
+        perPage: number;
+        page: number;
+        pageCount: number;
+    };
+}
+
+
 interface Metadata { }
 interface Split { }
