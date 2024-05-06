@@ -1,3 +1,10 @@
+## [1.2.0](https://github.com/NodesByTGM/nodes-server/compare/v1.1.2...v1.2.0) (2024-05-06)
+
+
+### Features
+
+* release and deploy to ec2 ([431a43f](https://github.com/NodesByTGM/nodes-server/commit/431a43fc0fb309d3f46d3f7710a5a56f9e8f8817))
+
 ## [1.1.2](https://github.com/NodesByTGM/nodes-server/compare/v1.1.1...v1.1.2) (2024-05-06)
 
 
