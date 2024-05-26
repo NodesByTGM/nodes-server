@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/NodesByTGM/nodes-server/compare/v1.2.0...v1.2.1) (2024-05-26)
+
+
+### Bug Fixes
+
+* subscriptions ([ea88633](https://github.com/NodesByTGM/nodes-server/commit/ea8863377975c368e10046bb63a32c2172ef13c6))
+
 ## [1.2.0](https://github.com/NodesByTGM/nodes-server/compare/v1.1.2...v1.2.0) (2024-05-06)
 
 
