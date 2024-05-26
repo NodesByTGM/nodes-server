@@ -338,6 +338,90 @@ export interface SubscriptionRecievedBody {
     };
 }
 
+export interface SubscriptionNotRenewingData {
+    id: number;
+    domain: string;
+    status: string;
+    subscription_code: string;
+    email_token: string;
+    amount: number;
+    cron_expression: string;
+    next_payment_date?: any;
+    open_invoice?: any;
+    integration: number;
+    plan: {
+        id: number;
+        name: string;
+        plan_code: string;
+        description: string;
+        amount: number;
+        interval: string;
+        send_invoices: boolean;
+        send_sms: boolean;
+        currency: string;
+    };
+    authorization: {
+        authorization_code: string;
+        bin: string;
+        last4: string;
+        exp_month: string;
+        exp_year: string;
+        channel: string;
+        card_type: string;
+        bank: string;
+        country_code: string;
+        brand: string;
+        reusable: boolean;
+        signature: string;
+        account_name?: any;
+    };
+    customer: {
+        id: number;
+        first_name?: any;
+        last_name?: any;
+        email: string;
+        customer_code: string;
+        phone?: any;
+        metadata?: any;
+        risk_action: string;
+        international_format_phone?: any;
+    };
+    invoices: any[];
+    invoices_history: any[];
+    invoice_limit: number;
+    split_code?: any;
+    most_recent_invoice?: any;
+    created_at: string;
+};
+
+export interface SubscriptionExpiringCardData {
+    event: string;
+    data: {
+        expiry_date: string;
+        description: string;
+        brand: string;
+        subscription: {
+            id: number;
+            subscription_code: string;
+            amount: number;
+            next_payment_date: string;
+            plan: {
+                interval: string;
+                id: number;
+                name: string;
+                plan_code: string;
+            };
+        };
+        customer: {
+            id: number;
+            first_name: string;
+            last_name: string;
+            email: string;
+            customer_code: string;
+        };
+    }[];
+}
+
 
 interface Metadata { }
 interface Split { }

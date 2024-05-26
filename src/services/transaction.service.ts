@@ -162,8 +162,8 @@ export const initiateSubscription = async ({
 }
 
 export const cancelSubscription = async ({ code, token }: {
-    code?: string,
-    token?: string,
+    code?: string, // Subscription code
+    token?: string, // Email token
 }) => {
     try {
         const result = await mainClient.post('https://api.paystack.co/subscription/disable', {
@@ -176,11 +176,10 @@ export const cancelSubscription = async ({ code, token }: {
                 // TODO handle the db subscription part
             }
         }
-        return null
     } catch (error) {
         throw error
-        // return ""
     }
+        return null
 }
 
 export const checkTxnExists = async (reference: string) => {

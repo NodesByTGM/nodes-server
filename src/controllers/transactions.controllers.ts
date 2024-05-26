@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express';
-import { ChargeSuccessEventData, PaystackWebhookEvent, SubscriptionCreatedData, SubscriptionDisabledEventData } from '../interfaces/paystack';
+import { ChargeSuccessEventData, PaystackWebhookEvent, SubscriptionCreatedData, SubscriptionDisabledEventData, SubscriptionNotRenewingData } from '../interfaces/paystack';
 import { AccountModel, SubscriptionModel, TransactionModel } from '../mongodb/models';
 import { EmailService, TransactionService, constructResponse, initiateSubscription, verifyTxnByReference } from '../services';
 import { sendHTMLEmail } from '../services/email.service';
@@ -221,6 +221,34 @@ const paystackWebhook: RequestHandler = async (req, res) => {
         return res.sendStatus(200)
     }
 
+
+    if (eventData.event === 'subscription.not_renew') {
+        const data: SubscriptionNotRenewingData = eventData.data
+        const user = await AccountModel.findOne({ email: data.customer.email })
+        if (user) {
+            const sub = await SubscriptionModel.findOne({ account: user.id })
+            if (sub) {
+                sub.active = true
+                sub.status = 'non-renewing'
+                await sub.save()
+            }
+        }
+    }
+
+    if (eventData.event === 'subscription.expiring_cards') {
+        const data: SubscriptionNotRenewingData = eventData.data
+        const user = await AccountModel.findOne({ email: data.customer.email })
+        if (user) {
+            const sub = await SubscriptionModel.findOne({ account: user.id })
+            if (sub) {
+                sub.active = true
+                sub.status = 'expiring_cards'
+                await sub.save()
+            }
+        }
+    }
+
+
     if (eventData.event === 'subscription.disable') {
         const data: SubscriptionDisabledEventData = eventData.data
         const user = await AccountModel.findOne({ email: data.customer.email })
@@ -228,6 +256,7 @@ const paystackWebhook: RequestHandler = async (req, res) => {
             const sub = await SubscriptionModel.findOne({ account: user.id })
             if (sub) {
                 sub.active = false
+                sub.status = 'complete'
                 await sub.save()
             }
         }
