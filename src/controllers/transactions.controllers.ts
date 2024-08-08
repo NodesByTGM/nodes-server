@@ -86,6 +86,7 @@ const verifyInternalTransaction: RequestHandler = async (req: any, res) => {
             apiObject: AppConfig.API_OBJECTS.Account
         })
     } catch (error) {
+        console.log(error)
         return constructResponse({
             res,
             code: 500,

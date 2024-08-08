@@ -89,6 +89,7 @@ export const createTransaction = async (reqData: PaystackVerifiedTransaction) =>
                     active: true,
                     paidAt: data.paidAt,
                     account: user.id,
+                    planCode: data.plan_object.plan_code
                 })
             }
 
@@ -179,7 +180,7 @@ export const cancelSubscription = async ({ code, token }: {
     } catch (error) {
         throw error
     }
-        return null
+    return null
 }
 
 export const checkTxnExists = async (reference: string) => {
