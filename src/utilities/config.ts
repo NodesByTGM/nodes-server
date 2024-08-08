@@ -200,6 +200,12 @@ export const AppConfig = {
     PLANS: {
         Pro: { name: 'Pro Plan', planCode: `${process.env.PRO_PLAN}` },
         Business: { name: 'Business Plan', planCode: `${process.env.BUSINESS_PLAN}` },
-    }
+    },
+    SUBSCRIPTION_STATUSES: {
+        Complete: 'complete',
+        Active: 'active',
+        NotRenewing: 'non_renewing',
+        ExpiringCards: 'expiring_cards',
+    },
 
 }

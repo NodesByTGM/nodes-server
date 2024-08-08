@@ -89,6 +89,7 @@ export const createTransaction = async (reqData: PaystackVerifiedTransaction) =>
                     active: true,
                     paidAt: data.paidAt,
                     account: user.id,
+                    status: AppConfig.SUBSCRIPTION_STATUSES.Active,
                     planCode: data.plan_object.plan_code
                 })
             }
