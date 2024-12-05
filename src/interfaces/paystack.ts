@@ -218,5 +218,210 @@ export interface SubscriptionDisabledEventData {
     created_at: string;
 };
 
+export interface SubscriptionCreatedData {
+    domain: string;
+    status: string;
+    subscription_code: string;
+    amount: number;
+    cron_expression: string;
+    next_payment_date: string;
+    open_invoice?: any;
+    createdAt: string;
+    plan: {
+        name: string;
+        plan_code: string;
+        description?: any;
+        amount: number;
+        interval: string;
+        send_invoices: boolean;
+        send_sms: boolean;
+        currency: string;
+    };
+    authorization: {
+        authorization_code: string;
+        bin: string;
+        last4: string;
+        exp_month: string;
+        exp_year: string;
+        card_type: string;
+        bank: string;
+        country_code: string;
+        brand: string;
+        account_name: string;
+    };
+    customer: {
+        first_name: string;
+        last_name: string;
+        email: string;
+        customer_code: string;
+        phone: string;
+        metadata: Metadata;
+        risk_action: string;
+    };
+    created_at: string;
+}
+
+export interface SubscriptionRecievedBody {
+    status: boolean;
+    message: string;
+    data: {
+        customer: {
+            first_name: string;
+            last_name: string;
+            email: string;
+            phone: string;
+            metadata?: any;
+            domain: string;
+            customer_code: string;
+            risk_action: string;
+            id: number;
+            integration: number;
+            createdAt: string;
+            updatedAt: string;
+        };
+        plan: {
+            domain: string;
+            name: string;
+            plan_code: string;
+            description: string;
+            amount: number;
+            interval: string;
+            send_invoices: boolean;
+            send_sms: boolean;
+            hosted_page: boolean;
+            hosted_page_url?: any;
+            hosted_page_summary?: any;
+            currency: string;
+            migrate?: any;
+            id: number;
+            integration: number;
+            createdAt: string;
+            updatedAt: string;
+        };
+        integration: number;
+        authorization: {
+            authorization_code: string;
+            bin: string;
+            last4: string;
+            exp_month: string;
+            exp_year: string;
+            channel: string;
+            card_type: string;
+            bank: string;
+            country_code: string;
+            brand: string;
+            reusable: boolean;
+            signature: string;
+            account_name: string;
+        };
+        domain: string;
+        start: number;
+        status: string;
+        quantity: number;
+        amount: number;
+        subscription_code: string;
+        email_token: string;
+        easy_cron_id: string;
+        cron_expression: string;
+        next_payment_date: string;
+        open_invoice: string;
+        id: number;
+        createdAt: string;
+        updatedAt: string;
+    }[];
+    meta: {
+        total: number;
+        skipped: number;
+        perPage: number;
+        page: number;
+        pageCount: number;
+    };
+}
+
+export interface SubscriptionNotRenewingData {
+    id: number;
+    domain: string;
+    status: string;
+    subscription_code: string;
+    email_token: string;
+    amount: number;
+    cron_expression: string;
+    next_payment_date?: any;
+    open_invoice?: any;
+    integration: number;
+    plan: {
+        id: number;
+        name: string;
+        plan_code: string;
+        description: string;
+        amount: number;
+        interval: string;
+        send_invoices: boolean;
+        send_sms: boolean;
+        currency: string;
+    };
+    authorization: {
+        authorization_code: string;
+        bin: string;
+        last4: string;
+        exp_month: string;
+        exp_year: string;
+        channel: string;
+        card_type: string;
+        bank: string;
+        country_code: string;
+        brand: string;
+        reusable: boolean;
+        signature: string;
+        account_name?: any;
+    };
+    customer: {
+        id: number;
+        first_name?: any;
+        last_name?: any;
+        email: string;
+        customer_code: string;
+        phone?: any;
+        metadata?: any;
+        risk_action: string;
+        international_format_phone?: any;
+    };
+    invoices: any[];
+    invoices_history: any[];
+    invoice_limit: number;
+    split_code?: any;
+    most_recent_invoice?: any;
+    created_at: string;
+};
+
+export interface SubscriptionExpiringCardData {
+    event: string;
+    data: {
+        expiry_date: string;
+        description: string;
+        brand: string;
+        subscription: {
+            id: number;
+            subscription_code: string;
+            amount: number;
+            next_payment_date: string;
+            plan: {
+                interval: string;
+                id: number;
+                name: string;
+                plan_code: string;
+            };
+        };
+        customer: {
+            id: number;
+            first_name: string;
+            last_name: string;
+            email: string;
+            customer_code: string;
+        };
+    }[];
+}
+
+
 interface Metadata { }
 interface Split { }

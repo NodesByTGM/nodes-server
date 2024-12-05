@@ -1,3 +1,59 @@
+## [1.2.1](https://github.com/NodesByTGM/nodes-server/compare/v1.2.0...v1.2.1) (2024-05-26)
+
+
+### Bug Fixes
+
+* subscriptions ([ea88633](https://github.com/NodesByTGM/nodes-server/commit/ea8863377975c368e10046bb63a32c2172ef13c6))
+
+## [1.2.0](https://github.com/NodesByTGM/nodes-server/compare/v1.1.2...v1.2.0) (2024-05-06)
+
+
+### Features
+
+* release and deploy to ec2 ([431a43f](https://github.com/NodesByTGM/nodes-server/commit/431a43fc0fb309d3f46d3f7710a5a56f9e8f8817))
+
+## [1.1.2](https://github.com/NodesByTGM/nodes-server/compare/v1.1.1...v1.1.2) (2024-05-06)
+
+
+### Bug Fixes
+
+* subscription p1 ([59c50ab](https://github.com/NodesByTGM/nodes-server/commit/59c50ab226c4e11f14cb5df7c033e19aa3b71b59))
+
+## [1.1.1](https://github.com/NodesByTGM/nodes-server/compare/v1.1.0...v1.1.1) (2024-05-05)
+
+
+### Bug Fixes
+
+* file system ([f2a408c](https://github.com/NodesByTGM/nodes-server/commit/f2a408cc8a889a9e5c3b8619cf51011e8c6e3b94))
+
+## [1.1.0](https://github.com/NodesByTGM/nodes-server/compare/v1.0.4...v1.1.0) (2024-05-03)
+
+
+### Features
+
+* added discover users ([15943d4](https://github.com/NodesByTGM/nodes-server/commit/15943d425137a536d15c63d0dea3a322fdbcb295))
+* ec2 setup ([521064e](https://github.com/NodesByTGM/nodes-server/commit/521064ef39a4a875fc01f03912d174681a816d51))
+* file uploads change ([3253a8b](https://github.com/NodesByTGM/nodes-server/commit/3253a8b98f1a582d6dfcf53f298c33c1bbd3bb88))
+* notifications, verify business, general emails, and event registrations ([21863f5](https://github.com/NodesByTGM/nodes-server/commit/21863f55c551b5565e5a70160a0c62c5dbf5dc28))
+* production init ([9a2ae95](https://github.com/NodesByTGM/nodes-server/commit/9a2ae95377ef94134207ad58f4000840e8729beb))
+* subscription test ([91048f0](https://github.com/NodesByTGM/nodes-server/commit/91048f0ad42ce8cde13b9020032d9c3306e05fbc))
+
+
+### Bug Fixes
+
+* auth admin admin and billing information added for users ([8a05f2c](https://github.com/NodesByTGM/nodes-server/commit/8a05f2c0a222172fd00f5161e5b0ce3371b7783e))
+* **auth:** registration ([6e6769c](https://github.com/NodesByTGM/nodes-server/commit/6e6769ced7f0b32c6bb1d0dd63189c3d30aa6c14))
+* cleanup ([7378249](https://github.com/NodesByTGM/nodes-server/commit/7378249e5bf1b02feaa8a5331e163fc7c9a67c25))
+* connection workflow ([8eea4c4](https://github.com/NodesByTGM/nodes-server/commit/8eea4c48e30649e23602abf9070e80edc5f6fddc))
+* discover api ([0bebd8f](https://github.com/NodesByTGM/nodes-server/commit/0bebd8fa9373d89fd82e8619bc2cd1c30960957d))
+* job search ([3b209d5](https://github.com/NodesByTGM/nodes-server/commit/3b209d574b45117f0a5ecb65382961e31364fea9))
+* jobs ([2b39963](https://github.com/NodesByTGM/nodes-server/commit/2b39963ac5d948b98b7bd7400874f457a22104f6))
+* jobs and events ([42cc267](https://github.com/NodesByTGM/nodes-server/commit/42cc267bf993171028bc6cf8b59ad8e36e2c077d))
+* middlewares ([5717335](https://github.com/NodesByTGM/nodes-server/commit/5717335d9b3693ce1d318fe23c0e1da51c693cbf))
+* post likes ([9ea3f2f](https://github.com/NodesByTGM/nodes-server/commit/9ea3f2f175f960f01d6f0debdb3293e66830824d))
+* removed users from discover api ([32d334c](https://github.com/NodesByTGM/nodes-server/commit/32d334cecb1814b9deb762cd6690e33f5cc3473a))
+* users and accept requests ([661853f](https://github.com/NodesByTGM/nodes-server/commit/661853fe54de46521642c7b5ddc4bc778bcfaf7b))
+
 ## [1.0.4](https://github.com/NodesByTGM/nodes-server/compare/v1.0.3...v1.0.4) (2024-04-23)
 
 

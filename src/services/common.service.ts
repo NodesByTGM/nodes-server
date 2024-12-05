@@ -25,7 +25,7 @@ export const constructResponse = ({
 }) => {
     const isSuccess = successCodes.includes(code)
     if (!isSuccess && process.env.NODE_ENV === 'development') {
-        console.log('[error]:', data.toString());
+        console.log('[error]:', data.toString() === '[object Object]' ? data : data.toString());
     }
 
     const _res = {

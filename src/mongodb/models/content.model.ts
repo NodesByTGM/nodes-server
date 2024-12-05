@@ -1,11 +1,10 @@
 import mongoose, { Schema } from 'mongoose';
 import { AppConfig } from '../../utilities/config';
-import { fileSchema } from './file.model';
 
 const ContentSchema = new mongoose.Schema({
     title: { type: String, required: true },
     description: { type: String, required: true, },
-    thumbnail: { type: fileSchema, required: false, default: null },
+    thumbnail: { type: Schema.Types.ObjectId, ref: 'File', autopopulate: true },
     category: {
         type: String,
         required: true,

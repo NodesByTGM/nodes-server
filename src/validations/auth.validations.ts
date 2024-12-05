@@ -24,7 +24,7 @@ export const loginSchema = Joi.object({
     email: Joi.string().allow(''),
     password: Joi.string().required(),
     firebaseToken: Joi.string().allow(''),
-})
+}).or('username', 'email')
 
 export const sendOTPSchema = Joi.object({
     // name: Joi.string().required(),

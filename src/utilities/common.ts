@@ -106,3 +106,56 @@ export const getLimitedText = (sentence: string = "") => {
     }
     return sentence;
 };
+
+export function generateRandomString(length = 16): string {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return result;
+}
+
+export function generateRandomFileName(length: number, extension: string): string {
+    const randomString = generateRandomString(length);
+    return randomString + '.' + extension;
+}
+
+export function getFileExtension(base64Data: string): string | null {
+    // Define supported file types and their corresponding extensions
+    const fileTypeMappings: { [key: string]: string } = {
+        'image/jpeg': 'jpg',
+        'image/png': 'png',
+        'image/gif': 'gif',
+        'application/pdf': 'pdf',
+        'video/mp4': 'mp4',
+        'audio/mpeg': 'mp3',
+        'audio/wav': 'wav',
+        'text/plain': 'txt',
+        'application/json': 'json',
+        'application/xml': 'xml',
+        'application/msword': 'doc',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
+        'application/vnd.ms-excel': 'xls',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
+        'application/vnd.ms-powerpoint': 'ppt',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'pptx',
+        // Add more mappings as needed
+    };
+
+    // Extract the file type from the base64 data
+    const match = base64Data.match(/^data:([a-z]+\/[a-z0-9-+.]+);base64,/i);
+    if (!match) return null;
+
+    // Extract the file type from the match
+    const fileType = match[1];
+
+    // Retrieve the extension based on the file type
+    return fileTypeMappings[fileType.toLowerCase()] || null;
+}
+
+export const generateFileName = (file: string, path: string, name = '') => {
+    const ext = getFileExtension(file);
+    const randomName = name.length === 0 ? generateRandomString() : name;
+    return `${path}/${randomName}.${ext}`
+}

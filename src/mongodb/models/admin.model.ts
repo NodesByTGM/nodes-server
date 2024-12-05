@@ -1,6 +1,5 @@
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import { AppConfig } from '../../utilities/config';
-import { fileSchema } from './file.model';
 
 const AdminSchema = new mongoose.Schema({
     name: { type: String, required: true },
@@ -9,7 +8,7 @@ const AdminSchema = new mongoose.Schema({
     phone: { type: String, required: true, unique: true },
     password: { type: String, required: true, },
     verified: { type: Boolean, required: false, default: false },
-    avatar: { type: fileSchema, required: false, default: null },
+    avatar: { type: Types.ObjectId, ref: 'File', autopopulate: true },
     role: {
         type: Number,
         required: true,
